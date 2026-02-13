@@ -1,0 +1,24 @@
+/* Botón base totalmente neutro */
+.app-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+/* Variante pink SOLO color */
+.app-button--pink {
+  background-color: #ec4899;
+  color: white;
+}
+
+.app-button--pink:hover {
+  background-color: #db2777;
+}
+
+.app-button--pink:active {
+  background-color: #be185d;
+}
+
+.app-button--pink:disabled {
+  background-color: #f9a8d4;
+}
