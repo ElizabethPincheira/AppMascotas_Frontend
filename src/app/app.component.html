@@ -1,4 +1,3 @@
-
 <p>coleccion de botones</p>
 <app-button variant="pink"></app-button>
 
@@ -13,7 +12,19 @@
 
 <p>card mascotas</p>
 
-<app-card-mascota></app-card-mascota>
+<div class="container">
+  <div class="row">
+
+    <div class="col-md-4"
+         *ngFor="let mascota of mascotas; trackBy: trackById">
+
+      <app-card-mascota [mascota]="mascota"></app-card-mascota>
+
+    </div>
+
+  </div>
+</div>
+
 
 
 <router-outlet />

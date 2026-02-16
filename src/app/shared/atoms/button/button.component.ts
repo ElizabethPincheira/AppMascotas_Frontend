@@ -12,4 +12,6 @@ export class ButtonComponent {
   @Input() type: 'button' | 'submit' | 'reset' = 'button';
   @Input() variant: string = 'primary'; // primary, secondary, danger...
   @Input() disabled: boolean = false;
+  @Input() buttonClass: string = '';
+
 }

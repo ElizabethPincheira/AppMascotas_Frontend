@@ -3,7 +3,7 @@
 <button
   [type]="type"
   class="app-button btn"
-  [ngClass]="'app-button--' + variant"
+  [ngClass]="['app-button--' + variant, buttonClass]"
   [disabled]="disabled"
 >
   {{ label }}

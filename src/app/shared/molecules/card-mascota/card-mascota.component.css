@@ -1,5 +1,64 @@
-.card-button {
-  width: 100%;
-  padding: 10px;
-  border-radius: 6px;
+
+
+.mascota-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
 }
+
+.mascota-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 20px rgba(0, 0, 0, 0.15);
+}
+
+.imagen-mascota {
+  height: 250px;       /* todas misma altura */
+  width: 100%;
+  object-fit: cover;
+  border-radius: 15px 15px 0 0;  /* recorta sin deformar */
+}
+
+
+.estado-robado {
+  background-color: #dc3545; /* rojo fuerte */
+  color: white;
+}
+
+.estado-extraviado {
+  background-color: #ff8800; /* naranja */
+  color: white;
+}
+
+.estado-encontrado {
+  background-color: #2d6a4f; /* verde claro */
+  color: white;
+}
+.estado-recuperado {
+  background-color: #2d6a4f; /* verde oscuro */
+  color: white;
+}
+
+.estado-busca-hogar {
+  background-color: #009bb0; /* cyan */
+  color: white;
+}
+
+.estado-adoptado {
+  background-color: #ffc107; /* dorado */
+  color: black;
+}
+
+.estado-buscando-pareja {
+  background-color: #ff69b4; /* rosa */
+  color: white;
+}
+
+.estado-emparejado {
+  background-color: #6f42c1; /* violeta */
+  color: white;
+}
+
+.estado-default {
+  background-color: #6c757d;
+  color: white;
+}
+

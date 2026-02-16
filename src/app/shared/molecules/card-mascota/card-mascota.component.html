@@ -1,9 +1,20 @@
-<div class="card" style="width: 18rem;">
-  <img src="..." class="card-img-top" alt="...">
+<div class="card mascota-card shadow  mb-5 bg-body-tertiary rounded-4 border-0">
+  <img [src]="mascota.imagenUrl" *ngIf="mascota.imagenUrl" class="card-img-top imagen-mascota" alt="Imagen Mascota">
   <div class="card-body">
-    <h5 class="card-title">Card title</h5>
-    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card’s content.
+    <span class="badge" [ngClass]="getEstadoClase(mascota.estado)">
+      {{ mascota.estado }}
+    </span>
+    <ul class="list-unstyled small mb-3">
+      <li><strong>Nombre:</strong> {{ mascota.nombre }}</li>
+      <li><strong>Tipo:</strong> {{ mascota.tipo }}</li>
+      <li><strong>Raza:</strong> {{ mascota.raza }}</li>
+      <li><strong>Chip N°:</strong> {{ mascota.chip ? mascota.chip : 'No tiene Chip' }}</li>
+      <li><strong>Ubicación:</strong> {{ mascota.ubicacion }}</li>
+    </ul>
+    <p class="card-text text-muted">
+      {{ mascota.descripcion }}
     </p>
-    <app-button label="Publicar Mascota" variant="pink"></app-button>
+
+    <app-button label="Ver Mascota" variant="pink" buttonClass="w-100"></app-button>
   </div>
 </div>
