@@ -7,18 +7,21 @@
 
 /* Variante pink SOLO color */
 .app-button--pink {
-  background-color: #ec4899;
+  background-color: #438647;
   color: white;
 }
 
 .app-button--pink:hover {
-  background-color: #db2777;
+  background-color: #356b38;
 }
 
 .app-button--pink:active {
-  background-color: #be185d;
+  background-color: #274f2a;
 }
 
 .app-button--pink:disabled {
-  background-color: #f9a8d4;
+  background-color: #9fc5a3;
 }
+
+
+
