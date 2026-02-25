@@ -1,0 +1,31 @@
+/* Botón base totalmente neutro */
+.app-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  z-index: 3;
+  position: relative;
+  border-radius: 30px;
+  font-size: 1rem;
+  font-weight: medium;
+  letter-spacing: 1px;
+
+}
+
+/* Variante green SOLO color */
+.app-button--green {
+  background-color: #438647;
+  color: white;
+}
+
+.app-button--green:hover {
+  background-color: #356b38;
+}
+
+.app-button--green:active {
+  background-color: #274f2a;
+}
+
+.app-button--green:disabled {
+  background-color: #9fc5a3;
+}
