@@ -1,1 +1,13 @@
-<p>pets-page works!</p>
+<p>card mascotas desde page</p>
+<div class="container">
+  <div class="row">
+    <div class="col-md-3" *ngFor="let mascota of mascotas; trackBy: trackById">
+      <app-card-mascota [mascota]="mascota"></app-card-mascota>
+    </div>
+  </div>
+</div>
+
+
+
+
+

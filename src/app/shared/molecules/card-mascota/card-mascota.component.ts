@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input, } from '@angular/core';
-import { ButtonComponent } from '../../atoms/button/button.component';
+import { ButtonComponent } from '../../atoms/button_card/button.component';
 import { Mascota } from '../../models/mascota.model';
 
 @Component({

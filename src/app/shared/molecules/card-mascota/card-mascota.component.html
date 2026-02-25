@@ -1,20 +1,22 @@
-<div class="card mascota-card shadow  mb-5 bg-body-tertiary rounded-4 border-0">
-  <img [src]="mascota.imagenUrl" *ngIf="mascota.imagenUrl" class="card-img-top imagen-mascota" alt="Imagen Mascota">
-  <div class="card-body">
-    <span class="badge" [ngClass]="getEstadoClase(mascota.estado)">
-      {{ mascota.estado }}
-    </span>
-    <ul class="list-unstyled small mb-3">
-      <li><strong>Nombre:</strong> {{ mascota.nombre }}</li>
-      <li><strong>Tipo:</strong> {{ mascota.tipo }}</li>
-      <li><strong>Raza:</strong> {{ mascota.raza }}</li>
-      <li><strong>Chip N°:</strong> {{ mascota.chip ? mascota.chip : 'No tiene Chip' }}</li>
-      <li><strong>Ubicación:</strong> {{ mascota.ubicacion }}</li>
-    </ul>
-    <p class="card-text text-muted">
-      {{ mascota.descripcion }}
-    </p>
+<div class="card mascota-card shadow mb-5 rounded-5 border-0"
+  [ngStyle]="{'background-image': 'url(' + mascota.imagenUrl + ')'}">
+  <div class="card-overlay">
+    <div class="card-body text-white">
+      <div class="info-card">
+        <div>
+          <span>{{ mascota.nombre }}</span>
+        </div>
 
-    <app-button label="Ver Mascota" variant="pink" buttonClass="w-100"></app-button>
+        <div>
+          <span class="badge" [ngClass]="getEstadoClase(mascota.estado)">
+            {{ mascota.estado }}
+          </span>
+          <span>{{ mascota.ubicacion }}</span>
+        </div>
+      </div>
+
+      <app-button label="Ver Mascota" variant="green" buttonClass="w-100"></app-button>
+
+    </div>
   </div>
 </div>

@@ -1,20 +1,47 @@
-
-
 .mascota-card {
+  position: relative;
+  height: 300px;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  border-radius: 25px;
+  overflow: hidden;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   cursor: pointer;
 }
 
 .mascota-card:hover {
-  transform: translateY(-8px);
+  transform: translateY(-6px);
   box-shadow: 0 12px 20px rgba(0, 0, 0, 0.15);
 }
 
-.imagen-mascota {
-  height: 250px;       /* todas misma altura */
-  width: 100%;
-  object-fit: cover;
-  border-radius: 15px 15px 0 0;  /* recorta sin deformar */
+/* Capa oscura encima de la imagen */
+.card-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.1) 0%,
+    rgb(0, 0, 0) 0%,
+    transparent 80%
+  );
+}
+
+
+/* Contenido */
+.card-body {
+  position: relative;
+  z-index: 2;
+}
+
+.info-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px;
+  text-align: center;
 }
 
 
