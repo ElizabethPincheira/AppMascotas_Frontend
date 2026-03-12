@@ -1,11 +1,6 @@
-
-
 <button
-  [type]="type"
-  class="app-button btn"
-  [ngClass]="['app-button--' + variant, buttonClass]"
-  [disabled]="disabled"
->
+  [routerLink]="routerLink"
+  [type]="type" class="app-button btn"
+  [ngClass]="['app-button--' + variant, buttonClass]" [disabled]="disabled">
   {{ label }}
 </button>
-

@@ -2,13 +2,15 @@ import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 
+
 @Component({
-  selector: 'app-button-cta',
+  selector: 'app-button-login',
   imports: [CommonModule, RouterLink],
-  templateUrl: './button-cta.component.html',
-  styleUrl: './button-cta.component.css'
+  templateUrl: './button-login.component.html',
+  styleUrl: './button-login.component.css'
 })
-export class ButtonCtaComponent {
+export class ButtonLoginComponent {
+
   @Input() routerLink?: string;
   @Input() label: string = 'Button';
   @Input() type: 'button' | 'submit' | 'reset' = 'button';
@@ -16,6 +18,5 @@ export class ButtonCtaComponent {
   @Input() disabled: boolean = false;
   @Input() buttonClass: string = '';
 }
-
 
 

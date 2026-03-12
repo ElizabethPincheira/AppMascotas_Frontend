@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 import { CardMascotaComponent } from '../../../../shared/molecules/card-mascota/card-mascota.component';
 import { CommonModule } from '@angular/common';
 import { Mascota } from '../../../../shared/models/mascota.model';
-import { MascotaService } from '../../../../services/mascota.service';
+import { MascotaService } from '../../../../core/services/mascota.service';
 
 
 @Component({
@@ -20,9 +20,12 @@ export class PetsPageComponent {
 
   mascotas: Mascota[] = [];
 
+  imagenUrl: string = '';
+
   constructor(private mascotaService: MascotaService) { }
 
-  ngOnInit() {
+  async ngOnInit() {
+
 
     this.mascotas = [
       {
@@ -119,13 +122,26 @@ export class PetsPageComponent {
 
     ];
 
-    // Ahora pedimos una imagen para cada mascota
-    this.mascotas.forEach(mascota => {
-      this.mascotaService.getImagen().subscribe(url => {
-        mascota.imagenUrl = url;
-      });
-    });
 
+    for (let mascota of this.mascotas) {
+      mascota.imagenUrl = await this.mascotaService.getImagen();
+    }
+
+    console.log(this.mascotas, 'mascotas');
   }
+
+
+
+  // Ahora pedimos una imagen para cada mascota
+  async cargarImagen() {
+    try {
+      const imagen = await this.mascotaService.getImagen();
+      this.imagenUrl = imagen;
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+
 
 }
