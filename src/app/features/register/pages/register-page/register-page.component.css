@@ -1,0 +1,23 @@
+.container {
+  /*background-image: url('/assets/images/fondo_register.png');*/
+  background-color: #30332E;
+  max-width: 100%;
+  height: 100vh;
+  margin: 0 auto;
+}
+
+
+
+.coltext {
+  align-content: center;
+  height: 30vh;
+  font-size: 2.5rem;
+  color: #FFFBFC;
+
+}
+
+.colform {
+  align-content: center;
+  height: 70vh;
+
+}
