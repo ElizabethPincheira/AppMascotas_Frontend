@@ -30,23 +30,8 @@ export class PetsPageComponent {
     this.mascotas = [...await this.mascotaService.getMascotas()];
 
 
-    for (let mascota of this.mascotas) {
-      mascota.imagenUrl = await this.mascotaService.getImagen();
-    }
 
     console.log(this.mascotas, 'mascotas');
-  }
-
-
-
-  // Ahora pedimos una imagen para cada mascota
-  async cargarImagen() {
-    try {
-      const imagen = await this.mascotaService.getImagen();
-      this.imagenUrl = imagen;
-    } catch (error) {
-      console.error(error);
-    }
   }
 
 

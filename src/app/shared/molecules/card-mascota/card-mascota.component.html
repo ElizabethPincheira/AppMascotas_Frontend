@@ -1,5 +1,37 @@
-<div class="card mascota-card shadow mb-5 rounded-5 border-0"
-  [ngStyle]="{'background-image': 'url(' + mascota.imagenUrl + ')'}">
+<div class="card mascota-card shadow mb-5 rounded-5 border-0">
+  <!-- Carrusel de imágenes -->
+  <div id="carousel-{{ mascota.id }}" class="carousel slide h-100" data-bs-ride="carousel">
+    <div class="carousel-inner h-100">
+      <div *ngFor="let imagen of mascota.imagenes; let first = first" 
+        [ngClass]="{'carousel-item': true, 'active': first}" 
+        class="h-100">
+        <img [src]="'data:image/jpeg;base64,' + imagen" 
+          class="d-block w-100 h-100" 
+          style="object-fit: cover;"
+          [alt]="mascota.nombre">
+      </div>
+    </div>
+    
+    <!-- Controles del carrusel -->
+    <button *ngIf="mascota.imagenes.length > 1" 
+      class="carousel-control-prev" 
+      type="button" 
+      [attr.data-bs-target]="'#carousel-' + mascota.id" 
+      data-bs-slide="prev">
+      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Previous</span>
+    </button>
+    <button *ngIf="mascota.imagenes.length > 1" 
+      class="carousel-control-next" 
+      type="button" 
+      [attr.data-bs-target]="'#carousel-' + mascota.id" 
+      data-bs-slide="next">
+      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Next</span>
+    </button>
+  </div>
+
+  <!-- Información de la mascota sobre el carrusel -->
   <div class="card-overlay">
     <div class="card-body text-white">
       <div class="info-card">

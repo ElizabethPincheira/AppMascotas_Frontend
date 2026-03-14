@@ -1,18 +1,59 @@
 .mascota-card {
   position: relative;
   height: 300px;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
   border-radius: 25px;
   overflow: hidden;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   cursor: pointer;
+  display: flex;
+  flex-direction: column;
 }
 
 .mascota-card:hover {
   transform: translateY(-6px);
   box-shadow: 0 12px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* Carrusel */
+.carousel {
+  flex: 1;
+  border-radius: 25px 25px 0 0;
+}
+
+.carousel-inner {
+  border-radius: 25px 25px 0 0;
+}
+
+.carousel-item {
+  height: 100%;
+}
+
+.carousel-item img {
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Controles del carrusel */
+.carousel-control-prev,
+.carousel-control-next {
+  width: 40px;
+  background-color: rgba(0, 0, 0, 0.3);
+  border-radius: 50%;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.carousel-control-prev {
+  left: 10px;
+}
+
+.carousel-control-next {
+  right: 10px;
+}
+
+.carousel-control-prev:hover,
+.carousel-control-next:hover {
+  background-color: rgba(0, 0, 0, 0.5);
 }
 
 /* Capa oscura encima de la imagen */

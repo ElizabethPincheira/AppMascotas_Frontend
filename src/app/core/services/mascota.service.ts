@@ -8,12 +8,6 @@ export class MascotaService {
 
   private apiUrl = 'http://localhost:8080/mascotas/';
 
-  async getImagen(): Promise<string> {
-    let apiUrl = 'https://dog.ceo/api/breeds/image/random';
-    const response = await axios.get(apiUrl)
-    return response.data.message;
-  }
-
   async getMascotas(): Promise<any[]> {
     let url = this.apiUrl + 'todas';
     const response = await axios.get(url);
