@@ -9,6 +9,18 @@
       <div>
         <form (ngSubmit)="register()">
           <div class="mb-3">
+            <label for="exampleInputName" class="form-label">Nombre</label>
+            <input type="text" class="form-control" id="exampleInputName" name="nombre" [(ngModel)]="nombre">
+          </div>
+          <div class="mb-3">
+            <label for="exampleInputComuna" class="form-label">Comuna</label>
+            <input type="text" class="form-control" id="exampleInputComuna" name="comuna" [(ngModel)]="comuna">
+          </div>
+          <div class="mb-3">
+            <label for="exampleInputCiudad" class="form-label">Ciudad</label>
+            <input type="text" class="form-control" id="exampleInputCiudad" name="ciudad" [(ngModel)]="ciudad">
+          </div>
+          <div class="mb-3">
             <label for="exampleInputEmail1" class="form-label">Email address</label>
             <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" name="email"
               [(ngModel)]="email">
