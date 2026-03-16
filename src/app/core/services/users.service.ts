@@ -12,7 +12,18 @@ export class UsersService {
 
         const registerData = { email, password, nombre, comuna, ciudad };
         const response = await axios.post(this.apiUrl, registerData);
+
+        console.log(response.data, 'respuesta del backend');
         return response.data;
+    }
+
+
+    async login(email: string, password: string): Promise<any> {
+      const loginData = { email, password };
+      const response = await axios.post(`${this.apiUrl}/login`, loginData);
+
+      console.log(response.data, 'respuesta del backend');
+      return response.data;
     }
 
 }
@@ -25,6 +36,14 @@ export class UsersService {
 
 
   /*
+
+
+
+@Post('login')
+  login(@Body() loginUserDto: LoginUserDto) {
+    return this.userService.loginUsuario(loginUserDto);
+  }
+
 
 
 

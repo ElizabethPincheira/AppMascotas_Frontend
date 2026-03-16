@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { UsersService } from '../../../../core/services/users.service';
+import Swal from 'sweetalert2';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-register-page',
@@ -18,7 +20,8 @@ export class RegisterPageComponent {
 
   respuesta: any;
 
-  constructor(private usersService: UsersService) { }
+  constructor(private usersService: UsersService, private router: Router) { }
+
 
   async register() {
     const register = {
@@ -29,19 +32,46 @@ export class RegisterPageComponent {
       ciudad: this.ciudad
     };
 
-
     console.log(register, 'usuario registrado');
 
-    this.respuesta = await this.usersService.register(this.email, this.password, this.nombre, this.comuna, this.ciudad);
+    Swal.fire({
+      title: 'Registrando...',
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      }
+    });
+
+    this.respuesta = await this.usersService.register(
+      this.email,
+      this.password,
+      this.nombre,
+      this.comuna,
+      this.ciudad);
 
     console.log(this.respuesta, 'respuesta del servidor');
+
+    Swal.close();
+
+    Swal.fire({
+      icon: 'success',
+      title: 'Registro completado',
+      text: 'Tu cuenta fue creada correctamente'
+    }).then(() => {
+
+      this.router.navigate(['/login']);
+
+    });
+
+
   }
 
 
-
-
-
 }
+
+
+
+
 
 /*
 ******************
