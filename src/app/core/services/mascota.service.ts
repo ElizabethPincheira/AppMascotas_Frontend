@@ -14,8 +14,6 @@ export class MascotaService {
     return response.data;
   }
 
-
-
 }
 
 
