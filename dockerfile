@@ -25,7 +25,7 @@ RUN rm /etc/nginx/conf.d/default.conf
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # Copy built Angular app to Nginx html directory
-COPY --from=builder /usr/src/app/dist//browser /usr/share/nginx/html
+COPY --from=builder /usr/src/app/dist/app-mascotas-frontend/browser /usr/share/nginx/html
 
 # Ensure logo.svg is in the correct location
 COPY --from=builder /usr/src/app/public/logo.svg /usr/share/nginx/html/logo.svg
