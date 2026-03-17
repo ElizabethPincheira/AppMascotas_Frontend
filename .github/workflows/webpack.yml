@@ -6,23 +6,16 @@ on:
       - main
 
 jobs:
-
   build-and-push:
     name: Build and Push Docker Image
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
 
       - name: Login to Docker Hub
-        env:
-          DOCKER_USER:  ${{ secrets.DOCKER_USER }}
-          DOCKER_PASS:  ${{ secrets.DOCKER_PASS }}
         run: |
           echo "${{ secrets.DOCKER_PASS }}" | docker login -u "${{ secrets.DOCKER_USER }}" --password-stdin
-          echo "Login exitoso a Docker Hub"
 
       - name: Build and Push Docker Image
         run: |
@@ -35,7 +28,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: build-and-push
     steps:
-      - name: Deploy only circuloanimal service
+      - name: Deploy en Droplet
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.DROPLET_IP }}
@@ -45,25 +38,19 @@ jobs:
             set -euo pipefail
             cd /root/redx
 
-            # NOMBRE DEL SERVICIO EN TU docker-compose.yml
-            SERVICE_NAME=circuloanimal            # <-- cámbialo si en tu compose se llama distinto
-            IMAGE_NAME=jormeno2020/circuloanimal
+            echo "Servicios disponibles:"
+            docker compose config --services
 
-            echo "Haciendo pull de la última imagen..."
-            docker compose pull $SERVICE_NAME || docker-compose pull $SERVICE_NAME
+            echo "Haciendo pull..."
+            docker compose pull
 
-            echo "Levantando solo $SERVICE_NAME (sin tocar deps)..."
-            docker compose up -d --no-deps $SERVICE_NAME || docker-compose up -d --no-deps $SERVICE_NAME
+            echo "Levantando stack..."
+            docker compose up -d --remove-orphans
 
-            echo "Esperando 8s..."
-            sleep 8
-
-            echo "Estado del servicio:"
-            docker ps --filter "name=${SERVICE_NAME}"
+            echo "Contenedores activos:"
+            docker compose ps
 
             echo "Logs recientes:"
-            docker compose logs --tail=100 $SERVICE_NAME || docker-compose logs --tail=100 $SERVICE_NAME
+            docker compose logs --tail=100
 
-            echo "Limpieza de imágenes huérfanas (opcional)..."
             docker image prune -f || true
-
