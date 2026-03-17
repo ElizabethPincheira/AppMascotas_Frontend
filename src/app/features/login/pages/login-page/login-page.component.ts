@@ -28,6 +28,12 @@ export class LoginPageComponent {
 
     };
 
+    //guarda el token 
+    localStorage.setItem('token', this.respuesta.token);
+    //guarda el user
+    localStorage.setItem('user', JSON.stringify(this.respuesta.user));
+    
+
     console.log(login, 'usuario logueado');
 
     Swal.fire({
