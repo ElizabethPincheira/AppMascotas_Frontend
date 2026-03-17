@@ -24,6 +24,9 @@
 
 
   <div>
+    <span *ngIf="user.nombre">
+      Hola {{ user.nombre }}
+    </span>
     <app-button-login class="me-4" label="Iniciar Sesión" variant="green" routerLink="/login">
     </app-button-login>
   </div>
