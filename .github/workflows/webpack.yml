@@ -46,7 +46,7 @@ jobs:
             cd /root/redx
 
             # NOMBRE DEL SERVICIO EN TU docker-compose.yml
-            SERVICE_NAME=circuloanimal              # <-- cámbialo si en tu compose se llama distinto
+            SERVICE_NAME=circuloAnimalFront              # <-- cámbialo si en tu compose se llama distinto
             IMAGE_NAME=jormeno2020/circuloanimal
 
             echo "Haciendo pull de la última imagen..."
