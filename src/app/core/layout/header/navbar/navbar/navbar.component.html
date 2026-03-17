@@ -24,10 +24,17 @@
 
 
   <div>
-    <span *ngIf="user.nombre">
+    <span *ngIf="user?.nombre">
       Hola {{ user.nombre }}
     </span>
-    <app-button-login class="me-4" label="Iniciar Sesión" variant="green" routerLink="/login">
+    <!-- BOTON LOGIN -->
+    <app-button-login *ngIf="!user?.nombre" class="me-4" label="Iniciar Sesión" variant="green" routerLink="/login">
+    </app-button-login>
+    <!-- BOTON PERFIL -->
+    <app-button-login *ngIf="user?.nombre" class="me-4" label="Perfil" variant="green" routerLink="/profile">
+    </app-button-login>
+    <!-- BOTON LOGOUT -->
+    <app-button-login *ngIf="user?.nombre" label="Cerrar sesión" variant="red" (click)="logout()">
     </app-button-login>
   </div>
 

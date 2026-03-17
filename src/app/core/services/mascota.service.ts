@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
-import axios, { Axios } from 'axios'; 
+import axios, { Axios } from 'axios';
 import { environment } from '../../../environments/environment.local';
 
 @Injectable({//
-  providedIn: 'root' 
+  providedIn: 'root'
 })
-export class MascotaService { 
+export class MascotaService {
 
   private apiUrl = `${environment.apiUrl}mascotas/`;
 
