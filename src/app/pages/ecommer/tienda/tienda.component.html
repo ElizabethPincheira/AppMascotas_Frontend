@@ -1,1 +1,134 @@
-<p>tienda works!</p>
+<section class="tienda-page">
+  <div class="tienda-shell">
+    <section class="tienda-hero">
+      <div class="tienda-hero__content">
+        <span class="tienda-hero__eyebrow">Tienda solidaria</span>
+        <h1>Compra alimento para mascotas y activa repartos locales por comuna.</h1>
+        <p>
+          Esta vitrina conectara pedidos de alimento con tiendas de reparto de terceros. Cada compra entregada
+          aportara <strong>$1000</strong> a la fundacion para seguir apoyando rescates, alimento y cuidado animal.
+        </p>
+
+        <div class="tienda-hero__actions">
+          <a class="hero-link hero-link--solid" href="#filtros">Explorar tiendas</a>
+          <a class="hero-link hero-link--ghost" routerLink="/donar">Ver otras formas de ayudar</a>
+        </div>
+      </div>
+
+      <div class="tienda-hero__aside">
+        <article class="impact-card">
+          <span class="impact-card__label">Modelo de reparto</span>
+          <strong class="impact-card__value">$1000 por pedido</strong>
+          <p>Cada entrega confirmada deja un aporte directo para la fundacion.</p>
+        </article>
+
+        <article class="impact-card">
+          <span class="impact-card__label">Cobertura piloto</span>
+          <strong class="impact-card__value">{{ filteredStores.length }} tiendas visibles</strong>
+          <p>Filtra por region, provincia y comuna para ver opciones de reparto cercanas.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="tienda-explainer">
+      <article class="explainer-card">
+        <span class="explainer-card__step">01</span>
+        <h2>El usuario compra alimento</h2>
+        <p>La compra se realiza desde la plataforma, con foco en alimento para perros y gatos.</p>
+      </article>
+
+      <article class="explainer-card">
+        <span class="explainer-card__step">02</span>
+        <h2>Una tienda tercera reparte</h2>
+        <p>Las tiendas asociadas se encargan del despacho segun su cobertura territorial.</p>
+      </article>
+
+      <article class="explainer-card">
+        <span class="explainer-card__step">03</span>
+        <h2>La fundacion recibe apoyo</h2>
+        <p>Cada pedido suma un ingreso fijo para rescate, alimento y apoyo a animales vulnerables.</p>
+      </article>
+    </section>
+
+    <section class="tienda-filters" id="filtros">
+      <div class="section-heading">
+        <div>
+          <span class="section-heading__eyebrow">Busqueda territorial</span>
+          <h2>Encuentra tiendas de reparto por ubicacion</h2>
+        </div>
+        <div class="results-badge">{{ filteredStores.length }} resultado(s)</div>
+      </div>
+
+      <div class="filters-grid">
+        <label class="filter-field">
+          <span>Region</span>
+          <select [(ngModel)]="selectedRegion" (ngModelChange)="onRegionChange()">
+            <option value="">Todas las regiones</option>
+            <option *ngFor="let region of regions" [value]="region">{{ region }}</option>
+          </select>
+        </label>
+
+        <label class="filter-field">
+          <span>Provincia</span>
+          <select [(ngModel)]="selectedProvincia" (ngModelChange)="onProvinciaChange()" [disabled]="!selectedRegion">
+            <option value="">Todas las provincias</option>
+            <option *ngFor="let provincia of provincias" [value]="provincia">{{ provincia }}</option>
+          </select>
+        </label>
+
+        <label class="filter-field">
+          <span>Comuna</span>
+          <select [(ngModel)]="selectedComuna" [disabled]="!selectedProvincia">
+            <option value="">Todas las comunas</option>
+            <option *ngFor="let comuna of comunas" [value]="comuna">{{ comuna }}</option>
+          </select>
+        </label>
+      </div>
+    </section>
+
+    <section class="stores-grid" *ngIf="filteredStores.length > 0; else noStores">
+      <article class="store-card" *ngFor="let store of filteredStores">
+        <div class="store-card__top">
+          <div>
+            <span class="store-card__location">{{ store.region }} · {{ store.comuna }}</span>
+            <h3>{{ store.name }}</h3>
+          </div>
+          <span class="store-card__eta">{{ store.eta }}</span>
+        </div>
+
+        <p class="store-card__highlight">{{ store.highlight }}</p>
+
+        <div class="store-card__info">
+          <div>
+            <span class="store-card__label">Direccion</span>
+            <strong>{{ store.address }}</strong>
+          </div>
+          <div>
+            <span class="store-card__label">Horario</span>
+            <strong>{{ store.schedule }}</strong>
+          </div>
+          <div>
+            <span class="store-card__label">Cobertura</span>
+            <strong>{{ store.coverage.join(', ') }}</strong>
+          </div>
+        </div>
+
+        <div class="store-card__chips">
+          <span *ngFor="let category of store.categories">{{ category }}</span>
+        </div>
+
+        <div class="store-card__footer">
+          <span class="store-card__support">Cada pedido aporta $1000 a la fundacion</span>
+          <button type="button" class="store-card__button">Simular pedido</button>
+        </div>
+      </article>
+    </section>
+
+    <ng-template #noStores>
+      <section class="empty-state">
+        <h2>No hay tiendas para este filtro</h2>
+        <p>Prueba cambiando region, provincia o comuna para ver otras opciones de reparto demo.</p>
+      </section>
+    </ng-template>
+  </div>
+</section>
