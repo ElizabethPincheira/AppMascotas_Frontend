@@ -1,45 +1,63 @@
-<nav class="navbar bg-body-tertiary">
+<header class="site-navbar-wrap">
+  <nav class="navbar navbar-expand-lg site-navbar">
+    <div class="container-fluid px-3 px-lg-4">
+      <a class="navbar-brand site-navbar__brand" routerLink="/">
+        <span class="site-navbar__brand-icon">
+          <img
+            src="assets/icons/icon_patita.png"
+            alt="MascotasChile"
+            width="34"
+            height="34">
+        </span>
+        <span class="site-navbar__brand-text">
+          Mascotas<span>Chile</span>.cl
+        </span>
+      </a>
 
-  <div>
-    <a class="navbar-brand d-flex me-4" href="#">
-      <img src="assets/icons/icon_patita.png" alt="Logo" width="24" height="24"
-        class="d-inline-block align-text-top icono-patita">
-      Circulo Animal
-    </a>
-  </div>
+      <button
+        class="navbar-toggler site-navbar__toggler"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#mainNavbar"
+        aria-controls="mainNavbar"
+        aria-expanded="false"
+        aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
 
+      <div class="collapse navbar-collapse" id="mainNavbar">
+        <ul class="navbar-nav mx-auto align-items-lg-center gap-lg-2">
+          <li class="nav-item" *ngFor="let item of navItems">
+            <a
+              *ngIf="item.path; else disabledItem"
+              class="nav-link site-navbar__link"
+              [routerLink]="item.path"
+              routerLinkActive="active-link"
+              [routerLinkActiveOptions]="{ exact: item.exact ?? false }">
+              {{ item.label }}
+            </a>
 
+            <ng-template #disabledItem>
+              <span class="nav-link site-navbar__link site-navbar__link--static">
+                {{ item.label }}
+              </span>
+            </ng-template>
+          </li>
+        </ul>
 
-  <div>
-    <ul class="nav nav-item">
-      <li class="nav-item">
-        <a class="nav-link" aria-current="page" routerLink="/" routerLinkActive="active-link"
-          [routerLinkActiveOptions]="{ exact: true }">Mascotas Perdidas</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" routerLink="/about" routerLinkActive="active-link">Conocenos</a>
-      </li>
-    </ul>
-  </div>
+        <div class="site-navbar__actions" *ngIf="!user?.nombre; else loggedUserActions">
+          <a class="btn site-navbar__login" routerLink="/login">Ingresar</a>
+          <a class="btn site-navbar__register" routerLink="/register">Registrarse</a>
+        </div>
 
-
-  <div>
-    <span *ngIf="user?.nombre">
-      Hola {{ user.nombre }}
-    </span>
-    <!-- BOTON LOGIN -->
-    <app-button-login *ngIf="!user?.nombre" class="me-4" label="Iniciar Sesión" variant="green" routerLink="/login">
-    </app-button-login>
-    <!-- BOTON PERFIL -->
-    <app-button-login *ngIf="user?.nombre" class="me-4" label="Perfil" variant="green" routerLink="/profile">
-    </app-button-login>
-    <!-- BOTON LOGOUT -->
-    <app-button-login *ngIf="user?.nombre" label="Cerrar sesión" variant="red" (click)="logout()">
-    </app-button-login>
-  </div>
-
-
-
-
-
-</nav>
+        <ng-template #loggedUserActions>
+          <div class="site-navbar__actions site-navbar__actions--logged">
+            <span class="site-navbar__welcome">Hola {{ user.nombre }}</span>
+            <a class="btn site-navbar__login" routerLink="/">Mi inicio</a>
+            <button class="btn site-navbar__logout" type="button" (click)="logout()">Salir</button>
+          </div>
+        </ng-template>
+      </div>
+    </div>
+  </nav>
+</header>
