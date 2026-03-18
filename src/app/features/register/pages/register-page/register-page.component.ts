@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { UsersService } from '../../../../core/services/users.service';
 import Swal from 'sweetalert2';
@@ -7,7 +8,7 @@ import { UbicacionesService } from '../../../../core/services/ubicaciones.servic
 
 @Component({
   selector: 'app-register-page',
-  imports: [FormsModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './register-page.component.html',
   styleUrl: './register-page.component.css'
 })
@@ -16,15 +17,19 @@ export class RegisterPageComponent {
   email: string = '';
   password: string = '';
   nombre: string = '';
-  regiones: any[] = [];
-  provincias: any[] = [];
-  comunas: any[] = [];
+  regiones: string[] = [];
+  provincias: string[] = [];
+  comunas: string[] = [];
 
   respuesta: any;
 
-  regionSeleccionada: string | null = null;
-  provinciaSeleccionada: string | null = null;
-  comunaSeleccionada: string | null = null;
+  regionSeleccionada: string = '';
+  provinciaSeleccionada: string = '';
+  comunaSeleccionada: string = '';
+  cargandoRegiones = false;
+  cargandoProvincias = false;
+  cargandoComunas = false;
+  enviandoFormulario = false;
 
 
   constructor(
@@ -35,39 +40,79 @@ export class RegisterPageComponent {
 
 
   async ngOnInit() {
-    this.regiones = await this.ubicacionesService.getUbicaciones();
-    console.log(this.regiones, 'regiones obtenidas');
+    await this.cargarRegiones();
   }
 
   async register() {
-    this.respuesta = await this.usersService.register(
-      this.email,
-      this.password,
-      this.nombre,
-      this.regionSeleccionada,
-      this.provinciaSeleccionada,
-      this.comunaSeleccionada,
-    );
+    this.enviandoFormulario = true;
 
-    console.log(this.respuesta, 'respuesta del servidor');
-    Swal.close();
+    try {
+      this.respuesta = await this.usersService.register(
+        this.email,
+        this.password,
+        this.nombre,
+        this.regionSeleccionada,
+        this.provinciaSeleccionada,
+        this.comunaSeleccionada,
+      );
+
+      console.log(this.respuesta, 'respuesta del servidor');
+      Swal.close();
+    } finally {
+      this.enviandoFormulario = false;
+    }
   }
 
-  async onRegionChange() {}
+  async onRegionChange() {
+    this.provinciaSeleccionada = '';
+    this.comunaSeleccionada = '';
+    this.provincias = [];
+    this.comunas = [];
 
-  async onProvinciaChange() {}
+    if (!this.regionSeleccionada) {
+      return;
+    }
+
+    this.cargandoProvincias = true;
+
+    try {
+      this.provincias = await this.ubicacionesService.getUbicaciones(this.regionSeleccionada);
+    } finally {
+      this.cargandoProvincias = false;
+    }
+  }
+
+  async onProvinciaChange() {
+    this.comunaSeleccionada = '';
+    this.comunas = [];
+
+    if (!this.regionSeleccionada || !this.provinciaSeleccionada) {
+      return;
+    }
+
+    this.cargandoComunas = true;
+
+    try {
+      this.comunas = await this.ubicacionesService.getUbicaciones(
+        this.regionSeleccionada,
+        this.provinciaSeleccionada,
+      );
+    } finally {
+      this.cargandoComunas = false;
+    }
+  }
 
   async onComunaChange() {}
 
+  private async cargarRegiones() {
+    this.cargandoRegiones = true;
 
-
-
-
-
-
-
-
-
+    try {
+      this.regiones = await this.ubicacionesService.getUbicaciones();
+      console.log(this.regiones, 'regiones obtenidas');
+    } finally {
+      this.cargandoRegiones = false;
+    }
+  }
 }
-
 

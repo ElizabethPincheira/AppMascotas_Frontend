@@ -15,27 +15,46 @@
 
           <div class="mb-3">
             <label for="exampleInputRegiones" class="form-label">Region</label>
-            <select class="form-control" name="regiones" [(ngModel)]="regionSeleccionada" (change)="onRegionChange()" [disabled]="!regionSeleccionada">
+            <select
+              class="form-control"
+              id="exampleInputRegiones"
+              name="regiones"
+              [(ngModel)]="regionSeleccionada"
+              (ngModelChange)="onRegionChange()"
+              [disabled]="cargandoRegiones"
+              required>
               <option value="">Seleccione una región</option>
-              <option *ngFor="let region of regiones" [value]="region.nombre">{{ region.nombre }}</option>
+              <option *ngFor="let region of regiones" [value]="region">{{ region }}</option>
             </select>
           </div>
 
           <div class="mb-3">
-            <label for="exampleInputRegiones" class="form-label">Provincia</label>
-            <select class="form-control" name="provincias" [(ngModel)]="provinciaSeleccionada"
-              (change)="onProvinciaChange()" [disabled]="!provinciaSeleccionada">
+            <label for="exampleInputProvincia" class="form-label">Provincia</label>
+            <select
+              class="form-control"
+              id="exampleInputProvincia"
+              name="provincias"
+              [(ngModel)]="provinciaSeleccionada"
+              (ngModelChange)="onProvinciaChange()"
+              [disabled]="!regionSeleccionada || cargandoProvincias"
+              required>
               <option value="">Seleccione una provincia</option>
-              <option *ngFor="let provincia of provincias" [value]="provincia.nombre">{{ provincia.nombre }}</option>
+              <option *ngFor="let provincia of provincias" [value]="provincia">{{ provincia }}</option>
             </select>
           </div>
 
           <div class="mb-3">
             <label for="exampleInputComuna" class="form-label">Comuna</label>
-            <select class="form-control" name="comunas" [(ngModel)]="comunaSeleccionada"
-              (change)="onComunaChange()" [disabled]="!comunaSeleccionada">
+            <select
+              class="form-control"
+              id="exampleInputComuna"
+              name="comunas"
+              [(ngModel)]="comunaSeleccionada"
+              (ngModelChange)="onComunaChange()"
+              [disabled]="!provinciaSeleccionada || cargandoComunas"
+              required>
               <option value="">Seleccione una comuna</option>
-              <option *ngFor="let comuna of comunas" [value]="comuna.nombre">{{ comuna.nombre }}</option>
+              <option *ngFor="let comuna of comunas" [value]="comuna">{{ comuna }}</option>
             </select>
           </div>
 
@@ -57,7 +76,9 @@
             <input type="checkbox" class="form-check-input" id="exampleCheck1">
             <label class="form-check-label" for="exampleCheck1">Aceptar términos y condiciones</label>
           </div>
-          <button type="submit" class="btn btn-primary">Registrarse</button>
+          <button type="submit" class="btn btn-primary" [disabled]="enviandoFormulario">
+            Registrarse
+          </button>
         </form>
       </div>
     </div>
