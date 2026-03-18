@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { UsersService } from '../../../../core/services/users.service';
 import { Router } from '@angular/router';
@@ -7,9 +8,9 @@ import { AuthService } from '../../../../core/services/auth.service';
 
 @Component({
   selector: 'app-login-page',
-  imports: [FormsModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './login-page.component.html',
-  styleUrl: './login-page.component.css'
+  styleUrls: ['./login-page.component.css']
 })
 export class LoginPageComponent {
 
@@ -18,11 +19,17 @@ export class LoginPageComponent {
   password: string = ''
   nombre: string = '';
   respuesta: any;
+  enviandoFormulario = false;
 
   constructor(private usersService: UsersService, private router: Router, private authService: AuthService) { }
 
+  get formularioCompleto(): boolean {
+    return !!(this.email.trim() && this.password.trim());
+  }
 
   async login() {
+    this.enviandoFormulario = true;
+
     const login = {
       email: this.email,
       password: this.password,
@@ -89,6 +96,8 @@ export class LoginPageComponent {
       });
 
       console.error(error);
+    } finally {
+      this.enviandoFormulario = false;
     }
 
 
@@ -105,4 +114,3 @@ export class LoginPageComponent {
 //4. guardo token
 //5. muestro mensaje
 //6. redirijo
-
