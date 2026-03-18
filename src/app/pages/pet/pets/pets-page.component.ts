@@ -7,6 +7,7 @@ import { CardMascotaComponent } from '../../../shared/molecules/card-mascota/car
 
 @Component({
   selector: 'app-pets-page',
+  standalone: true,
   imports: [CommonModule, RouterLink, CardMascotaComponent],
   templateUrl: './pets-page.component.html',
   styleUrls: ['./pets-page.component.css']

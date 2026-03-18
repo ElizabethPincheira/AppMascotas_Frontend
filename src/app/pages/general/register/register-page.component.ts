@@ -9,6 +9,7 @@ import { UbicacionesService } from '../../../core/services/ubicaciones.service';
 
 @Component({
   selector: 'app-register-page',
+  standalone: true,
   imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './register-page.component.html',
   styleUrls: ['./register-page.component.css']
