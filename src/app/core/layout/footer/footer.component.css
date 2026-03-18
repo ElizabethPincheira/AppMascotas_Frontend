@@ -1,0 +1,133 @@
+.site-footer {
+  padding: 18px 12px 18px;
+  background: linear-gradient(180deg, #f8f5ef 0%, #efe9de 100%);
+}
+
+.site-footer__panel {
+  border-radius: 26px;
+  padding: 32px 24px 18px;
+  background:
+    radial-gradient(circle at top right, rgba(122, 189, 90, 0.12), transparent 22%),
+    linear-gradient(160deg, #213d31 0%, #2b4e3a 58%, #335944 100%);
+  color: #f6fbf6;
+  box-shadow: 0 18px 36px rgba(33, 61, 49, 0.18);
+}
+
+.site-footer__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-bottom: 1rem;
+  text-decoration: none;
+}
+
+.site-footer__brand-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.site-footer__brand-text {
+  color: #ffffff;
+  font-size: 1.35rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.site-footer__brand-text span {
+  color: #7fcb59;
+}
+
+.site-footer__description {
+  max-width: 440px;
+  color: rgba(246, 251, 246, 0.8);
+  font-size: 0.98rem;
+  line-height: 1.7;
+  margin-bottom: 1.2rem;
+}
+
+.site-footer__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+}
+
+.site-footer__tag {
+  padding: 0.5rem 0.85rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #eff8ef;
+  font-size: 0.83rem;
+  font-weight: 700;
+}
+
+.site-footer__title {
+  margin: 0 0 1rem;
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.site-footer__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.site-footer__list a,
+.site-footer__list span {
+  color: rgba(246, 251, 246, 0.78);
+  text-decoration: none;
+  font-size: 0.94rem;
+  transition: color 0.2s ease;
+}
+
+.site-footer__list a:hover {
+  color: #92d46d;
+}
+
+.site-footer__bottom {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  color: rgba(246, 251, 246, 0.7);
+  font-size: 0.88rem;
+}
+
+.site-footer__bottom-links {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.site-footer__bottom-links a {
+  color: rgba(246, 251, 246, 0.82);
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.site-footer__bottom-links a:hover {
+  color: #92d46d;
+}
+
+@media (max-width: 767px) {
+  .site-footer__panel {
+    padding: 28px 18px 18px;
+  }
+
+  .site-footer__bottom {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
