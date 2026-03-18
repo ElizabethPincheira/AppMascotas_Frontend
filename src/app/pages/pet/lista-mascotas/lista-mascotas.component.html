@@ -1,0 +1,35 @@
+<section class="lista-mascotas-page">
+  <div class="lista-mascotas-shell">
+    <div class="lista-mascotas-hero">
+      <div>
+        <span class="lista-mascotas-hero__badge">{{ pageBadge }}</span>
+        <h1>{{ pageTitle }}</h1>
+        <p>{{ pageDescription }}</p>
+      </div>
+
+      <div class="lista-mascotas-hero__stats">
+        <div class="stat-card">
+          <span class="stat-card__label">Resultados</span>
+          <strong class="stat-card__value">{{ mascotasFiltradas.length }}</strong>
+        </div>
+
+        
+      </div>
+    </div>
+
+    <div class="lista-mascotas-grid" *ngIf="mascotasFiltradas.length > 0; else emptyState">
+      <app-card-mascota
+        *ngFor="let mascota of mascotasFiltradas; trackBy: trackById"
+        [mascota]="mascota">
+      </app-card-mascota>
+    </div>
+
+    <ng-template #emptyState>
+      <div class="empty-state">
+        <h2>No hay publicaciones para esta categoria</h2>
+        <p>Cuando existan mascotas en esta seccion, apareceran aqui usando el mismo sistema de cards del sitio.</p>
+        <a class="empty-state__link" routerLink="/">Ir a la portada</a>
+      </div>
+    </ng-template>
+  </div>
+</section>

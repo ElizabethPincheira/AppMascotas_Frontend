@@ -18,14 +18,16 @@ export const routes: Routes = [
       {
         path: 'perdidos',
         loadComponent: () =>
-          import('./pages/pet/pets/pets-page.component')
-            .then(m => m.PetsPageComponent)
+          import('./pages/pet/lista-mascotas/lista-mascotas.component')
+            .then(m => m.ListaMascotasComponent),
+        data: { modo: 'perdidos' },
       },
       {
         path: 'adopcion',
         loadComponent: () =>
-          import('./pages/pet/pets/pets-page.component')
-            .then(m => m.PetsPageComponent)
+          import('./pages/pet/lista-mascotas/lista-mascotas.component')
+            .then(m => m.ListaMascotasComponent),
+        data: { modo: 'adopcion' },
       },
       {
         path: 'about',

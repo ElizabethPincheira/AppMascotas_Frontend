@@ -1,12 +1,13 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { Mascota } from '../../../shared/models/mascota.model';
 import { MascotaService } from '../../../core/services/mascota.service';
 import { CardMascotaComponent } from '../../../shared/molecules/card-mascota/card-mascota.component';
 
 @Component({
   selector: 'app-pets-page',
-  imports: [CommonModule, CardMascotaComponent],
+  imports: [CommonModule, RouterLink, CardMascotaComponent],
   templateUrl: './pets-page.component.html',
   styleUrls: ['./pets-page.component.css']
 })
