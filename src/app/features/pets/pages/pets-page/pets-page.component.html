@@ -10,22 +10,10 @@
       </div>
 
       <div class="cards-grid">
-        <article class="pet-card" *ngFor="let mascota of mascotasPerdidasRecientes; trackBy: trackById">
-          <div class="pet-card__image-wrap">
-            <img class="pet-card__image" [src]="getImageSrc(mascota)" [alt]="mascota.nombre">
-          </div>
-
-          <div class="pet-card__body">
-            <div class="pet-card__text">
-              <h3>{{ mascota.nombre }}</h3>
-              <p>{{ getSubtitle(mascota) }}</p>
-            </div>
-
-            <button class="action-button action-button--green" type="button">
-              {{ getActionLabel(mascota) }}
-            </button>
-          </div>
-        </article>
+        <app-card-mascota
+          *ngFor="let mascota of mascotasPerdidasRecientes; trackBy: trackById"
+          [mascota]="mascota">
+        </app-card-mascota>
       </div>
     </div>
 
@@ -39,29 +27,10 @@
       </div>
 
       <div class="cards-grid">
-        <article class="pet-card" *ngFor="let mascota of mascotasEnAdopcion; trackBy: trackById">
-          <div class="pet-card__image-wrap">
-            <img class="pet-card__image" [src]="getImageSrc(mascota)" [alt]="mascota.nombre">
-          </div>
-
-          <div class="pet-card__body">
-            <div class="pet-card__text">
-              <h3>{{ mascota.nombre }}</h3>
-              <p>{{ getSubtitle(mascota) }}</p>
-              <span class="pet-card__owner" *ngIf="getOwnerName(mascota) as owner">
-                Publicado por {{ owner }}
-              </span>
-            </div>
-
-            <button
-              class="action-button"
-              [class.action-button--orange]="mascota.estado !== 'Adoptado'"
-              [class.action-button--green]="mascota.estado === 'Adoptado'"
-              type="button">
-              {{ getActionLabel(mascota) }}
-            </button>
-          </div>
-        </article>
+        <app-card-mascota
+          *ngFor="let mascota of mascotasEnAdopcion; trackBy: trackById"
+          [mascota]="mascota">
+        </app-card-mascota>
       </div>
     </div>
 
