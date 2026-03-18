@@ -1,3 +1,75 @@
+:root {
+  --font-ui: "Trebuchet MS", "Segoe UI", sans-serif;
+  --font-display: "Palatino Linotype", "Book Antiqua", Georgia, serif;
+  --bg-page:
+    radial-gradient(circle at 14% 12%, rgba(118, 167, 63, 0.18), transparent 18%),
+    radial-gradient(circle at 82% 10%, rgba(221, 156, 69, 0.18), transparent 16%),
+    radial-gradient(circle at 75% 65%, rgba(70, 112, 82, 0.13), transparent 24%),
+    repeating-linear-gradient(
+      115deg,
+      rgba(58, 82, 52, 0.02) 0,
+      rgba(58, 82, 52, 0.02) 14px,
+      transparent 14px,
+      transparent 32px
+    ),
+    linear-gradient(180deg, #f3ead7 0%, #e8deca 100%);
+  --bg-panel: rgba(251, 247, 238, 0.84);
+  --bg-card: rgba(255, 251, 243, 0.96);
+  --bg-soft: #eee4d0;
+  --bg-muted: #e7ecdf;
+  --line-soft: rgba(70, 84, 50, 0.18);
+  --shadow-soft: 0 24px 48px rgba(41, 56, 36, 0.12);
+  --shadow-card: 0 22px 44px rgba(38, 45, 29, 0.12);
+  --text-strong: #1f3125;
+  --text-main: #4f5f51;
+  --text-soft: #748071;
+  --brand-forest: #233a2a;
+  --brand-moss: #55753d;
+  --brand-lime: #86ad48;
+  --brand-earth: #ba7135;
+  --brand-sand: #e8bf74;
+  --brand-danger: #d36255;
+  --radius-xl: 30px;
+  --radius-lg: 22px;
+  --radius-md: 16px;
+}
+
+html,
 body {
-  font-family: 'Roboto', sans-serif;
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-ui);
+  color: var(--text-main);
+  background: var(--bg-page);
+  background-attachment: fixed;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-display);
+  color: var(--text-strong);
+  text-wrap: balance;
+}
+
+a {
+  color: inherit;
+}
+
+main {
+  position: relative;
+}
+
+.btn,
+.form-control,
+.form-select {
+  font-family: var(--font-ui);
 }

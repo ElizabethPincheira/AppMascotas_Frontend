@@ -1,14 +1,14 @@
 .lista-mascotas-page {
   min-height: 100vh;
-  padding: 36px 18px 56px;
+  padding: 38px 18px 60px;
   background:
-    radial-gradient(circle at top left, rgba(107, 160, 73, 0.16), transparent 28%),
-    radial-gradient(circle at top right, rgba(243, 162, 74, 0.18), transparent 22%),
-    linear-gradient(180deg, #fffdf9 0%, #f6f2ea 100%);
+    radial-gradient(circle at left top, rgba(129, 167, 69, 0.14), transparent 20%),
+    radial-gradient(circle at right 30%, rgba(205, 135, 55, 0.1), transparent 16%),
+    transparent;
 }
 
 .lista-mascotas-shell {
-  max-width: 1380px;
+  max-width: 1400px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
@@ -16,42 +16,61 @@
 }
 
 .lista-mascotas-hero {
+  position: relative;
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
   gap: 24px;
-  padding: 28px 30px;
-  border-radius: 28px;
+  padding: 34px 34px 36px;
+  border-radius: 38px 38px 30px 30px;
   background:
-    radial-gradient(circle at right top, rgba(138, 210, 103, 0.16), transparent 24%),
-    linear-gradient(160deg, rgba(33, 61, 49, 0.96), rgba(51, 88, 62, 0.92));
+    radial-gradient(circle at right top, rgba(159, 208, 97, 0.2), transparent 24%),
+    radial-gradient(circle at left bottom, rgba(208, 123, 58, 0.18), transparent 20%),
+    linear-gradient(160deg, rgba(26, 47, 31, 0.98), rgba(40, 65, 43, 0.96) 52%, rgba(60, 91, 59, 0.94));
   color: #fff;
-  box-shadow: 0 18px 36px rgba(33, 61, 49, 0.16);
+  box-shadow: 0 28px 52px rgba(28, 43, 31, 0.24);
+  overflow: hidden;
+}
+
+.lista-mascotas-hero::after {
+  content: "";
+  position: absolute;
+  right: -80px;
+  bottom: -90px;
+  width: 280px;
+  height: 280px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(231, 186, 104, 0.16), transparent 64%);
 }
 
 .lista-mascotas-hero__badge {
   display: inline-flex;
-  margin-bottom: 0.8rem;
-  padding: 0.45rem 0.8rem;
+  margin-bottom: 0.85rem;
+  padding: 0.46rem 0.82rem;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.14);
-  font-size: 0.82rem;
-  font-weight: 700;
+  background: rgba(255, 255, 255, 0.1);
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
 }
 
 .lista-mascotas-hero h1 {
   margin: 0;
-  font-size: clamp(2rem, 3vw, 2.8rem);
+  max-width: 760px;
+  font-size: clamp(2.4rem, 4vw, 4rem);
+  font-family: var(--font-display);
   font-weight: 800;
-  letter-spacing: -0.03em;
+  line-height: 0.98;
+  letter-spacing: -0.05em;
 }
 
 .lista-mascotas-hero p {
-  margin: 0.6rem 0 0;
+  margin: 0.7rem 0 0;
   max-width: 760px;
-  color: rgba(255, 255, 255, 0.82);
-  font-size: 1.02rem;
-  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.84);
+  font-size: 1.05rem;
+  line-height: 1.72;
 }
 
 .lista-mascotas-hero__stats {
@@ -62,20 +81,21 @@
 }
 
 .stat-card {
-  min-width: 120px;
-  padding: 0.9rem 1rem;
-  border-radius: 18px;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(6px);
+  min-width: 128px;
+  padding: 1rem 1.08rem;
+  border-radius: 22px 22px 18px 18px;
+  background: rgba(255, 255, 255, 0.11);
+  backdrop-filter: blur(8px);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
 }
 
 .stat-card__label {
   display: block;
-  font-size: 0.76rem;
-  font-weight: 700;
-  letter-spacing: 0.07em;
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  opacity: 0.82;
+  opacity: 0.84;
 }
 
 .stat-card__value {
@@ -89,10 +109,10 @@
   align-items: center;
   justify-content: center;
   min-height: 46px;
-  padding: 0.7rem 1.15rem;
-  border-radius: 12px;
+  padding: 0.72rem 1.15rem;
+  border-radius: 999px;
   text-decoration: none;
-  font-weight: 700;
+  font-weight: 800;
 }
 
 .lista-mascotas-hero__link {
@@ -103,32 +123,35 @@
 .lista-mascotas-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 24px;
+  gap: 26px;
 }
 
 .empty-state {
-  padding: 56px 28px;
-  border-radius: 24px;
+  padding: 62px 30px;
+  border-radius: 36px;
   text-align: center;
-  background: rgba(255, 255, 255, 0.72);
-  box-shadow: inset 0 0 0 1px rgba(106, 132, 98, 0.14);
+  background:
+    radial-gradient(circle at top, rgba(139, 182, 73, 0.12), transparent 20%),
+    var(--bg-panel);
+  border: 1px solid var(--line-soft);
+  box-shadow: var(--shadow-soft);
 }
 
 .empty-state h2 {
   margin: 0 0 12px;
-  color: #223443;
-  font-size: 1.7rem;
+  color: var(--text-strong);
+  font-size: 1.8rem;
   font-weight: 800;
 }
 
 .empty-state p {
   margin: 0 0 18px;
-  color: #6f7c77;
+  color: var(--text-main);
   font-size: 1rem;
 }
 
 .empty-state__link {
-  background: linear-gradient(180deg, #63ad44 0%, #4d8b3f 100%);
+  background: linear-gradient(180deg, var(--brand-lime) 0%, var(--brand-moss) 100%);
   color: #fff;
 }
 
@@ -151,7 +174,7 @@
 
 @media (max-width: 620px) {
   .lista-mascotas-page {
-    padding: 28px 14px 40px;
+    padding: 30px 14px 42px;
   }
 
   .lista-mascotas-hero {

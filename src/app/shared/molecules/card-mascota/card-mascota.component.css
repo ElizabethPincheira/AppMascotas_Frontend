@@ -1,29 +1,46 @@
 .mascota-card {
   overflow: hidden;
-  border-radius: 24px;
-  background: #fffdf9;
-  box-shadow: 0 16px 32px rgba(38, 52, 39, 0.08);
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  border-radius: 32px 32px 28px 28px;
+  background: var(--bg-card);
+  border: 1px solid var(--line-soft);
+  box-shadow: var(--shadow-card);
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  position: relative;
 }
 
 .mascota-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 20px 38px rgba(38, 52, 39, 0.14);
+  transform: translateY(-9px) rotate(-0.4deg);
+  box-shadow: 0 30px 56px rgba(40, 51, 37, 0.16);
+  border-color: rgba(102, 134, 73, 0.26);
+}
+
+.mascota-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 6px;
+  background: linear-gradient(90deg, #ca8345, #8eb254, #315740);
+  z-index: 3;
 }
 
 .mascota-card__media {
   position: relative;
-  aspect-ratio: 1.12 / 1;
-  background: linear-gradient(135deg, #eef7e9, #f5e8d7);
+  aspect-ratio: 1.08 / 1;
+  background:
+    linear-gradient(180deg, rgba(29, 47, 33, 0.04), rgba(29, 47, 33, 0.12)),
+    linear-gradient(135deg, #dbe9cf, #e9d5b4);
 }
 
 .mascota-card__image {
   object-fit: cover;
+  width: 100%;
+  height: 100%;
+  filter: saturate(1.05) contrast(1.02);
 }
 
 .mascota-card__topbar {
   position: absolute;
-  inset: 14px 14px auto 14px;
+  inset: 15px 15px auto 15px;
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
@@ -32,22 +49,22 @@
 }
 
 .mascota-card__badge {
-  padding: 0.55rem 0.8rem;
+  padding: 0.55rem 0.82rem;
   border-radius: 999px;
-  font-size: 0.82rem;
-  font-weight: 700;
-  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.12);
+  font-size: 0.8rem;
+  font-weight: 800;
+  box-shadow: 0 12px 18px rgba(0, 0, 0, 0.12);
 }
 
 .mascota-card__chip {
   display: inline-flex;
   align-items: center;
-  padding: 0.48rem 0.75rem;
+  padding: 0.48rem 0.76rem;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.92);
-  color: #31503a;
-  font-size: 0.82rem;
-  font-weight: 700;
+  background: rgba(255, 252, 246, 0.92);
+  color: var(--brand-forest);
+  font-size: 0.8rem;
+  font-weight: 800;
   text-transform: capitalize;
   box-shadow: 0 10px 18px rgba(0, 0, 0, 0.08);
 }
@@ -57,7 +74,7 @@
   height: 38px;
   top: 50%;
   transform: translateY(-50%);
-  background: rgba(22, 28, 21, 0.34);
+  background: rgba(29, 40, 28, 0.35);
   border-radius: 50%;
 }
 
@@ -70,7 +87,10 @@
 }
 
 .mascota-card__body {
-  padding: 1rem 1rem 1.1rem;
+  padding: 1.1rem 1.05rem 1.18rem;
+  background:
+    radial-gradient(circle at top right, rgba(134, 173, 72, 0.08), transparent 24%),
+    linear-gradient(180deg, rgba(255, 252, 245, 0.96), rgba(246, 241, 230, 0.98));
 }
 
 .mascota-card__header {
@@ -82,48 +102,52 @@
 
 .mascota-card__title {
   margin: 0;
-  color: #233741;
-  font-size: 1.45rem;
+  color: var(--text-strong);
+  font-family: var(--font-display);
+  font-size: 1.55rem;
   font-weight: 800;
-  line-height: 1.05;
+  line-height: 1.02;
   text-transform: capitalize;
 }
 
 .mascota-card__subtitle {
-  margin: 0.22rem 0 0;
-  color: #6c786f;
-  font-size: 0.96rem;
+  margin: 0.24rem 0 0;
+  color: var(--text-main);
+  font-size: 0.95rem;
   text-transform: capitalize;
 }
 
 .mascota-card__date {
   flex-shrink: 0;
-  color: #8a968d;
-  font-size: 0.78rem;
-  font-weight: 700;
+  color: var(--text-soft);
+  font-size: 0.76rem;
+  font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.06em;
 }
 
 .mascota-card__info-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.85rem;
+  gap: 0.9rem;
   margin-bottom: 1rem;
 }
 
 .info-item {
   display: flex;
   flex-direction: column;
-  gap: 0.2rem;
-  padding: 0.85rem 0.9rem;
-  border-radius: 16px;
-  background: linear-gradient(180deg, #f8fbf7 0%, #f4efe8 100%);
-  box-shadow: inset 0 0 0 1px rgba(91, 115, 87, 0.08);
+  gap: 0.24rem;
+  padding: 0.88rem 0.92rem;
+  border-radius: 20px 20px 16px 16px;
+  background:
+    linear-gradient(180deg, rgba(249, 241, 225, 0.98) 0%, rgba(233, 241, 224, 0.98) 100%);
+  box-shadow:
+    inset 0 0 0 1px rgba(87, 102, 69, 0.08),
+    0 10px 18px rgba(65, 78, 48, 0.05);
 }
 
 .info-item__label {
-  color: #7b877f;
+  color: var(--text-soft);
   font-size: 0.72rem;
   font-weight: 800;
   text-transform: uppercase;
@@ -132,64 +156,31 @@
 
 .info-item__value {
   color: #294136;
-  font-size: 0.96rem;
+  font-size: 0.95rem;
   font-weight: 700;
   line-height: 1.3;
   word-break: break-word;
 }
 
 .info-item__value--small {
-  font-size: 0.86rem;
+  font-size: 0.84rem;
 }
 
 .mascota-card__button {
-  min-height: 44px;
+  min-height: 46px;
+  border-radius: 999px;
+  font-weight: 800;
 }
 
-.estado-robado {
-  background: #d84a4a;
-  color: #fff;
-}
-
-.estado-extraviado {
-  background: #f18b2c;
-  color: #fff;
-}
-
-.estado-encontrado {
-  background: #32a06c;
-  color: #fff;
-}
-
-.estado-recuperado {
-  background: #2e7d54;
-  color: #fff;
-}
-
-.estado-busca-hogar {
-  background: #2493a9;
-  color: #fff;
-}
-
-.estado-adoptado {
-  background: #f1c24b;
-  color: #2d2a17;
-}
-
-.estado-buscando-pareja {
-  background: #d8649e;
-  color: #fff;
-}
-
-.estado-emparejado {
-  background: #7c59be;
-  color: #fff;
-}
-
-.estado-default {
-  background: #6f7a72;
-  color: #fff;
-}
+.estado-robado { background: #d85b58; color: #fff; }
+.estado-extraviado { background: #dd9141; color: #fff; }
+.estado-encontrado { background: #4ea06b; color: #fff; }
+.estado-recuperado { background: #397e56; color: #fff; }
+.estado-busca-hogar { background: #46889d; color: #fff; }
+.estado-adoptado { background: #ebc55a; color: #2d2a17; }
+.estado-buscando-pareja { background: #c96a95; color: #fff; }
+.estado-emparejado { background: #7655b3; color: #fff; }
+.estado-default { background: #6f7a72; color: #fff; }
 
 @media (max-width: 576px) {
   .mascota-card__info-grid {

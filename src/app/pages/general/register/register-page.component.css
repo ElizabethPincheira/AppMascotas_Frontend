@@ -1,25 +1,23 @@
 .register-page {
   min-height: 100vh;
-  background:
-    radial-gradient(circle at top left, rgba(117, 176, 90, 0.18), transparent 28%),
-    radial-gradient(circle at bottom right, rgba(242, 167, 76, 0.18), transparent 24%),
-    linear-gradient(135deg, #f4efe6 0%, #eef5ea 52%, #f8f6f1 100%);
+  background: transparent;
 }
 
 .register-hero {
   background:
-    linear-gradient(160deg, rgba(32, 77, 51, 0.96), rgba(59, 116, 70, 0.92)),
-    linear-gradient(135deg, #204d33, #4f7b3d);
+    radial-gradient(circle at top right, rgba(144, 200, 101, 0.14), transparent 22%),
+    linear-gradient(160deg, rgba(33, 61, 49, 0.98), rgba(50, 82, 61, 0.94));
   color: #fff;
-  border-radius: 28px;
+  border-radius: 34px;
   overflow: hidden;
   position: relative;
+  box-shadow: var(--shadow-soft);
 }
 
 .register-hero::before {
   content: "";
   position: absolute;
-  inset: auto -60px -60px auto;
+  inset: auto -54px -54px auto;
   width: 220px;
   height: 220px;
   border-radius: 50%;
@@ -28,20 +26,20 @@
 
 .hero-badge {
   width: fit-content;
-  color: #214730;
-  font-weight: 700;
+  color: var(--brand-forest);
+  font-weight: 800;
   letter-spacing: 0.04em;
 }
 
 .mini-stat {
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(6px);
-  border-radius: 18px;
+  border-radius: 22px;
   color: #fff;
 }
 
 .mini-stat__label {
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   opacity: 0.8;
@@ -51,44 +49,46 @@
 .mini-stat__value {
   font-size: 1rem;
   font-weight: 700;
-  line-height: 1.35;
+  line-height: 1.4;
 }
 
 .register-alert {
-  border-radius: 18px;
+  border-radius: 20px;
   color: #284534;
   background: rgba(255, 255, 255, 0.9);
 }
 
 .register-card {
-  border-radius: 28px;
-  background: rgba(255, 255, 255, 0.92);
+  border-radius: 34px;
+  background: var(--bg-panel);
+  border: 1px solid var(--line-soft);
+  box-shadow: var(--shadow-soft);
   backdrop-filter: blur(10px);
 }
 
 .progress-badge {
-  color: #6d7e75;
-  background: #edf2ec;
-  border: 1px solid #dde8dc;
-  padding: 0.5rem 0.8rem;
+  color: var(--text-soft);
+  background: #eef2e9;
+  border: 1px solid rgba(103, 126, 92, 0.12);
+  padding: 0.52rem 0.82rem;
 }
 
 .progress-badge.is-active {
   color: #fff;
-  background: #4d8b3f;
-  border-color: #4d8b3f;
+  background: var(--brand-moss);
+  border-color: var(--brand-moss);
 }
 
 .location-card {
-  border-radius: 22px;
-  background: linear-gradient(180deg, #f8fbf7 0%, #f3f0ea 100%);
-  box-shadow: inset 0 0 0 1px rgba(85, 110, 84, 0.08);
+  border-radius: 24px;
+  background: linear-gradient(180deg, #f8f4eb 0%, #eef3e7 100%);
+  box-shadow: inset 0 0 0 1px rgba(87, 102, 69, 0.08);
 }
 
 .form-control,
 .form-select {
-  border-radius: 16px;
-  border-color: #dbe4da;
+  border-radius: 18px;
+  border-color: #d8dfd0;
   min-height: 58px;
   box-shadow: none;
 }
@@ -96,27 +96,27 @@
 .form-control:focus,
 .form-select:focus {
   border-color: #6aa05e;
-  box-shadow: 0 0 0 0.25rem rgba(106, 160, 94, 0.15);
+  box-shadow: 0 0 0 0.25rem rgba(106, 160, 94, 0.14);
 }
 
 .register-button {
-  min-width: 200px;
-  border-radius: 14px;
-  font-weight: 700;
+  min-width: 210px;
+  border-radius: 999px;
+  font-weight: 800;
 }
 
 .switch-auth {
-  padding-top: 0.5rem;
+  padding-top: 0.6rem;
 }
 
 .switch-auth__link {
   text-decoration: none;
-  font-weight: 700;
-  color: #4d8b3f;
+  font-weight: 800;
+  color: var(--brand-moss);
 }
 
 .switch-auth__link:hover {
-  color: #356e2c;
+  color: var(--brand-forest);
 }
 
 .text-light-emphasis {
