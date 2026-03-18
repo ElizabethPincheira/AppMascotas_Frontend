@@ -29,3 +29,20 @@
 .app-button-cta--green:disabled {
   background-color: #9fc5a3;
 }
+
+.app-button-cta--orange {
+  background-color: #ef6c23;
+  color: white;
+}
+
+.app-button-cta--orange:hover {
+  background-color: #d75f1f;
+}
+
+.app-button-cta--orange:active {
+  background-color: #b94f18;
+}
+
+.app-button-cta--orange:disabled {
+  background-color: #f3ad82;
+}

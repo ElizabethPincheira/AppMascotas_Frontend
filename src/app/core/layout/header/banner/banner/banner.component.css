@@ -1,0 +1,83 @@
+.banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  min-height: 300px;
+  padding: 2.5rem 3rem;
+  border-radius: 28px;
+  overflow: hidden;
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.98) 0%, rgba(255, 255, 255, 0.92) 38%, rgba(255, 255, 255, 0.2) 68%),
+    url('https://images.unsplash.com/photo-1548199973-03cce0bbc87b?auto=format&fit=crop&w=1400&q=80') center right / cover no-repeat;
+  box-shadow: 0 24px 60px rgba(29, 58, 74, 0.14);
+}
+
+.banner__content {
+  max-width: 470px;
+  z-index: 1;
+}
+
+.banner__title {
+  margin: 0;
+  color: #19323f;
+  font-size: clamp(2rem, 4vw, 3.3rem);
+  line-height: 1.1;
+  font-weight: 800;
+}
+
+.banner__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 1.75rem;
+}
+
+.banner__image {
+  flex: 1 1 40%;
+  min-height: 220px;
+}
+
+:host ::ng-deep .banner__button {
+  padding: 0.95rem 1.4rem;
+  border-radius: 14px;
+  font-size: 0.98rem;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+@media (max-width: 991px) {
+  .banner {
+    padding: 2rem;
+    background-position: 72% center;
+  }
+
+  .banner__content {
+    max-width: 420px;
+  }
+}
+
+@media (max-width: 767px) {
+  .banner {
+    min-height: auto;
+    padding: 1.5rem;
+    align-items: flex-start;
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.96) 0%, rgba(255, 255, 255, 0.88) 52%, rgba(255, 255, 255, 0.15) 100%),
+      url('https://images.unsplash.com/photo-1548199973-03cce0bbc87b?auto=format&fit=crop&w=1400&q=80') 72% center / cover no-repeat;
+  }
+
+  .banner__actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  :host ::ng-deep .banner__button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .banner__image {
+    display: none;
+  }
+}
