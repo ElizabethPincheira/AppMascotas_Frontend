@@ -105,6 +105,20 @@
   font-weight: 700;
 }
 
+.switch-auth {
+  padding-top: 0.5rem;
+}
+
+.switch-auth__link {
+  text-decoration: none;
+  font-weight: 700;
+  color: #4d8b3f;
+}
+
+.switch-auth__link:hover {
+  color: #356e2c;
+}
+
 .text-light-emphasis {
   color: rgba(255, 255, 255, 0.82) !important;
 }
