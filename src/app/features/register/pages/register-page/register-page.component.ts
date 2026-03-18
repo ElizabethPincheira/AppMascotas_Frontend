@@ -10,7 +10,7 @@ import { UbicacionesService } from '../../../../core/services/ubicaciones.servic
   selector: 'app-register-page',
   imports: [CommonModule, FormsModule],
   templateUrl: './register-page.component.html',
-  styleUrl: './register-page.component.css'
+  styleUrls: ['./register-page.component.css']
 })
 export class RegisterPageComponent {
 
@@ -58,6 +58,7 @@ export class RegisterPageComponent {
 
       console.log(this.respuesta, 'respuesta del servidor');
       Swal.close();
+      await this.router.navigate(['/login']);
     } finally {
       this.enviandoFormulario = false;
     }
@@ -104,6 +105,17 @@ export class RegisterPageComponent {
 
   async onComunaChange() {}
 
+  get formularioCompleto(): boolean {
+    return !!(
+      this.nombre.trim() &&
+      this.email.trim() &&
+      this.password.trim() &&
+      this.regionSeleccionada &&
+      this.provinciaSeleccionada &&
+      this.comunaSeleccionada
+    );
+  }
+
   private async cargarRegiones() {
     this.cargandoRegiones = true;
 
@@ -115,4 +127,3 @@ export class RegisterPageComponent {
     }
   }
 }
-
