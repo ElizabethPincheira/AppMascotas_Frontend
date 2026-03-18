@@ -1,2 +1,23 @@
-<h1>Encuentra a tu mascota perdida</h1>
-<app-button-cta class="me-4" label="Registrate" variant="green" routerLink="/register"></app-button-cta>
+<section class="banner">
+  <div class="banner__content">
+    <h1 class="banner__title">¡Ayuda a encontrar, rescatar y adoptar!</h1>
+
+    <div class="banner__actions">
+      <app-button-cta
+        label="Reportar Mascota Perdida"
+        variant="orange"
+        buttonClass="banner__button"
+        routerLink="/register"
+      ></app-button-cta>
+
+      <app-button-cta
+        label="Ver Mascotas en Adopción"
+        variant="green"
+        buttonClass="banner__button"
+        routerLink="/"
+      ></app-button-cta>
+    </div>
+  </div>
+
+  <div class="banner__image" aria-hidden="true"></div>
+</section>
