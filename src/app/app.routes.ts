@@ -9,46 +9,40 @@ export const routes: Routes = [
     children: [
       {
         path: '',
-        loadChildren: () =>
-          import('./features/pets/pets.routes')
-            .then(m => m.PETS_ROUTES)
+        loadComponent: () =>
+          import('./pages/pet/pets/pets-page.component')
+            .then(m => m.PetsPageComponent)
       },
       {
         path: 'about',
-        loadChildren: () =>
-          import('./features/about/about.routes')
-            .then(m => m.ABOUT_ROUTES)
+        loadComponent: () =>
+          import('./pages/pet/about/about-page.component')
+            .then(m => m.AboutPageComponent)
       }
     ]
   },
-
-
-
   {
     path: 'register',
     component: AuthLayoutComponent,
     children: [
       {
         path: '',
-        loadChildren: () =>
-          import('./features/register/register.routes')
-            .then(m => m.REGISTER_ROUTES)
+        loadComponent: () =>
+          import('./pages/general/register/register-page.component')
+            .then(m => m.RegisterPageComponent)
       },
-
-    ]
+    ],
   },
-
   {
     path: 'login',
     component: AuthLayoutComponent,
     children: [
       {
         path: '',
-        loadChildren: () =>
-          import('./features/login/login.routes')
-            .then(m => m.LOGIN_ROUTES)
+        loadComponent: () =>
+          import('./pages/general/login/login-page.component')
+            .then(m => m.LoginPageComponent)
       },
-
-    ]
-  }
+    ],
+  },
 ];

@@ -1,10 +1,11 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { UsersService } from '../../../../core/services/users.service';
 import Swal from 'sweetalert2';
 import { Router, RouterLink } from '@angular/router';
-import { UbicacionesService } from '../../../../core/services/ubicaciones.service';
+import { UsersService } from '../../../core/services/users.service';
+import { UbicacionesService } from '../../../core/services/ubicaciones.service';
+
 
 @Component({
   selector: 'app-register-page',

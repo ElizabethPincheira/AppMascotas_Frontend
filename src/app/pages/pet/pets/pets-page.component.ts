@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Mascota } from '../../../../shared/models/mascota.model';
-import { MascotaService } from '../../../../core/services/mascota.service';
-import { CardMascotaComponent } from '../../../../shared/molecules/card-mascota/card-mascota.component';
+import { Mascota } from '../../../shared/models/mascota.model';
+import { MascotaService } from '../../../core/services/mascota.service';
+import { CardMascotaComponent } from '../../../shared/molecules/card-mascota/card-mascota.component';
 
 @Component({
   selector: 'app-pets-page',

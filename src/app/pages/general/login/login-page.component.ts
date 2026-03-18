@@ -1,10 +1,11 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { UsersService } from '../../../../core/services/users.service';
 import { Router, RouterLink } from '@angular/router';
 import Swal from 'sweetalert2';
-import { AuthService } from '../../../../core/services/auth.service';
+import { UsersService } from '../../../core/services/users.service';
+import { AuthService } from '../../../core/services/auth.service';
+
 
 @Component({
   selector: 'app-login-page',
