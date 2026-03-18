@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { UsersService } from '../../../../core/services/users.service';
 import Swal from 'sweetalert2';
 import { Router } from '@angular/router';
+import { UbicacionesService } from '../../../../core/services/ubicaciones.service';
 
 @Component({
   selector: 'app-register-page',
@@ -15,109 +16,58 @@ export class RegisterPageComponent {
   email: string = '';
   password: string = '';
   nombre: string = '';
-  comuna: string = '';
-  ciudad: string = '';
+  regiones: any[] = [];
+  provincias: any[] = [];
+  comunas: any[] = [];
 
   respuesta: any;
 
-  constructor(private usersService: UsersService, private router: Router) { }
+  regionSeleccionada: string | null = null;
+  provinciaSeleccionada: string | null = null;
+  comunaSeleccionada: string | null = null;
 
+
+  constructor(
+    private usersService: UsersService,
+    private ubicacionesService: UbicacionesService,
+    private router: Router
+  ) { }
+
+
+  async ngOnInit() {
+    this.regiones = await this.ubicacionesService.getUbicaciones();
+    console.log(this.regiones, 'regiones obtenidas');
+  }
 
   async register() {
-    const register = {
-      email: this.email,
-      password: this.password,
-      nombre: this.nombre,
-      comuna: this.comuna,
-      ciudad: this.ciudad
-    };
-
-    console.log(register, 'usuario registrado');
-
-    Swal.fire({
-      title: 'Registrando...',
-      allowOutsideClick: false,
-      didOpen: () => {
-        Swal.showLoading();
-      }
-    });
-
     this.respuesta = await this.usersService.register(
       this.email,
       this.password,
       this.nombre,
-      this.comuna,
-      this.ciudad);
+      this.regionSeleccionada,
+      this.provinciaSeleccionada,
+      this.comunaSeleccionada,
+    );
 
     console.log(this.respuesta, 'respuesta del servidor');
-
     Swal.close();
-
-    Swal.fire({
-      icon: 'success',
-      title: 'Registro completado',
-      text: 'Tu cuenta fue creada correctamente'
-    }).then(() => {
-
-      this.router.navigate(['/login']);
-
-    });
-
-
   }
 
+  async onRegionChange() {}
 
-}
+  async onProvinciaChange() {}
 
-
-
-
-
-/*
-******************
-
-
-email, password, nombre, comuna, ciudad
-
-
-import { Component } from '@angular/core';
-import { CardMascotaComponent } from '../../../../shared/molecules/card-mascota/card-mascota.component';
-import { CommonModule } from '@angular/common';
-import { Mascota } from '../../../../shared/models/mascota.model';
-import { MascotaService } from '../../../../core/services/mascota.service';
-
-
-@Component({
-  selector: 'app-pets-page',
-  imports: [CommonModule, CardMascotaComponent],
-  templateUrl: './pets-page.component.html',
-  styleUrl: './pets-page.component.css'
-})
-export class PetsPageComponent {
-
-  trackById(index: number, mascota: Mascota) {
-    return mascota.id;
-  }
-
-  mascotas: Mascota[] = [];
-
-  imagenUrl: string = '';
-
-  constructor(private mascotaService: MascotaService) { }
-
-  async ngOnInit() {
-
-
-    this.mascotas = [...await this.mascotaService.getMascotas()];
+  async onComunaChange() {}
 
 
 
-    console.log(this.mascotas, 'mascotas');
-  }
+
+
+
+
 
 
 
 }
 
 
-*/
