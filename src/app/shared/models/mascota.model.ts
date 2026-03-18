@@ -1,12 +1,19 @@
 export interface Mascota {
-  id: number;
+  id?: number;
+  _id?: string;
   nombre: string;
-  tipo: string;
+  tipo?: string;
+  especie?: string;
   raza: string;
-  chip: string | null;
-  ubicacion: string;
+  chip?: string | null;
+  ubicacion?: string;
   estado: 'Robado' | 'Extraviado' | 'Encontrado'|'Recuperado'|'Busca hogar'|'Adoptado'|'Buscando pareja'|'Emparejado';
-  descripcion: string;
+  descripcion?: string;
+  fechaNacimiento?: string | Date;
   imagenes: string[];
+  usuarioId?: string | {
+    _id?: string;
+    nombre?: string;
+    email?: string;
+  };
 }
-

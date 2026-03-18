@@ -1,0 +1,198 @@
+.pets-showcase {
+  min-height: 100vh;
+  padding: 40px 18px 56px;
+  background:
+    radial-gradient(circle at top left, rgba(107, 160, 73, 0.16), transparent 30%),
+    radial-gradient(circle at top right, rgba(243, 162, 74, 0.16), transparent 24%),
+    linear-gradient(180deg, #fffdf9 0%, #f6f2ea 100%);
+  font-family: "Avenir Next", "Segoe UI", sans-serif;
+}
+
+.pets-shell {
+  max-width: 1240px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 34px;
+}
+
+.section-block {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.section-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 16px;
+}
+
+.section-heading h2 {
+  margin: 0;
+  color: #223443;
+  font-size: clamp(1.6rem, 2vw, 2rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.section-heading p {
+  margin: 6px 0 0;
+  color: #6f7c77;
+  font-size: 0.98rem;
+}
+
+.more-link {
+  border: 0;
+  background: transparent;
+  color: #4a8f39;
+  font-size: 0.98rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.more-link::after {
+  content: " ›";
+  font-size: 1.1em;
+}
+
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 22px;
+}
+
+.pet-card {
+  overflow: hidden;
+  border: 1px solid rgba(95, 116, 94, 0.12);
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow: 0 14px 30px rgba(27, 43, 26, 0.08);
+  transition: transform 0.24s ease, box-shadow 0.24s ease;
+}
+
+.pet-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 18px 36px rgba(27, 43, 26, 0.12);
+}
+
+.pet-card__image-wrap {
+  aspect-ratio: 1.22 / 1;
+  overflow: hidden;
+  background: linear-gradient(135deg, #ecf5e7, #f5ead8);
+}
+
+.pet-card__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.pet-card__body {
+  padding: 14px 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.pet-card__text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-height: 74px;
+}
+
+.pet-card__text h3 {
+  margin: 0;
+  color: #243846;
+  font-size: 1.35rem;
+  font-weight: 800;
+  line-height: 1.05;
+}
+
+.pet-card__text p {
+  margin: 0;
+  color: #67746c;
+  font-size: 0.97rem;
+  line-height: 1.35;
+}
+
+.pet-card__owner {
+  color: #87a17e;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.action-button {
+  width: 100%;
+  min-height: 42px;
+  border: 0;
+  border-radius: 10px;
+  font-size: 0.98rem;
+  font-weight: 800;
+  transition: filter 0.2s ease, transform 0.2s ease;
+}
+
+.action-button:hover {
+  filter: brightness(0.98);
+  transform: translateY(-1px);
+}
+
+.action-button--green {
+  background: linear-gradient(180deg, #5aad47 0%, #418a34 100%);
+  color: #fff;
+}
+
+.action-button--orange {
+  background: linear-gradient(180deg, #f39f39 0%, #e46d1d 100%);
+  color: #fff;
+}
+
+.empty-state {
+  padding: 56px 28px;
+  border-radius: 22px;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow: inset 0 0 0 1px rgba(106, 132, 98, 0.14);
+}
+
+.empty-state h2 {
+  margin: 0 0 10px;
+  color: #223443;
+  font-size: 1.6rem;
+  font-weight: 800;
+}
+
+.empty-state p {
+  margin: 0;
+  color: #6f7c77;
+  font-size: 1rem;
+}
+
+@media (max-width: 1100px) {
+  .cards-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 680px) {
+  .pets-showcase {
+    padding: 28px 14px 40px;
+  }
+
+  .section-heading {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .cards-grid {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  .pet-card__text {
+    min-height: auto;
+  }
+}

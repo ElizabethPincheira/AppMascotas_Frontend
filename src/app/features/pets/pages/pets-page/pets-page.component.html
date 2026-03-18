@@ -1,15 +1,73 @@
-<p>card mascotas desde page</p>
-<div class="container">
-  <div class="row">
-    <div class="col-md-3" *ngFor="let mascota of mascotas; trackBy: trackById">
-      <app-card-mascota [mascota]="mascota"></app-card-mascota>
-      <!--<div *ngIf="!mascota.imagenUrl">
-        Cargando...
-      </div>-->
+<section class="pets-showcase">
+  <div class="pets-shell">
+    <div class="section-block" *ngIf="mascotasPerdidasRecientes.length > 0">
+      <div class="section-heading">
+        <div>
+          <h2>Mascotas Perdidas Recientes</h2>
+          <p>Casos visibles en la comunidad para ayudar a reencontrarlas.</p>
+        </div>
+        <button class="more-link" type="button">Ver mas</button>
+      </div>
+
+      <div class="cards-grid">
+        <article class="pet-card" *ngFor="let mascota of mascotasPerdidasRecientes; trackBy: trackById">
+          <div class="pet-card__image-wrap">
+            <img class="pet-card__image" [src]="getImageSrc(mascota)" [alt]="mascota.nombre">
+          </div>
+
+          <div class="pet-card__body">
+            <div class="pet-card__text">
+              <h3>{{ mascota.nombre }}</h3>
+              <p>{{ getSubtitle(mascota) }}</p>
+            </div>
+
+            <button class="action-button action-button--green" type="button">
+              {{ getActionLabel(mascota) }}
+            </button>
+          </div>
+        </article>
+      </div>
+    </div>
+
+    <div class="section-block" *ngIf="mascotasEnAdopcion.length > 0">
+      <div class="section-heading">
+        <div>
+          <h2>En Adopcion</h2>
+          <p>Compañeros listos para encontrar un nuevo hogar.</p>
+        </div>
+        <button class="more-link" type="button">Ver mas</button>
+      </div>
+
+      <div class="cards-grid">
+        <article class="pet-card" *ngFor="let mascota of mascotasEnAdopcion; trackBy: trackById">
+          <div class="pet-card__image-wrap">
+            <img class="pet-card__image" [src]="getImageSrc(mascota)" [alt]="mascota.nombre">
+          </div>
+
+          <div class="pet-card__body">
+            <div class="pet-card__text">
+              <h3>{{ mascota.nombre }}</h3>
+              <p>{{ getSubtitle(mascota) }}</p>
+              <span class="pet-card__owner" *ngIf="getOwnerName(mascota) as owner">
+                Publicado por {{ owner }}
+              </span>
+            </div>
+
+            <button
+              class="action-button"
+              [class.action-button--orange]="mascota.estado !== 'Adoptado'"
+              [class.action-button--green]="mascota.estado === 'Adoptado'"
+              type="button">
+              {{ getActionLabel(mascota) }}
+            </button>
+          </div>
+        </article>
+      </div>
+    </div>
+
+    <div class="empty-state" *ngIf="!hasAnySectionData()">
+      <h2>Estamos preparando esta vitrina</h2>
+      <p>Cuando haya mascotas cargadas, esta pagina mostrara las secciones de perdidas y adopcion con este nuevo diseño.</p>
     </div>
   </div>
-</div>
-
-
-
-
+</section>
