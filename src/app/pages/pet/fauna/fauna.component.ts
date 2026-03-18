@@ -10,6 +10,21 @@ import { RouterLink } from '@angular/router';
   styleUrls: ['./fauna.component.css']
 })
 export class FaunaComponent {
+  readonly heroImages = [
+    {
+      title: 'Costa protegida',
+      image: 'assets/fauna/chungungo.jpg',
+    },
+    {
+      title: 'Bosque nativo',
+      image: 'assets/fauna/pudu.jpg',
+    },
+    {
+      title: 'Montana y refugio',
+      image: 'assets/fauna/zorro-chilote.jpg',
+    },
+  ];
+
   readonly threats = [
     {
       title: 'Perdida de habitat',
@@ -30,16 +45,19 @@ export class FaunaComponent {
       name: 'Zorro chilote',
       region: 'Bosques templados del sur',
       note: 'Una de las especies mas amenazadas del pais, sensible a la perdida de bosque nativo y a los perros asilvestrados.',
+      image: 'assets/fauna/zorro-chilote.jpg',
     },
     {
       name: 'Pudu',
       region: 'Zona sur y austral',
       note: 'El ciervo mas pequeno del mundo necesita corredores seguros, bosque denso y comunidades que respeten su espacio.',
+      image: 'assets/fauna/pudu.jpg',
     },
     {
       name: 'Chungungo',
       region: 'Costa rocosa del Pacifico',
       note: 'Depende de mares limpios y bordes costeros protegidos para sobrevivir y reproducirse.',
+      image: 'assets/fauna/chungungo.jpg',
     },
   ];
 

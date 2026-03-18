@@ -17,7 +17,7 @@
 
 .fauna-hero {
   display: grid;
-  grid-template-columns: 1.4fr 0.9fr;
+  grid-template-columns: minmax(0, 1.05fr) minmax(320px, 0.95fr);
   gap: 24px;
   padding: 34px;
   border-radius: 30px;
@@ -93,6 +93,61 @@
 .fauna-hero__panel {
   display: flex;
   align-items: stretch;
+  min-width: 0;
+}
+
+.hero-gallery {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+}
+
+.hero-gallery__main,
+.hero-gallery__tile {
+  margin: 0;
+  overflow: hidden;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.08);
+  min-width: 0;
+}
+
+.hero-gallery__main {
+  width: 100%;
+  height: 260px;
+}
+
+.hero-gallery__row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  min-width: 0;
+}
+
+.hero-gallery__tile {
+  width: 100%;
+  height: 140px;
+}
+
+.hero-gallery img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  object-position: center;
+}
+
+.hero-gallery__main img {
+  object-position: center 38%;
+}
+
+.hero-gallery__tile img:first-child {
+  object-position: center 28%;
+}
+
+.hero-gallery__tile img:last-child {
+  object-position: center 35%;
 }
 
 .impact-card,
@@ -105,7 +160,7 @@
 
 .impact-card {
   width: 100%;
-  padding: 24px;
+  padding: 20px 22px;
   background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(6px);
 }
@@ -164,6 +219,22 @@
   padding: 22px;
   background: rgba(255, 255, 255, 0.86);
   box-shadow: 0 16px 28px rgba(36, 56, 40, 0.08);
+}
+
+.species-card__image-wrap {
+  overflow: hidden;
+  margin: -22px -22px 1rem;
+  border-radius: 24px 24px 18px 18px;
+  height: 180px;
+  background: linear-gradient(135deg, #edf5e7, #f6ebdb);
+}
+
+.species-card__image {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  object-position: center 35%;
 }
 
 .threat-card h3,
@@ -281,6 +352,22 @@
   .species-grid {
     grid-template-columns: 1fr;
   }
+
+  .hero-gallery {
+    gap: 12px;
+  }
+
+  .hero-gallery__main {
+    height: 220px;
+  }
+
+  .hero-gallery__row {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .hero-gallery__tile {
+    height: 130px;
+  }
 }
 
 @media (max-width: 640px) {
@@ -290,6 +377,22 @@
 
   .fauna-hero {
     padding: 24px 18px;
+  }
+
+  .hero-gallery__main {
+    height: 180px;
+  }
+
+  .hero-gallery__row {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-gallery__tile {
+    height: 120px;
+  }
+
+  .species-card__image-wrap {
+    height: 160px;
   }
 
   .action-item {
