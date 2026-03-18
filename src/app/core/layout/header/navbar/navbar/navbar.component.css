@@ -1,15 +1,17 @@
 .site-navbar-wrap {
-  padding: 18px 16px 0;
+  padding: 0;
   background: transparent;
 }
 
 .site-navbar {
-  border-radius: 28px;
+  min-height: 78px;
+  border-radius: 0;
   background:
-    radial-gradient(circle at 10% 10%, rgba(143, 180, 86, 0.16), transparent 18%),
-    linear-gradient(180deg, rgba(37, 58, 40, 0.96), rgba(31, 48, 33, 0.94));
-  border: 1px solid rgba(218, 203, 163, 0.16);
-  box-shadow: 0 22px 46px rgba(24, 33, 23, 0.2);
+    radial-gradient(circle at 14% 0%, rgba(143, 180, 86, 0.14), transparent 14%),
+    linear-gradient(180deg, rgba(37, 58, 40, 0.98), rgba(29, 46, 31, 0.98));
+  border: 0;
+  border-bottom: 1px solid rgba(218, 203, 163, 0.12);
+  box-shadow: 0 10px 24px rgba(24, 33, 23, 0.14);
   backdrop-filter: blur(16px);
 }
 
@@ -29,7 +31,7 @@
   justify-content: center;
   width: 46px;
   height: 46px;
-  border-radius: 18px;
+  border-radius: 12px;
   background:
     radial-gradient(circle at top left, rgba(248, 195, 102, 0.28), transparent 52%),
     linear-gradient(135deg, #f9ecd2, #dbe8cc);
@@ -54,7 +56,7 @@
   color: rgba(244, 239, 229, 0.82);
   font-size: 0.95rem;
   font-weight: 700;
-  padding: 0.92rem 0.88rem;
+  padding: 1rem 0.92rem;
   transition: color 0.22s ease;
 }
 
@@ -71,9 +73,9 @@
   position: absolute;
   left: 0.88rem;
   right: 0.88rem;
-  bottom: 0.34rem;
+  bottom: 0.48rem;
   height: 3px;
-  border-radius: 999px;
+  border-radius: 2px;
   background: linear-gradient(90deg, #d4e88d, #7eb84e);
 }
 
@@ -84,10 +86,10 @@
 }
 
 .site-navbar__actions .btn {
-  border-radius: 999px;
+  border-radius: 12px;
   font-size: 0.92rem;
   font-weight: 800;
-  padding: 0.62rem 1.08rem;
+  padding: 0.66rem 1.08rem;
 }
 
 .site-navbar__login {
@@ -134,7 +136,7 @@
 
 @media (max-width: 991px) {
   .site-navbar {
-    border-radius: 28px;
+    border-radius: 0;
   }
 
   .site-navbar__link.active-link::after {

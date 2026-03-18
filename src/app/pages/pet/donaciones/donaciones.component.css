@@ -46,19 +46,23 @@
 
 .donaciones-hero h1 {
   margin: 0;
-  max-width: 760px;
-  font-size: clamp(2.2rem, 4vw, 4rem);
-  line-height: 1.02;
-  letter-spacing: -0.04em;
+  max-width: 680px;
+  color: #fff8ee;
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 4.2vw, 4.4rem);
+  line-height: 0.96;
+  letter-spacing: -0.05em;
   font-weight: 800;
+  text-wrap: balance;
+  text-shadow: 0 10px 24px rgba(14, 24, 18, 0.28);
 }
 
 .donaciones-hero p {
   margin: 1rem 0 0;
-  max-width: 720px;
-  color: rgba(255, 255, 255, 0.84);
-  font-size: 1.04rem;
-  line-height: 1.7;
+  max-width: 640px;
+  color: rgba(255, 248, 238, 0.88);
+  font-size: 1.05rem;
+  line-height: 1.78;
 }
 
 .donaciones-hero__actions {
