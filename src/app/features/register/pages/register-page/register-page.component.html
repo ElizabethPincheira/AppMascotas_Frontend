@@ -12,14 +12,35 @@
             <label for="exampleInputName" class="form-label">Nombre</label>
             <input type="text" class="form-control" id="exampleInputName" name="nombre" [(ngModel)]="nombre">
           </div>
+
+          <div class="mb-3">
+            <label for="exampleInputRegiones" class="form-label">Region</label>
+            <select class="form-control" name="regiones" [(ngModel)]="regionSeleccionada" (change)="onRegionChange()" [disabled]="!regionSeleccionada">
+              <option value="">Seleccione una región</option>
+              <option *ngFor="let region of regiones" [value]="region.nombre">{{ region.nombre }}</option>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label for="exampleInputRegiones" class="form-label">Provincia</label>
+            <select class="form-control" name="provincias" [(ngModel)]="provinciaSeleccionada"
+              (change)="onProvinciaChange()" [disabled]="!provinciaSeleccionada">
+              <option value="">Seleccione una provincia</option>
+              <option *ngFor="let provincia of provincias" [value]="provincia.nombre">{{ provincia.nombre }}</option>
+            </select>
+          </div>
+
           <div class="mb-3">
             <label for="exampleInputComuna" class="form-label">Comuna</label>
-            <input type="text" class="form-control" id="exampleInputComuna" name="comuna" [(ngModel)]="comuna">
+            <select class="form-control" name="comunas" [(ngModel)]="comunaSeleccionada"
+              (change)="onComunaChange()" [disabled]="!comunaSeleccionada">
+              <option value="">Seleccione una comuna</option>
+              <option *ngFor="let comuna of comunas" [value]="comuna.nombre">{{ comuna.nombre }}</option>
+            </select>
           </div>
-          <div class="mb-3">
-            <label for="exampleInputCiudad" class="form-label">Ciudad</label>
-            <input type="text" class="form-control" id="exampleInputCiudad" name="ciudad" [(ngModel)]="ciudad">
-          </div>
+
+
+
           <div class="mb-3">
             <label for="exampleInputEmail1" class="form-label">Email address</label>
             <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" name="email"
@@ -28,7 +49,7 @@
               Nunca compartiremos tu correo electrónico con nadie más.</div>
           </div>
           <div class="mb-3">
-            <label for="exampleInputPassword1" class="form-label" >Contraseña</label>
+            <label for="exampleInputPassword1" class="form-label">Contraseña</label>
             <input type="password" class="form-control" id="exampleInputPassword1" name="password"
               [(ngModel)]="password">
           </div>

@@ -12,9 +12,9 @@ export class UsersService {
 
 
 
-  async register(email: string, password: string, nombre: string, comuna: string, ciudad: string): Promise<any> {
+  async register(email: string, password: string, nombre: string, region: string | null, provincia: string | null, comuna: string | null): Promise<any> {
 
-    const registerData = { email, password, nombre, comuna, ciudad };
+    const registerData = { email, password, nombre, region, provincia, comuna};
     const response = await axios.post(this.apiUrl + "user", registerData);
 
     console.log(response.data, 'respuesta del backend');
