@@ -1,6 +1,6 @@
 .mascota-card {
   overflow: hidden;
-  border-radius: 32px 32px 28px 28px;
+  border-radius: 28px;
   background: var(--bg-card);
   border: 1px solid var(--line-soft);
   box-shadow: var(--shadow-card);
@@ -9,7 +9,7 @@
 }
 
 .mascota-card:hover {
-  transform: translateY(-9px) rotate(-0.4deg);
+  transform: translateY(-10px);
   box-shadow: 0 30px 56px rgba(40, 51, 37, 0.16);
   border-color: rgba(102, 134, 73, 0.26);
 }
@@ -25,10 +25,19 @@
 
 .mascota-card__media {
   position: relative;
-  aspect-ratio: 1.08 / 1;
+  aspect-ratio: 0.76 / 1;
   background:
     linear-gradient(180deg, rgba(29, 47, 33, 0.04), rgba(29, 47, 33, 0.12)),
     linear-gradient(135deg, #dbe9cf, #e9d5b4);
+}
+
+.mascota-card__media::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0;
+  height: 58%;
+  background: linear-gradient(180deg, rgba(20, 28, 19, 0.02), rgba(12, 18, 14, 0.9));
+  pointer-events: none;
 }
 
 .mascota-card__image {
@@ -86,8 +95,38 @@
   right: 12px;
 }
 
+.mascota-card__overlay {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2;
+  padding: 1.2rem 1.05rem 1rem;
+}
+
+.mascota-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 0.8rem;
+}
+
+.mascota-card__meta-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.46rem 0.72rem;
+  border-radius: 999px;
+  background: rgba(248, 243, 233, 0.14);
+  color: #fff8ed;
+  font-size: 0.78rem;
+  font-weight: 800;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.14);
+  text-transform: capitalize;
+  backdrop-filter: blur(8px);
+}
+
 .mascota-card__body {
-  padding: 1.1rem 1.05rem 1.18rem;
+  padding: 0.95rem 1.05rem 1.15rem;
   background:
     radial-gradient(circle at top right, rgba(134, 173, 72, 0.08), transparent 24%),
     linear-gradient(180deg, rgba(255, 252, 245, 0.96), rgba(246, 241, 230, 0.98));
@@ -102,43 +141,75 @@
 
 .mascota-card__title {
   margin: 0;
-  color: var(--text-strong);
+  color: #fff9ef;
   font-family: var(--font-display);
-  font-size: 1.55rem;
+  font-size: 1.85rem;
   font-weight: 800;
-  line-height: 1.02;
+  line-height: 0.98;
   text-transform: capitalize;
+  text-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
 }
 
 .mascota-card__subtitle {
   margin: 0.24rem 0 0;
-  color: var(--text-main);
-  font-size: 0.95rem;
+  color: rgba(255, 248, 237, 0.84);
+  font-size: 0.88rem;
+  font-weight: 700;
   text-transform: capitalize;
+  letter-spacing: 0.05em;
+}
+
+.mascota-card__emotion {
+  margin: 0.55rem 0 0;
+  max-width: 24ch;
+  color: #fff7ea;
+  font-size: 0.94rem;
+  font-weight: 800;
+  line-height: 1.35;
+  text-wrap: balance;
 }
 
 .mascota-card__date {
   flex-shrink: 0;
-  color: var(--text-soft);
-  font-size: 0.76rem;
+  color: rgba(255, 248, 237, 0.76);
+  font-size: 0.72rem;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.06em;
 }
 
+.mascota-card__quickfacts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  margin-bottom: 0.95rem;
+}
+
+.quickfact-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.48rem 0.74rem;
+  border-radius: 999px;
+  background: rgba(93, 134, 64, 0.1);
+  color: var(--brand-forest);
+  font-size: 0.82rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
 .mascota-card__info-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: 1fr;
   gap: 0.9rem;
-  margin-bottom: 1rem;
+  margin-bottom: 0.95rem;
 }
 
 .info-item {
   display: flex;
   flex-direction: column;
   gap: 0.24rem;
-  padding: 0.88rem 0.92rem;
-  border-radius: 20px 20px 16px 16px;
+  padding: 0.82rem 0.9rem;
+  border-radius: 18px;
   background:
     linear-gradient(180deg, rgba(249, 241, 225, 0.98) 0%, rgba(233, 241, 224, 0.98) 100%);
   box-shadow:
@@ -166,10 +237,18 @@
   font-size: 0.84rem;
 }
 
-.mascota-card__button {
-  min-height: 46px;
-  border-radius: 999px;
+.mascota-card__footer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.72rem;
+}
+
+.mascota-card__footer-note {
+  color: var(--brand-earth);
+  font-size: 0.84rem;
   font-weight: 800;
+  letter-spacing: 0.03em;
+  line-height: 1.45;
 }
 
 .estado-robado { background: #d85b58; color: #fff; }
@@ -183,12 +262,12 @@
 .estado-default { background: #6f7a72; color: #fff; }
 
 @media (max-width: 576px) {
-  .mascota-card__info-grid {
-    grid-template-columns: 1fr;
-  }
-
   .mascota-card__header {
     flex-direction: column;
     gap: 8px;
+  }
+
+  .mascota-card__media {
+    aspect-ratio: 0.82 / 1;
   }
 }

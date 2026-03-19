@@ -1,11 +1,10 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input, } from '@angular/core';
-import { ButtonComponent } from '../../atoms/button_card/button.component';
 import { Mascota } from '../../models/mascota.model';
 
 @Component({
   selector: 'app-card-mascota',
-  imports: [ButtonComponent, CommonModule],
+  imports: [CommonModule],
   templateUrl: './card-mascota.component.html',
   styleUrls: ['./card-mascota.component.css']
 })
@@ -29,20 +28,17 @@ export class CardMascotaComponent {
     return `data:image/jpeg;base64,${imagen}`;
   }
 
-  getOwnerName(): string {
-    if (typeof this.mascota.usuarioId === 'object' && this.mascota.usuarioId?.nombre) {
-      return this.mascota.usuarioId.nombre;
-    }
-
-    return 'Sin duenio visible';
-  }
-
   getOwnerLocation(): string | null {
     if (typeof this.mascota.usuarioId !== 'object' || !this.mascota.usuarioId) {
       return null;
     }
 
     return this.mascota.usuarioId.comuna ?? this.mascota.usuarioId.ciudad ?? null;
+  }
+
+  getSecondaryLocation(): string | null {
+    const ownerLocation = this.getOwnerLocation();
+    return ownerLocation && ownerLocation !== this.getPrimaryLocation() ? ownerLocation : null;
   }
 
   getOwnerEmail(): string | null {
@@ -59,7 +55,7 @@ export class CardMascotaComponent {
       this.mascota.comunaPerdida ??
       this.mascota.ubicacion ??
       this.getOwnerLocation() ??
-      'Ubicacion no informada'
+      'Ubicación no informada'
     );
   }
 
@@ -84,7 +80,7 @@ export class CardMascotaComponent {
     }
 
     if (years > 0) {
-      return `${years} ${years === 1 ? 'ano' : 'anos'}`;
+      return `${years} ${years === 1 ? 'año' : 'años'}`;
     }
 
     return `${Math.max(months, 1)} ${months === 1 ? 'mes' : 'meses'}`;
@@ -106,6 +102,34 @@ export class CardMascotaComponent {
       month: 'short',
       year: 'numeric',
     });
+  }
+
+  getEmotionalMessage(): string {
+    switch (this.mascota.estado) {
+      case 'Robado':
+      case 'Extraviado':
+        return 'Me perdí, ayúdame a volver con mi familia.';
+      case 'Encontrado':
+        return 'Estoy esperando que alguien me reconozca.';
+      case 'Busca hogar':
+        return 'Estoy buscando una familia que me quiera.';
+      case 'Adoptado':
+        return 'Ya encontré una familia, gracias por ayudar.';
+      default:
+        return 'Ayúdame a que mi historia tenga un final feliz.';
+    }
+  }
+
+  getFooterMessage(): string {
+    if (this.getOwnerEmail()) {
+      return 'Contacto disponible para actuar rápido';
+    }
+
+    if (this.mascota.estado === 'Busca hogar') {
+      return 'Difunde esta publicación para encontrar un hogar';
+    }
+
+    return 'Comparte esta publicación y ayuda a encontrarlo';
   }
 
   getEstadoClase(estado: string): string {

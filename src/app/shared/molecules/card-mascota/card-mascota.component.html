@@ -31,6 +31,29 @@
         <span class="mascota-card__chip" *ngIf="mascota.especie">{{ mascota.especie }}</span>
       </div>
 
+      <div class="mascota-card__overlay">
+        <div class="mascota-card__header">
+          <div>
+            <h3 class="mascota-card__title">{{ mascota.nombre }}</h3>
+            <p class="mascota-card__subtitle">
+              {{ mascota.raza || mascota.especie || 'Mascota' }}
+              <span *ngIf="getAgeText() as age"> · {{ age }}</span>
+            </p>
+            <p class="mascota-card__emotion">{{ getEmotionalMessage() }}</p>
+          </div>
+          <span class="mascota-card__date" *ngIf="getPublishedText() as published">
+            {{ published }}
+          </span>
+        </div>
+
+        <div class="mascota-card__meta">
+          <span class="mascota-card__meta-pill" *ngIf="getPrimaryLocation() as primaryLocation">{{ primaryLocation }}</span>
+          <span class="mascota-card__meta-pill" *ngIf="mascota.imagenes?.length">
+            {{ mascota.imagenes.length }} foto<span *ngIf="mascota.imagenes.length > 1">s</span>
+          </span>
+        </div>
+      </div>
+
       <button
         *ngIf="mascota.imagenes?.length && mascota.imagenes.length > 1"
         class="carousel-control-prev mascota-card__control"
@@ -54,31 +77,19 @@
   </div>
 
   <div class="card-body mascota-card__body">
-    <div class="mascota-card__header">
-      <div>
-        <h3 class="mascota-card__title">{{ mascota.nombre }}</h3>
-        <p class="mascota-card__subtitle">
-          {{ mascota.raza }}
-          <span *ngIf="getAgeText() as age"> · {{ age }}</span>
-        </p>
-      </div>
-      <span class="mascota-card__date" *ngIf="getPublishedText() as published">
-        {{ published }}
-      </span>
+    <div class="mascota-card__quickfacts">
+      <span class="quickfact-pill" *ngIf="mascota.especie">{{ mascota.especie }}</span>
+      <span class="quickfact-pill" *ngIf="getAgeText() as age">{{ age }}</span>
+      <span class="quickfact-pill" *ngIf="getPublishedText() as published">{{ published }}</span>
     </div>
 
     <div class="mascota-card__info-grid">
       <div class="info-item">
-        <span class="info-item__label">Ubicacion</span>
+        <span class="info-item__label">Última ubicación</span>
         <span class="info-item__value">{{ getPrimaryLocation() }}</span>
       </div>
 
-      <div class="info-item">
-        <span class="info-item__label">Dueno</span>
-        <span class="info-item__value">{{ getOwnerName() }}</span>
-      </div>
-
-      <div class="info-item" *ngIf="getOwnerLocation() as ownerLocation">
+      <div class="info-item" *ngIf="getSecondaryLocation() as ownerLocation">
         <span class="info-item__label">Comuna</span>
         <span class="info-item__value">{{ ownerLocation }}</span>
       </div>
@@ -89,6 +100,10 @@
       </div>
     </div>
 
-    <app-button label="Ver Mascota" variant="green" buttonClass="w-100 mascota-card__button"></app-button>
+    <div class="mascota-card__footer">
+      <span class="mascota-card__footer-note">
+        {{ getFooterMessage() }}
+      </span>
+    </div>
   </div>
 </article>
