@@ -41,8 +41,13 @@ export class PublicarComponent {
 
   enviandoFormulario = false;
 
-  imagePreviews: string[] = [];
+  existingImagePreviews: string[] = [];
+  newImagePreviews: string[] = [];
   imagePayloads: string[] = [];
+  mensajeErrorImagenes = '';
+  readonly maxImagenes = 5;
+  readonly maxTamanoImagenMb = 2;
+  readonly maxTamanoImagenBytes = this.maxTamanoImagenMb * 1024 * 1024;
 
   readonly estados = [
     'Extraviado',
@@ -88,10 +93,6 @@ export class PublicarComponent {
       this.contacto.trim() &&
       tieneUbicacionGps
     );
-  }
-
-  get mapaUrl(): string {
-    return '';
   }
 
   get mapTiles(): Array<{ src: string; left: number; top: number }> {
@@ -278,21 +279,64 @@ export class PublicarComponent {
     const input = event.target as HTMLInputElement;
     const files = input.files;
 
-    this.imagePreviews = [];
-    this.imagePayloads = [];
+    this.mensajeErrorImagenes = '';
 
     if (!files?.length) {
       return;
     }
 
-    const selectedFiles = Array.from(files).slice(0, 5);
-    const results = await Promise.all(selectedFiles.map((file) => this.readFileAsPreview(file)));
+    const cuposDisponibles =
+      this.maxImagenes - this.existingImagePreviews.length - this.newImagePreviews.length;
 
-    this.imagePreviews = results;
-    this.imagePayloads = await this.imagenesService.filesToBase64(selectedFiles);
+    if (cuposDisponibles <= 0) {
+      input.value = '';
+      this.mensajeErrorImagenes = `Solo puedes subir un máximo de ${this.maxImagenes} imágenes en total.`;
+      await Swal.fire({
+        icon: 'warning',
+        title: 'Límite de imágenes alcanzado',
+        text: `Ya tienes ${this.maxImagenes} imágenes cargadas entre guardadas y nuevas.`,
+      });
+      return;
+    }
+
+    const selectedFiles = Array.from(files).slice(0, cuposDisponibles);
+    const oversizedFiles = selectedFiles.filter((file) => file.size > this.maxTamanoImagenBytes);
+
+    if (oversizedFiles.length) {
+      input.value = '';
+      this.mensajeErrorImagenes = `No se pudo continuar porque una o más imágenes superan el máximo permitido de ${this.maxTamanoImagenMb} MB por archivo.`;
+      await Swal.fire({
+        icon: 'warning',
+        title: 'Imágenes demasiado pesadas',
+        text: `Cada imagen puede pesar como máximo ${this.maxTamanoImagenMb} MB. Reduce el tamaño e inténtalo nuevamente.`,
+      });
+      return;
+    }
+
+    const results = await Promise.all(selectedFiles.map((file) => this.readFileAsPreview(file)));
+    const payloads = await this.imagenesService.filesToBase64(selectedFiles);
+
+    this.newImagePreviews = [...this.newImagePreviews, ...results];
+    this.imagePayloads = [...this.imagePayloads, ...payloads];
+    input.value = '';
+  }
+
+  removeNewImage(index: number): void {
+    this.newImagePreviews = this.newImagePreviews.filter((_, imageIndex) => imageIndex !== index);
+    this.imagePayloads = this.imagePayloads.filter((_, imageIndex) => imageIndex !== index);
+    this.mensajeErrorImagenes = '';
   }
 
   async submit(): Promise<void> {
+    if (this.mensajeErrorImagenes) {
+      await Swal.fire({
+        icon: 'warning',
+        title: 'Revisa las imágenes',
+        text: this.mensajeErrorImagenes,
+      });
+      return;
+    }
+
     if (!this.formularioCompleto || this.enviandoFormulario) {
       return;
     }
@@ -326,7 +370,15 @@ export class PublicarComponent {
       const mascotaId = this.mascotaId ?? response?.mascotaId ?? response?._id ?? response?.id;
 
       if (mascotaId && this.imagePayloads.length) {
-        await this.imagenesService.cargarImagenesMascota(mascotaId, this.imagePayloads);
+        try {
+          await this.imagenesService.cargarImagenesMascota(mascotaId, this.imagePayloads);
+        } catch (imageError) {
+          if (!this.modoEdicion) {
+            await this.mascotaService.deleteMascota(mascotaId);
+          }
+
+          throw imageError;
+        }
       }
 
       Swal.close();
@@ -345,7 +397,9 @@ export class PublicarComponent {
       await Swal.fire({
         icon: 'error',
         title: 'No se pudo inscribir',
-        text: 'Revisa los datos e intenta nuevamente.'
+        text: this.imagePayloads.length
+          ? `Revisa los datos y usa imágenes de hasta ${this.maxTamanoImagenMb} MB. Si la carga de fotos falla, la mascota no se guardará.`
+          : 'Revisa los datos e intenta nuevamente.'
       });
       console.error(error);
     } finally {
@@ -386,7 +440,7 @@ export class PublicarComponent {
     this.direccionGps = this.ubicacionGpsLista ? 'Punto guardado en el mapa' : '';
     this.caracteristicasAdicionales = mascota.caracteristicasAdicionales ?? '';
     this.contacto = mascota.contacto ?? '';
-    this.imagePreviews = (mascota.imagenes ?? []).map((imagen) =>
+    this.existingImagePreviews = (mascota.imagenes ?? []).map((imagen) =>
       imagen.startsWith('data:') ? imagen : `data:image/jpeg;base64,${imagen}`
     );
   }
