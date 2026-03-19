@@ -3,6 +3,7 @@ import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import Swal from 'sweetalert2';
+import { ImagenesService } from '../../../core/services/imagenes.service';
 import { MascotaService } from '../../../core/services/mascota.service';
 import { UbicacionesService } from '../../../core/services/ubicaciones.service';
 
@@ -15,6 +16,7 @@ import { UbicacionesService } from '../../../core/services/ubicaciones.service';
 })
 export class PublicarComponent {
   private readonly mascotaService = inject(MascotaService);
+  private readonly imagenesService = inject(ImagenesService);
   private readonly ubicacionesService = inject(UbicacionesService);
   private readonly router = inject(Router);
 
@@ -128,10 +130,10 @@ export class PublicarComponent {
     }
 
     const selectedFiles = Array.from(files).slice(0, 5);
-    const results = await Promise.all(selectedFiles.map((file) => this.readFileAsDataUrl(file)));
+    const results = await Promise.all(selectedFiles.map((file) => this.readFileAsPreview(file)));
 
     this.imagePreviews = results;
-    this.imagePayloads = results.map((result) => result.split(',')[1] ?? result);
+    this.imagePayloads = await this.imagenesService.filesToBase64(selectedFiles);
   }
 
   async submit(): Promise<void> {
@@ -162,10 +164,10 @@ export class PublicarComponent {
         contacto: this.contacto.trim()
       });
 
-      const mascotaId = createdMascota?._id ?? createdMascota?.id;
+      const mascotaId = createdMascota?.mascotaId ?? createdMascota?._id ?? createdMascota?.id;
 
       if (mascotaId && this.imagePayloads.length) {
-        await this.mascotaService.cargarImagenes(mascotaId, this.imagePayloads);
+        await this.imagenesService.cargarImagenesMascota(mascotaId, this.imagePayloads);
       }
 
       Swal.close();
@@ -190,7 +192,7 @@ export class PublicarComponent {
     }
   }
 
-  private readFileAsDataUrl(file: File): Promise<string> {
+  private readFileAsPreview(file: File): Promise<string> {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onload = () => resolve(String(reader.result));

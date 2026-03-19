@@ -26,16 +26,4 @@ export class MascotaService {
     return response.data;
   }
 
-  async cargarImagenes(id: string, imagenes: string[]): Promise<any> {
-    const token = localStorage.getItem('token');
-    const response = await axios.patch(`${this.apiUrl}${id}/imagenes`, { imagenes }, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      }
-    });
-
-    return response.data;
-  }
-
 }
-
