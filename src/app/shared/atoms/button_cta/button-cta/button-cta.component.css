@@ -1,48 +1,73 @@
 /* Botón base totalmente neutro */
 .app-button-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
   background: none;
-  border: none;
+  border: 1px solid transparent;
   cursor: pointer;
   z-index: 3;
   position: relative;
-  border-radius: 30px;
+  border-radius: 14px;
   font-size: 1rem;
-  font-weight: medium;
-  letter-spacing: 1px;
-
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  text-decoration: none;
+  transition:
+    transform 0.22s ease,
+    box-shadow 0.22s ease,
+    background-color 0.22s ease,
+    border-color 0.22s ease;
 }
 
-/* Variante green SOLO color */
+.app-button-cta:hover {
+  transform: translateY(-2px);
+}
+
+.app-button-cta:focus-visible {
+  outline: 0;
+  box-shadow: 0 0 0 0.22rem rgba(255, 255, 255, 0.18);
+}
+
 .app-button-cta--green {
-  background-color: #438647;
+  background: linear-gradient(180deg, #6caf4d 0%, #46783d 100%);
   color: white;
+  box-shadow: 0 16px 28px rgba(52, 91, 44, 0.24);
 }
 
 .app-button-cta--green:hover {
-  background-color: #356b38;
-}
-
-.app-button-cta--green:active {
-  background-color: #274f2a;
-}
-
-.app-button-cta--green:disabled {
-  background-color: #9fc5a3;
-}
-
-.app-button-cta--orange {
-  background-color: #ef6c23;
+  background: linear-gradient(180deg, #78bb58 0%, #4b803f 100%);
   color: white;
 }
 
+.app-button-cta--green:active {
+  transform: translateY(0);
+  background: linear-gradient(180deg, #5d9945 0%, #406d36 100%);
+}
+
+.app-button-cta--green:disabled {
+  background: #9fc5a3;
+  box-shadow: none;
+}
+
+.app-button-cta--orange {
+  background: linear-gradient(180deg, #f58a3d 0%, #df6221 100%);
+  color: white;
+  box-shadow: 0 16px 28px rgba(175, 88, 31, 0.24);
+}
+
 .app-button-cta--orange:hover {
-  background-color: #d75f1f;
+  background: linear-gradient(180deg, #ff9951 0%, #ea6825 100%);
+  color: white;
 }
 
 .app-button-cta--orange:active {
-  background-color: #b94f18;
+  transform: translateY(0);
+  background: linear-gradient(180deg, #d96c2b 0%, #c2551e 100%);
 }
 
 .app-button-cta--orange:disabled {
-  background-color: #f3ad82;
+  background: #f3ad82;
+  box-shadow: none;
 }

@@ -41,6 +41,7 @@
   flex-wrap: wrap;
   gap: 1rem;
   margin-top: 1.8rem;
+  align-items: center;
 }
 
 .banner__image {
@@ -49,11 +50,21 @@
 }
 
 :host ::ng-deep .banner__button {
-  padding: 0.95rem 1.4rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 220px;
+  min-height: 54px;
+  padding: 0.95rem 1.5rem;
   border-radius: 12px;
-  font-size: 0.96rem;
+  font-size: 0.95rem;
   font-weight: 800;
-  letter-spacing: 0;
+  letter-spacing: 0.01em;
+  text-align: center;
+}
+
+:host ::ng-deep .banner__button--secondary {
+  backdrop-filter: blur(8px);
 }
 
 @media (max-width: 991px) {
