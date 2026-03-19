@@ -62,18 +62,49 @@
 
         <label class="form-field">
           <span>Fecha de nacimiento</span>
-          <input type="date" [(ngModel)]="fechaNacimiento" name="fechaNacimiento" required>
+          <input type="date" [(ngModel)]="fechaNacimiento" name="fechaNacimiento" [max]="maxFechaHoy" required>
         </label>
 
         <label class="form-field">
           <span>Perdido desde</span>
-          <input type="date" [(ngModel)]="perdidoDesde" name="perdidoDesde">
+          <input type="date" [(ngModel)]="perdidoDesde" name="perdidoDesde" [max]="maxFechaHoy">
         </label>
 
-        <label class="form-field">
+        <div class="form-field form-field--full">
           <span>Contacto</span>
-          <input type="text" [(ngModel)]="contacto" name="contacto" placeholder="Teléfono o correo" required>
-        </label>
+
+          <div class="location-switch">
+            <label class="location-switch__option" [class.is-active]="modoContacto === 'mail'">
+              <input type="radio" [(ngModel)]="modoContacto" name="modoContacto" value="mail">
+              <span>Contactar por mail</span>
+            </label>
+
+            <label class="location-switch__option" [class.is-active]="modoContacto === 'telefono'">
+              <input type="radio" [(ngModel)]="modoContacto" name="modoContacto" value="telefono">
+              <span>Contactar por teléfono</span>
+            </label>
+          </div>
+
+          <div class="contact-card" *ngIf="modoContacto === 'mail'">
+            <span class="contact-card__label">Correo del perfil</span>
+            <input
+              type="email"
+              [value]="userEmail || 'No hay correo disponible en tu perfil'"
+              readonly>
+            <small *ngIf="!userEmail">Para usar esta opción, tu sesión debe tener un correo guardado.</small>
+          </div>
+
+          <div class="contact-card" *ngIf="modoContacto === 'telefono'">
+            <span class="contact-card__label">Teléfono de contacto</span>
+            <input
+              type="tel"
+              [(ngModel)]="contacto"
+              name="contactoTelefono"
+              placeholder="Ej: +56 9 1234 5678"
+              [required]="modoContacto === 'telefono'">
+            <small>Ingresa un número que revises con frecuencia para responder rápido.</small>
+          </div>
+        </div>
       </div>
 
       <div class="section-heading">

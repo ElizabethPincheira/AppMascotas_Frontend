@@ -3,6 +3,7 @@ import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import Swal from 'sweetalert2';
+import { AuthService } from '../../../core/services/auth.service';
 import { ImagenesService } from '../../../core/services/imagenes.service';
 import { MascotaService } from '../../../core/services/mascota.service';
 import { Mascota } from '../../../shared/models/mascota.model';
@@ -17,6 +18,7 @@ import { Mascota } from '../../../shared/models/mascota.model';
 export class PublicarComponent {
   private readonly mascotaService = inject(MascotaService);
   private readonly imagenesService = inject(ImagenesService);
+  private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
 
@@ -34,6 +36,7 @@ export class PublicarComponent {
   direccionGps = '';
   caracteristicasAdicionales = '';
   contacto = '';
+  modoContacto: 'mail' | 'telefono' = 'mail';
   modoUbicacion: 'mapa' | 'gps' = 'mapa';
   ubicacionGpsCargando = false;
   ubicacionGpsLista = false;
@@ -82,6 +85,8 @@ export class PublicarComponent {
 
   get formularioCompleto(): boolean {
     const tieneUbicacionGps = this.latitud !== null && this.longitud !== null;
+    const fechasValidas = this.isFechaNacimientoValida() && this.isPerdidoDesdeValida();
+    const contactoValido = this.isContactoValido();
 
     return !!(
       this.nombre.trim() &&
@@ -89,9 +94,22 @@ export class PublicarComponent {
       this.raza.trim() &&
       this.estado.trim() &&
       this.fechaNacimiento &&
-      this.contacto.trim() &&
-      tieneUbicacionGps
+      contactoValido &&
+      tieneUbicacionGps &&
+      fechasValidas
     );
+  }
+
+  get maxFechaHoy(): string {
+    return new Date().toISOString().slice(0, 10);
+  }
+
+  get userEmail(): string {
+    return this.authService.getUser()?.email?.trim?.() || '';
+  }
+
+  get contactoSeleccionado(): string {
+    return this.modoContacto === 'mail' ? this.userEmail : this.contacto.trim();
   }
 
   get mapTiles(): Array<{ src: string; left: number; top: number }> {
@@ -323,6 +341,35 @@ export class PublicarComponent {
       return;
     }
 
+    if (!this.isFechaNacimientoValida()) {
+      await Swal.fire({
+        icon: 'warning',
+        title: 'Fecha de nacimiento inválida',
+        text: 'La fecha de nacimiento no puede ser futura.',
+      });
+      return;
+    }
+
+    if (!this.isPerdidoDesdeValida()) {
+      await Swal.fire({
+        icon: 'warning',
+        title: 'Fecha de pérdida inválida',
+        text: 'La fecha de pérdida no puede ser futura. Sí puede ser hoy.',
+      });
+      return;
+    }
+
+    if (!this.isContactoValido()) {
+      await Swal.fire({
+        icon: 'warning',
+        title: 'Contacto incompleto',
+        text: this.modoContacto === 'mail'
+          ? 'Tu perfil no tiene un correo disponible para usar como contacto.'
+          : 'Debes ingresar un teléfono de contacto válido.',
+      });
+      return;
+    }
+
     if (!this.formularioCompleto || this.enviandoFormulario) {
       return;
     }
@@ -346,7 +393,7 @@ export class PublicarComponent {
         latitud: this.latitud ?? undefined,
         longitud: this.longitud ?? undefined,
         caracteristicasAdicionales: this.caracteristicasAdicionales.trim() || undefined,
-        contacto: this.contacto.trim()
+        contacto: this.contactoSeleccionado
       };
 
       const response = this.modoEdicion && this.mascotaId
@@ -416,7 +463,9 @@ export class PublicarComponent {
     this.ubicacionGpsLista = this.latitud !== null && this.longitud !== null;
     this.direccionGps = this.ubicacionGpsLista ? 'Punto guardado en el mapa' : '';
     this.caracteristicasAdicionales = mascota.caracteristicasAdicionales ?? '';
-    this.contacto = mascota.contacto ?? '';
+    const contactoMascota = mascota.contacto?.trim() ?? '';
+    this.modoContacto = contactoMascota && contactoMascota === this.userEmail ? 'mail' : 'telefono';
+    this.contacto = this.modoContacto === 'telefono' ? contactoMascota : '';
     this.existingImagePreviews = (mascota.imagenes ?? []).map((imagen) =>
       imagen.startsWith('data:') ? imagen : `data:image/jpeg;base64,${imagen}`
     );
@@ -437,6 +486,43 @@ export class PublicarComponent {
 
   private capitalize(value: string): string {
     return value.charAt(0).toUpperCase() + value.slice(1);
+  }
+
+  private isFechaNacimientoValida(): boolean {
+    if (!this.fechaNacimiento) {
+      return false;
+    }
+
+    const fecha = new Date(`${this.fechaNacimiento}T00:00:00`);
+    const hoy = this.getInicioDelDiaActual();
+
+    return !Number.isNaN(fecha.getTime()) && fecha <= hoy;
+  }
+
+  private isPerdidoDesdeValida(): boolean {
+    if (!this.perdidoDesde) {
+      return true;
+    }
+
+    const fecha = new Date(`${this.perdidoDesde}T00:00:00`);
+    const hoy = this.getInicioDelDiaActual();
+
+    return !Number.isNaN(fecha.getTime()) && fecha <= hoy;
+  }
+
+  private isContactoValido(): boolean {
+    if (this.modoContacto === 'mail') {
+      return !!this.userEmail;
+    }
+
+    const telefono = this.contacto.replace(/\s+/g, '');
+    return telefono.length >= 8;
+  }
+
+  private getInicioDelDiaActual(): Date {
+    const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0);
+    return hoy;
   }
 
   private latLngToPixel(latitud: number, longitud: number): { x: number; y: number } {

@@ -129,6 +129,26 @@
   gap: 18px;
 }
 
+.contact-card {
+  display: grid;
+  margin-top: 0.9rem;
+  padding: 1rem 1.05rem;
+  border-radius: 20px;
+  border: 1px solid rgba(85, 117, 66, 0.16);
+  background: #f7f8f1;
+}
+
+.location-switch input[type="radio"] {
+  margin: 0 0.55rem 0 0;
+  accent-color: var(--brand-moss);
+}
+
+.location-switch label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
 .location-switch {
   display: inline-grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -528,6 +548,10 @@
 
   .submit-button {
     width: 100%;
+  }
+
+  .location-switch {
+    grid-template-columns: 1fr;
   }
 
   .map-picker,
