@@ -47,7 +47,6 @@ export class PublicarComponent {
   mensajeErrorImagenes = '';
   readonly maxImagenes = 5;
   readonly maxTamanoImagenMb = 2;
-  readonly maxTamanoImagenBytes = this.maxTamanoImagenMb * 1024 * 1024;
 
   readonly estados = [
     'Extraviado',
@@ -300,24 +299,11 @@ export class PublicarComponent {
     }
 
     const selectedFiles = Array.from(files).slice(0, cuposDisponibles);
-    const oversizedFiles = selectedFiles.filter((file) => file.size > this.maxTamanoImagenBytes);
 
-    if (oversizedFiles.length) {
-      input.value = '';
-      this.mensajeErrorImagenes = `No se pudo continuar porque una o más imágenes superan el máximo permitido de ${this.maxTamanoImagenMb} MB por archivo.`;
-      await Swal.fire({
-        icon: 'warning',
-        title: 'Imágenes demasiado pesadas',
-        text: `Cada imagen puede pesar como máximo ${this.maxTamanoImagenMb} MB. Reduce el tamaño e inténtalo nuevamente.`,
-      });
-      return;
-    }
+    const preparedImages = await this.imagenesService.prepareImagesForUpload(selectedFiles);
 
-    const results = await Promise.all(selectedFiles.map((file) => this.readFileAsPreview(file)));
-    const payloads = await this.imagenesService.filesToBase64(selectedFiles);
-
-    this.newImagePreviews = [...this.newImagePreviews, ...results];
-    this.imagePayloads = [...this.imagePayloads, ...payloads];
+    this.newImagePreviews = [...this.newImagePreviews, ...preparedImages.map((image) => image.preview)];
+    this.imagePayloads = [...this.imagePayloads, ...preparedImages.map((image) => image.base64)];
     input.value = '';
   }
 
@@ -398,22 +384,13 @@ export class PublicarComponent {
         icon: 'error',
         title: 'No se pudo inscribir',
         text: this.imagePayloads.length
-          ? `Revisa los datos y usa imágenes de hasta ${this.maxTamanoImagenMb} MB. Si la carga de fotos falla, la mascota no se guardará.`
+          ? 'La mascota no pudo guardarse porque falló la subida final de imágenes, incluso después de comprimirlas. Intenta con menos fotos a la vez o vuelve a probar.'
           : 'Revisa los datos e intenta nuevamente.'
       });
       console.error(error);
     } finally {
       this.enviandoFormulario = false;
     }
-  }
-
-  private readFileAsPreview(file: File): Promise<string> {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(String(reader.result));
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
-    });
   }
 
   private async cargarMascotaParaEditar(id: string): Promise<void> {

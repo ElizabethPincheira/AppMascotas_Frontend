@@ -353,6 +353,12 @@
   color: var(--text-main);
 }
 
+.upload-box__hint {
+  color: var(--text-soft);
+  font-size: 0.84rem;
+  line-height: 1.45;
+}
+
 .upload-box input {
   display: none;
 }

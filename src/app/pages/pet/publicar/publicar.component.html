@@ -197,7 +197,10 @@
         <label class="upload-box">
           <span class="upload-box__title">Seleccionar imágenes</span>
           <span class="upload-box__text">
-            Sube hasta {{ maxImagenes }} fotos claras de tu mascota. Máximo {{ maxTamanoImagenMb }} MB por imagen.
+            Sube hasta {{ maxImagenes }} fotos claras de tu mascota. El sistema las optimiza automáticamente antes de subirlas.
+          </span>
+          <span class="upload-box__hint">
+            Recomendado: fotos de hasta 1600 px por lado largo. El objetivo es que cada imagen final quede liviana, normalmente entre 200 KB y 500 KB.
           </span>
           <input type="file" accept="image/*" multiple (change)="onImagesSelected($event)">
         </label>
