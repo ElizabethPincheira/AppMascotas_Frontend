@@ -3,7 +3,11 @@
     <section class="publicar-hero">
       <div class="publicar-hero__content">
         <span class="publicar-hero__eyebrow">Inscribir mascota</span>
-        <h1>Registra a tu mascota y deja lista su publicación para ayudarla a volver o encontrar hogar.</h1>
+        <h1>
+          {{ modoEdicion
+            ? 'Actualiza la ficha de tu mascota y mantén su publicación siempre al día.'
+            : 'Registra a tu mascota y deja lista su publicación para ayudarla a volver o encontrar hogar.' }}
+        </h1>
         <p>
           Completa la ficha con los datos más importantes, agrega fotos y deja una ubicación clara.
           Así la comunidad podrá reconocerla y actuar más rápido.
@@ -136,7 +140,7 @@
       <div class="form-actions">
         <a class="secondary-link" routerLink="/">Volver al inicio</a>
         <button type="submit" class="submit-button" [disabled]="!formularioCompleto || enviandoFormulario">
-          {{ enviandoFormulario ? 'Guardando...' : 'Inscribir mascota' }}
+          {{ enviandoFormulario ? 'Guardando...' : (modoEdicion ? 'Guardar cambios' : 'Inscribir mascota') }}
         </button>
       </div>
     </form>

@@ -15,9 +15,46 @@ export class MascotaService {
     return response.data;
   }
 
+  async getMascotasByOwner(ownerId: string): Promise<any[]> {
+    const response = await axios.get(this.apiUrl, {
+      params: {
+        usuarioId: ownerId,
+      }
+    });
+
+    return response.data;
+  }
+
+  async getMascotaById(id: string): Promise<any | null> {
+    const mascotas = await this.getMascotas();
+    return mascotas.find((mascota) => (mascota._id ?? mascota.id) === id) ?? null;
+  }
+
   async createMascota(payload: Record<string, unknown>): Promise<any> {
     const token = localStorage.getItem('token');
     const response = await axios.post(this.apiUrl, payload, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      }
+    });
+
+    return response.data;
+  }
+
+  async updateMascota(id: string, payload: Record<string, unknown>): Promise<any> {
+    const token = localStorage.getItem('token');
+    const response = await axios.patch(`${this.apiUrl}${id}`, payload, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      }
+    });
+
+    return response.data;
+  }
+
+  async deleteMascota(id: string): Promise<any> {
+    const token = localStorage.getItem('token');
+    const response = await axios.delete(`${this.apiUrl}${id}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       }

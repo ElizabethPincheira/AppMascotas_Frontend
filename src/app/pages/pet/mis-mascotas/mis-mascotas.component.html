@@ -1,0 +1,67 @@
+<section class="mis-mascotas-page">
+  <div class="mis-mascotas-shell">
+    <section class="mis-mascotas-hero">
+      <div>
+        <span class="mis-mascotas-hero__eyebrow">Panel personal</span>
+        <h1>Administra tus mascotas inscritas y mantén sus publicaciones al día.</h1>
+        <p>
+          Desde aquí puedes revisar tus publicaciones, editar información importante, eliminar registros
+          o inscribir una nueva mascota.
+        </p>
+      </div>
+
+      <a class="mis-mascotas-hero__button" routerLink="/publicar">Agregar mascota</a>
+    </section>
+
+    <section class="mis-mascotas-panel" *ngIf="!cargando; else loadingState">
+      <div class="section-heading">
+        <div>
+          <span class="section-heading__eyebrow">Tus publicaciones</span>
+          <h2>{{ mascotas.length }} mascota(s) inscrita(s)</h2>
+        </div>
+      </div>
+
+      <div class="mis-mascotas-grid" *ngIf="mascotas.length; else emptyState">
+        <article class="pet-admin-card" *ngFor="let mascota of mascotas">
+          <img class="pet-admin-card__image" [src]="getImageSrc(mascota.imagenes[0])" [alt]="mascota.nombre">
+
+          <div class="pet-admin-card__body">
+            <span class="pet-admin-card__status">{{ mascota.estado }}</span>
+            <h3>{{ mascota.nombre }}</h3>
+            <p>{{ mascota.raza }} · {{ mascota.especie }}</p>
+
+            <div class="pet-admin-card__meta">
+              <span *ngIf="mascota.comunaPerdida">{{ mascota.comunaPerdida }}</span>
+              <span *ngIf="mascota.contacto">{{ mascota.contacto }}</span>
+            </div>
+
+            <div class="pet-admin-card__actions">
+              <button type="button" class="pet-admin-card__action pet-admin-card__action--edit" (click)="editarMascota(mascota)">
+                Modificar
+              </button>
+              <button type="button" class="pet-admin-card__action pet-admin-card__action--delete" (click)="eliminarMascota(mascota)">
+                Eliminar
+              </button>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <ng-template #loadingState>
+      <section class="mis-mascotas-panel">
+        <div class="empty-state">
+          <h2>Cargando tus mascotas...</h2>
+        </div>
+      </section>
+    </ng-template>
+
+    <ng-template #emptyState>
+      <div class="empty-state">
+        <h2>Aún no has inscrito mascotas</h2>
+        <p>Comienza registrando la primera para que aparezca en tu panel personal.</p>
+        <a class="empty-state__button" routerLink="/publicar">Inscribir mascota</a>
+      </div>
+    </ng-template>
+  </div>
+</section>

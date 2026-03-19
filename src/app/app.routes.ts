@@ -59,6 +59,20 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./pages/pet/publicar/publicar.component')
             .then(m => m.PublicarComponent)
+      },
+      {
+        path: 'publicar/:id',
+        canActivate: [authGuard],
+        loadComponent: () =>
+          import('./pages/pet/publicar/publicar.component')
+            .then(m => m.PublicarComponent)
+      },
+      {
+        path: 'mis-mascotas',
+        canActivate: [authGuard],
+        loadComponent: () =>
+          import('./pages/pet/mis-mascotas/mis-mascotas.component')
+            .then(m => m.MisMascotasComponent)
       }
     ]
   },

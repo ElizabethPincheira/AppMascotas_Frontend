@@ -13,6 +13,8 @@ export interface Mascota {
   comunaPerdida?: string;
   estado: 'Robado' | 'Extraviado' | 'Encontrado'|'Recuperado'|'Busca hogar'|'Adoptado'|'Buscando pareja'|'Emparejado';
   descripcion?: string;
+  caracteristicasAdicionales?: string;
+  contacto?: string;
   fechaNacimiento?: string | Date;
   createdAt?: string | Date;
   updatedAt?: string | Date;

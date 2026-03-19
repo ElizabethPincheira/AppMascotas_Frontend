@@ -1,11 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import Swal from 'sweetalert2';
 import { ImagenesService } from '../../../core/services/imagenes.service';
 import { MascotaService } from '../../../core/services/mascota.service';
 import { UbicacionesService } from '../../../core/services/ubicaciones.service';
+import { Mascota } from '../../../shared/models/mascota.model';
 
 @Component({
   selector: 'app-publicar',
@@ -19,6 +20,10 @@ export class PublicarComponent {
   private readonly imagenesService = inject(ImagenesService);
   private readonly ubicacionesService = inject(UbicacionesService);
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
+
+  mascotaId: string | null = null;
+  modoEdicion = false;
 
   nombre = '';
   especie = '';
@@ -62,6 +67,13 @@ export class PublicarComponent {
 
   async ngOnInit(): Promise<void> {
     await this.cargarRegiones();
+
+    this.mascotaId = this.route.snapshot.paramMap.get('id');
+    this.modoEdicion = !!this.mascotaId;
+
+    if (this.modoEdicion && this.mascotaId) {
+      await this.cargarMascotaParaEditar(this.mascotaId);
+    }
   }
 
   get formularioCompleto(): boolean {
@@ -94,12 +106,7 @@ export class PublicarComponent {
       return;
     }
 
-    this.cargandoProvincias = true;
-    try {
-      this.provincias = await this.ubicacionesService.getUbicaciones(this.regionPerdida);
-    } finally {
-      this.cargandoProvincias = false;
-    }
+    await this.cargarProvincias();
   }
 
   async onProvinciaChange(): Promise<void> {
@@ -110,6 +117,19 @@ export class PublicarComponent {
       return;
     }
 
+    await this.cargarComunas();
+  }
+
+  private async cargarProvincias(): Promise<void> {
+    this.cargandoProvincias = true;
+    try {
+      this.provincias = await this.ubicacionesService.getUbicaciones(this.regionPerdida);
+    } finally {
+      this.cargandoProvincias = false;
+    }
+  }
+
+  private async cargarComunas(): Promise<void> {
     this.cargandoComunas = true;
     try {
       this.comunas = await this.ubicacionesService.getUbicaciones(this.regionPerdida, this.provinciaPerdida);
@@ -150,7 +170,7 @@ export class PublicarComponent {
     });
 
     try {
-      const createdMascota = await this.mascotaService.createMascota({
+      const payload = {
         nombre: this.nombre.trim(),
         especie: this.especie.trim().toLowerCase(),
         raza: this.raza.trim(),
@@ -162,9 +182,13 @@ export class PublicarComponent {
         comunaPerdida: this.comunaPerdida || undefined,
         caracteristicasAdicionales: this.caracteristicasAdicionales.trim() || undefined,
         contacto: this.contacto.trim()
-      });
+      };
 
-      const mascotaId = createdMascota?.mascotaId ?? createdMascota?._id ?? createdMascota?.id;
+      const response = this.modoEdicion && this.mascotaId
+        ? await this.mascotaService.updateMascota(this.mascotaId, payload)
+        : await this.mascotaService.createMascota(payload);
+
+      const mascotaId = this.mascotaId ?? response?.mascotaId ?? response?._id ?? response?.id;
 
       if (mascotaId && this.imagePayloads.length) {
         await this.imagenesService.cargarImagenesMascota(mascotaId, this.imagePayloads);
@@ -174,11 +198,13 @@ export class PublicarComponent {
 
       await Swal.fire({
         icon: 'success',
-        title: 'Mascota inscrita',
-        text: 'Tu publicación ya quedó registrada correctamente.'
+        title: this.modoEdicion ? 'Mascota actualizada' : 'Mascota inscrita',
+        text: this.modoEdicion
+          ? 'La información se actualizó correctamente.'
+          : 'Tu publicación ya quedó registrada correctamente.'
       });
 
-      await this.router.navigate(['/perdidos']);
+      await this.router.navigate(['/mis-mascotas']);
     } catch (error) {
       Swal.close();
       await Swal.fire({
@@ -199,5 +225,57 @@ export class PublicarComponent {
       reader.onerror = reject;
       reader.readAsDataURL(file);
     });
+  }
+
+  private async cargarMascotaParaEditar(id: string): Promise<void> {
+    const mascota = await this.mascotaService.getMascotaById(id);
+
+    if (!mascota) {
+      return;
+    }
+
+    await this.cargarFormularioDesdeMascota(mascota);
+  }
+
+  private async cargarFormularioDesdeMascota(mascota: Mascota): Promise<void> {
+    this.nombre = mascota.nombre ?? '';
+    this.especie = mascota.especie ? this.capitalize(mascota.especie) : '';
+    this.raza = mascota.raza ?? '';
+    this.estado = mascota.estado ?? 'Extraviado';
+    this.fechaNacimiento = this.toInputDate(mascota.fechaNacimiento);
+    this.perdidoDesde = this.toInputDate((mascota as any).perdidoDesde);
+    this.regionPerdida = mascota.regionPerdida ?? '';
+    this.provinciaPerdida = mascota.provinciaPerdida ?? '';
+    this.comunaPerdida = mascota.comunaPerdida ?? '';
+    this.caracteristicasAdicionales = mascota.caracteristicasAdicionales ?? '';
+    this.contacto = mascota.contacto ?? '';
+    this.imagePreviews = (mascota.imagenes ?? []).map((imagen) =>
+      imagen.startsWith('data:') ? imagen : `data:image/jpeg;base64,${imagen}`
+    );
+
+    if (this.regionPerdida) {
+      await this.cargarProvincias();
+    }
+
+    if (this.provinciaPerdida) {
+      await this.cargarComunas();
+    }
+  }
+
+  private toInputDate(value?: string | Date): string {
+    if (!value) {
+      return '';
+    }
+
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) {
+      return '';
+    }
+
+    return date.toISOString().slice(0, 10);
+  }
+
+  private capitalize(value: string): string {
+    return value.charAt(0).toUpperCase() + value.slice(1);
   }
 }
