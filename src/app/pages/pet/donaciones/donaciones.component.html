@@ -1,0 +1,72 @@
+<section class="donaciones-page">
+  <div class="donaciones-shell">
+    <section class="donaciones-hero">
+      <div class="donaciones-hero__content">
+        <span class="donaciones-hero__eyebrow">Donaciones con impacto real</span>
+        <h1>El 100% de tu aporte va directamente a ayudar animales.</h1>
+        <p>
+          Cada donacion se transforma en alimento, atencion veterinaria, apoyo para hogares temporales,
+          rescates y oportunidades reales para que mas animales encuentren cuidado y un hogar digno.
+        </p>
+
+        <div class="donaciones-hero__actions">
+          <a class="hero-link hero-link--solid" routerLink="/publicar">Quiero ayudar</a>
+          <a class="hero-link hero-link--ghost" routerLink="/adopcion">Ver adopciones</a>
+        </div>
+      </div>
+
+      <div class="donaciones-hero__panel">
+        <div class="donation-card">
+          <span class="donation-card__label">Destino transparente</span>
+          <strong class="donation-card__value">100% ayuda animal</strong>
+          <p>
+            No hablamos de aportes abstractos: hablamos de alimento, vacunas, tratamientos,
+            traslados, hogares temporales y segundas oportunidades.
+          </p>
+
+          <div class="donation-card__amounts">
+            <span *ngFor="let amount of suggestedAmounts">${{ amount }}</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="donaciones-section">
+      <div class="section-heading">
+        <div>
+          <span class="section-heading__eyebrow">En que se usan</span>
+          <h2>Tu aporte cubre necesidades urgentes y concretas</h2>
+        </div>
+      </div>
+
+      <div class="uses-grid">
+        <article class="use-card" *ngFor="let item of donationUses">
+          <h3>{{ item.title }}</h3>
+          <p>{{ item.text }}</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="donaciones-section donaciones-section--split">
+      <div class="trust-card">
+        <span class="section-heading__eyebrow">Compromiso</span>
+        <h2>Donar tambien es decirle a un animal que no esta solo.</h2>
+        <div class="trust-list">
+          <div class="trust-item" *ngFor="let point of trustPoints; let i = index">
+            <span class="trust-item__index">0{{ i + 1 }}</span>
+            <p>{{ point }}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="cta-card">
+        <h3>Ayuda a sostener rescates, tratamientos y nuevos comienzos.</h3>
+        <p>
+          A veces una bolsa de alimento cambia una semana. A veces una consulta veterinaria cambia una vida.
+          Donar es participar activamente en ese cambio.
+        </p>
+        <a class="cta-card__link" routerLink="/perdidos">Ver casos activos</a>
+      </div>
+    </section>
+  </div>
+</section>

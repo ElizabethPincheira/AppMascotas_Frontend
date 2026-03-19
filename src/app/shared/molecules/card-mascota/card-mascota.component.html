@@ -1,54 +1,114 @@
-<div class="card mascota-card shadow mb-5 rounded-5 border-0">
-  <!-- Carrusel de imágenes -->
-  <div id="carousel-{{ mascota.id }}" class="carousel slide h-100" data-bs-ride="carousel">
-    <div class="carousel-inner h-100">
-      <div *ngFor="let imagen of mascota.imagenes; let first = first" 
-        [ngClass]="{'carousel-item': true, 'active': first}" 
-        class="h-100">
-        <img [src]="'data:image/jpeg;base64,' + imagen" 
-          class="d-block w-100 h-100" 
-          style="object-fit: cover;"
-          [alt]="mascota.nombre">
+<article class="card mascota-card border-0 shadow-sm">
+  <div class="mascota-card__media">
+    <div [id]="carouselId" class="carousel slide h-100" data-bs-ride="carousel">
+      <div class="carousel-inner h-100">
+        <ng-container *ngIf="mascota.imagenes?.length; else fallbackSlide">
+          <div
+            *ngFor="let imagen of mascota.imagenes; let first = first"
+            [ngClass]="{ 'carousel-item': true, 'active': first }"
+            class="h-100">
+            <img
+              [src]="getImageSrc(imagen)"
+              class="d-block w-100 h-100 mascota-card__image"
+              [alt]="mascota.nombre">
+          </div>
+        </ng-container>
+
+        <ng-template #fallbackSlide>
+          <div class="carousel-item active h-100">
+            <img
+              [src]="getImageSrc()"
+              class="d-block w-100 h-100 mascota-card__image"
+              [alt]="mascota.nombre">
+          </div>
+        </ng-template>
       </div>
-    </div>
-    
-    <!-- Controles del carrusel -->
-    <button *ngIf="mascota.imagenes.length > 1" 
-      class="carousel-control-prev" 
-      type="button" 
-      [attr.data-bs-target]="'#carousel-' + mascota.id" 
-      data-bs-slide="prev">
-      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-      <span class="visually-hidden">Previous</span>
-    </button>
-    <button *ngIf="mascota.imagenes.length > 1" 
-      class="carousel-control-next" 
-      type="button" 
-      [attr.data-bs-target]="'#carousel-' + mascota.id" 
-      data-bs-slide="next">
-      <span class="carousel-control-next-icon" aria-hidden="true"></span>
-      <span class="visually-hidden">Next</span>
-    </button>
-  </div>
 
-  <!-- Información de la mascota sobre el carrusel -->
-  <div class="card-overlay">
-    <div class="card-body text-white">
-      <div class="info-card">
-        <div>
-          <span>{{ mascota.nombre }}</span>
-        </div>
+      <div class="mascota-card__topbar">
+        <span class="badge mascota-card__badge" [ngClass]="getEstadoClase(mascota.estado)">
+          {{ mascota.estado }}
+        </span>
+        <span class="mascota-card__chip" *ngIf="mascota.especie">{{ mascota.especie }}</span>
+      </div>
 
-        <div>
-          <span class="badge" [ngClass]="getEstadoClase(mascota.estado)">
-            {{ mascota.estado }}
+      <div class="mascota-card__overlay">
+        <div class="mascota-card__header">
+          <div>
+            <h3 class="mascota-card__title">{{ mascota.nombre }}</h3>
+            <p class="mascota-card__subtitle">
+              {{ mascota.raza || mascota.especie || 'Mascota' }}
+              <span *ngIf="getAgeText() as age"> · {{ age }}</span>
+            </p>
+            <p class="mascota-card__emotion">{{ getEmotionalMessage() }}</p>
+          </div>
+          <span class="mascota-card__date" *ngIf="getPublishedText() as published">
+            {{ published }}
           </span>
-          <span>{{ mascota.ubicacion }}</span>
+        </div>
+
+        <div class="mascota-card__meta">
+          <span class="mascota-card__meta-pill" *ngIf="getPrimaryLocation() as primaryLocation">{{ primaryLocation }}</span>
+          <span class="mascota-card__meta-pill" *ngIf="mascota.imagenes?.length">
+            {{ mascota.imagenes.length }} foto<span *ngIf="mascota.imagenes.length > 1">s</span>
+          </span>
         </div>
       </div>
 
-      <app-button label="Ver Mascota" variant="green" buttonClass="w-100"></app-button>
+      <button
+        *ngIf="mascota.imagenes?.length && mascota.imagenes.length > 1"
+        class="carousel-control-prev mascota-card__control"
+        type="button"
+        [attr.data-bs-target]="'#' + carouselId"
+        data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+      </button>
 
+      <button
+        *ngIf="mascota.imagenes?.length && mascota.imagenes.length > 1"
+        class="carousel-control-next mascota-card__control"
+        type="button"
+        [attr.data-bs-target]="'#' + carouselId"
+        data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+      </button>
     </div>
   </div>
-</div>
+
+  <div class="card-body mascota-card__body">
+    <div class="mascota-card__distance-highlight" *ngIf="getDistanceText() as distance">
+      <span class="mascota-card__distance-label">Cerca de ti</span>
+      <strong class="mascota-card__distance-value">{{ distance }}</strong>
+    </div>
+
+    <div class="mascota-card__quickfacts">
+      <span class="quickfact-pill" *ngIf="mascota.especie">{{ mascota.especie }}</span>
+      <span class="quickfact-pill" *ngIf="getAgeText() as age">{{ age }}</span>
+      <span class="quickfact-pill" *ngIf="getPublishedText() as published">{{ published }}</span>
+    </div>
+
+    <div class="mascota-card__info-grid">
+      <div class="info-item">
+        <span class="info-item__label">Última ubicación</span>
+        <span class="info-item__value">{{ getPrimaryLocation() }}</span>
+      </div>
+
+      <div class="info-item" *ngIf="getSecondaryLocation() as ownerLocation">
+        <span class="info-item__label">Comuna</span>
+        <span class="info-item__value">{{ ownerLocation }}</span>
+      </div>
+
+      <div class="info-item" *ngIf="getOwnerEmail() as ownerEmail">
+        <span class="info-item__label">Contacto</span>
+        <span class="info-item__value info-item__value--small">{{ ownerEmail }}</span>
+      </div>
+    </div>
+
+    <div class="mascota-card__footer">
+      <span class="mascota-card__footer-note">
+        {{ getFooterMessage() }}
+      </span>
+    </div>
+  </div>
+</article>

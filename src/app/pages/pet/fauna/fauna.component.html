@@ -1,0 +1,98 @@
+<section class="fauna-page">
+  <div class="fauna-shell">
+    <section class="fauna-hero">
+      <div class="fauna-hero__content">
+        <span class="fauna-hero__eyebrow">Fauna de Chile</span>
+        <h1>Cuidar la fauna del pais tambien es cuidar nuestro hogar.</h1>
+        <p>
+          Desde humedales y cordilleras hasta bosques y costas, miles de especies dependen de decisiones humanas mas conscientes.
+          Proteger la vida silvestre no es una idea lejana: empieza en nuestras ciudades, playas, senderos y barrios.
+        </p>
+
+        <div class="fauna-hero__actions">
+          <a class="hero-link hero-link--solid" routerLink="/donar">Apoyar acciones</a>
+          <a class="hero-link hero-link--ghost" routerLink="/publicar">Reportar o ayudar</a>
+        </div>
+      </div>
+
+      <div class="fauna-hero__panel">
+        <div class="hero-gallery">
+          <figure class="hero-gallery__main">
+            <img [src]="heroImages[0].image" [alt]="heroImages[0].title">
+          </figure>
+
+          <div class="hero-gallery__row">
+            <figure class="hero-gallery__tile" *ngFor="let image of heroImages.slice(1)">
+              <img [src]="image.image" [alt]="image.title">
+            </figure>
+          </div>
+
+          <div class="impact-card">
+            <span class="impact-card__label">Conciencia activa</span>
+            <strong class="impact-card__value">Fauna, territorio y comunidad</strong>
+            <p>
+              Cuando cuidamos ecosistemas, controlamos a nuestras mascotas y reducimos residuos,
+              tambien protegemos especies que solo existen en este paisaje.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="fauna-section">
+      <div class="section-heading">
+        <div>
+          <span class="section-heading__eyebrow">Amenazas actuales</span>
+          <h2>Lo que pone en riesgo a la fauna silvestre</h2>
+        </div>
+      </div>
+
+      <div class="threat-grid">
+        <article class="threat-card" *ngFor="let threat of threats">
+          <h3>{{ threat.title }}</h3>
+          <p>{{ threat.text }}</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="fauna-section fauna-section--split">
+      <div class="awareness-card">
+        <span class="section-heading__eyebrow">Que podemos hacer</span>
+        <h2>Pequenas acciones que cambian el destino de muchas especies</h2>
+        <div class="action-list">
+          <div class="action-item" *ngFor="let action of actions; let i = index">
+            <span class="action-item__index">0{{ i + 1 }}</span>
+            <p>{{ action }}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="quote-card">
+        <p>
+          “La fauna silvestre no necesita que la invadamos. Necesita distancia, respeto y ecosistemas vivos.”
+        </p>
+        <span>Compromiso ciudadano por la biodiversidad</span>
+      </div>
+    </section>
+
+    <section class="fauna-section">
+      <div class="section-heading">
+        <div>
+          <span class="section-heading__eyebrow">Especies emblematicas</span>
+          <h2>Animales que nos recuerdan por que vale la pena proteger</h2>
+        </div>
+      </div>
+
+      <div class="species-grid">
+        <article class="species-card" *ngFor="let species of species">
+          <div class="species-card__image-wrap">
+            <img class="species-card__image" [src]="species.image" [alt]="species.name">
+          </div>
+          <span class="species-card__region">{{ species.region }}</span>
+          <h3>{{ species.name }}</h3>
+          <p>{{ species.note }}</p>
+        </article>
+      </div>
+    </section>
+  </div>
+</section>

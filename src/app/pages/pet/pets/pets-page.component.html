@@ -1,0 +1,78 @@
+<section class="pets-showcase">
+  <div class="pets-shell">
+    <section class="showcase-hero">
+      <div class="showcase-hero__content">
+        <span class="showcase-hero__eyebrow">Rescate, adopcion y fauna chilena</span>
+        <h1>Un refugio digital para reencontrar mascotas y cuidar la vida animal de Chile.</h1>
+        <p>
+          CirculoAnimal conecta reportes, adopciones solidarias y acciones de conciencia para que cada publicacion
+          ayude tanto a mascotas en riesgo como al respeto por la fauna de nuestro territorio.
+        </p>
+
+        <div class="showcase-hero__actions">
+          <a class="showcase-link showcase-link--solid" routerLink="/perdidos">Ver casos activos</a>
+          <a class="showcase-link showcase-link--ghost" routerLink="/fauna">Conocer fauna chilena</a>
+        </div>
+      </div>
+
+      <div class="showcase-hero__stats">
+        <article class="showcase-stat">
+          <span class="showcase-stat__label">Perdidos visibles</span>
+          <strong class="showcase-stat__value">{{ mascotasPerdidasRecientes.length }}</strong>
+          <p>Casos recientes donde la comunidad puede ayudar a reencontrar.</p>
+        </article>
+
+        <article class="showcase-stat">
+          <span class="showcase-stat__label">En adopcion</span>
+          <strong class="showcase-stat__value">{{ mascotasEnAdopcion.length }}</strong>
+          <p>Animales esperando una familia responsable y un nuevo comienzo.</p>
+        </article>
+
+        <article class="showcase-stat showcase-stat--accent">
+          <span class="showcase-stat__label">Compromiso</span>
+          <strong class="showcase-stat__value">100%</strong>
+          <p>Enfoque en rescate, cuidado, educacion y proteccion de la fauna chilena.</p>
+        </article>
+      </div>
+    </section>
+
+    <div class="section-block" *ngIf="mascotasPerdidasRecientes.length > 0">
+      <div class="section-heading">
+        <div>
+          <h2>Mascotas Perdidas Recientes</h2>
+          <p>Casos visibles en la comunidad para ayudar a reencontrarlas.</p>
+        </div>
+        <a class="more-link" routerLink="/perdidos">Ver mas</a>
+      </div>
+
+      <div class="cards-grid">
+        <app-card-mascota
+          *ngFor="let mascota of mascotasPerdidasRecientes; trackBy: trackById"
+          [mascota]="mascota">
+        </app-card-mascota>
+      </div>
+    </div>
+
+    <div class="section-block" *ngIf="mascotasEnAdopcion.length > 0">
+      <div class="section-heading">
+        <div>
+          <h2>En Adopcion</h2>
+          <p>Compañeros listos para encontrar un nuevo hogar.</p>
+        </div>
+        <a class="more-link" routerLink="/adopcion">Ver mas</a>
+      </div>
+
+      <div class="cards-grid">
+        <app-card-mascota
+          *ngFor="let mascota of mascotasEnAdopcion; trackBy: trackById"
+          [mascota]="mascota">
+        </app-card-mascota>
+      </div>
+    </div>
+
+    <div class="empty-state" *ngIf="!hasAnySectionData()">
+      <h2>Estamos preparando esta vitrina</h2>
+      <p>Cuando haya mascotas cargadas, esta pagina mostrara las secciones de perdidas y adopcion con este nuevo diseño.</p>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,138 @@
+.register-page {
+  min-height: 100vh;
+  background: transparent;
+}
+
+.register-hero {
+  background:
+    radial-gradient(circle at top right, rgba(144, 200, 101, 0.14), transparent 22%),
+    linear-gradient(160deg, rgba(33, 61, 49, 0.98), rgba(50, 82, 61, 0.94));
+  color: #fff;
+  border-radius: 34px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: var(--shadow-soft);
+}
+
+.register-hero h1 {
+  color: #f8f3e8;
+  font-family: var(--font-display);
+  line-height: 0.98;
+  letter-spacing: -0.04em;
+  text-wrap: balance;
+}
+
+.register-hero::before {
+  content: "";
+  position: absolute;
+  inset: auto -54px -54px auto;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.hero-badge {
+  width: fit-content;
+  color: var(--brand-forest);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.mini-stat {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(6px);
+  border-radius: 22px;
+  color: #fff;
+}
+
+.mini-stat__label {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  opacity: 0.8;
+  margin-bottom: 0.35rem;
+}
+
+.mini-stat__value {
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.register-alert {
+  border-radius: 20px;
+  color: #284534;
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.register-card {
+  border-radius: 34px;
+  background: var(--bg-panel);
+  border: 1px solid var(--line-soft);
+  box-shadow: var(--shadow-soft);
+  backdrop-filter: blur(10px);
+}
+
+.progress-badge {
+  color: var(--text-soft);
+  background: #eef2e9;
+  border: 1px solid rgba(103, 126, 92, 0.12);
+  padding: 0.52rem 0.82rem;
+}
+
+.progress-badge.is-active {
+  color: #fff;
+  background: var(--brand-moss);
+  border-color: var(--brand-moss);
+}
+
+.location-card {
+  border-radius: 24px;
+  background: linear-gradient(180deg, #f8f4eb 0%, #eef3e7 100%);
+  box-shadow: inset 0 0 0 1px rgba(87, 102, 69, 0.08);
+}
+
+.form-control,
+.form-select {
+  border-radius: 18px;
+  border-color: #d8dfd0;
+  min-height: 58px;
+  box-shadow: none;
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: #6aa05e;
+  box-shadow: 0 0 0 0.25rem rgba(106, 160, 94, 0.14);
+}
+
+.register-button {
+  min-width: 210px;
+  border-radius: 999px;
+  font-weight: 800;
+}
+
+.switch-auth {
+  padding-top: 0.6rem;
+}
+
+.switch-auth__link {
+  text-decoration: none;
+  font-weight: 800;
+  color: var(--brand-moss);
+}
+
+.switch-auth__link:hover {
+  color: var(--brand-forest);
+}
+
+.text-light-emphasis {
+  color: rgba(255, 255, 255, 0.82) !important;
+}
+
+@media (max-width: 991px) {
+  .register-page {
+    min-height: auto;
+  }
+}

@@ -1,1 +1,68 @@
-<p>footer works!</p>
+<footer class="site-footer">
+  <div class="container-fluid px-3 px-lg-4">
+    <div class="site-footer__panel">
+      <div class="row g-4 g-lg-5">
+        <div class="col-12 col-lg-5">
+          <a class="site-footer__brand" routerLink="/">
+            <span class="site-footer__brand-icon">
+              <img
+                src="assets/icons/icon_patita.png"
+                alt="CirculoAnimal"
+                width="38"
+                height="38">
+            </span>
+            <span class="site-footer__brand-text">
+              Circulo<span>Animal</span>.cl
+            </span>
+          </a>
+
+          <p class="site-footer__description">
+            Una comunidad pensada para reportar mascotas perdidas, impulsar adopciones y promover una convivencia mas consciente
+            con la fauna chilena.
+          </p>
+
+          <div class="site-footer__tags">
+            <span class="site-footer__tag">Perdidos</span>
+            <span class="site-footer__tag">Adopcion</span>
+            <span class="site-footer__tag">Fauna chilena</span>
+          </div>
+        </div>
+
+        <div class="col-6 col-lg-3">
+          <h3 class="site-footer__title">Navegacion</h3>
+          <ul class="site-footer__list">
+            <li *ngFor="let link of mainLinks">
+              <a [routerLink]="link.path">{{ link.label }}</a>
+            </li>
+          </ul>
+        </div>
+
+        <div class="col-6 col-lg-2">
+          <h3 class="site-footer__title">Secciones</h3>
+          <ul class="site-footer__list">
+            <li *ngFor="let link of infoLinks">
+              <a [routerLink]="link.path">{{ link.label }}</a>
+            </li>
+          </ul>
+        </div>
+
+        <div class="col-12 col-lg-2">
+          <h3 class="site-footer__title">Contacto</h3>
+          <ul class="site-footer__list">
+            <li><a href="mailto:hola@CirculoAnimal.cl">hola&#64;CirculoAnimal.cl</a></li>
+            <li><span>Santiago, Chile</span></li>
+            <li><span>Apoyando reencuentros reales</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="site-footer__bottom">
+        <p class="mb-0">© 2026 CirculoAnimal.cl. Hecho para cuidar, encontrar y conectar.</p>
+        <div class="site-footer__bottom-links">
+          <a routerLink="/about">Sobre nosotros</a>
+          <a routerLink="/donar">Donar</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>

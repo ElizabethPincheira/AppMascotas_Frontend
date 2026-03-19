@@ -1,0 +1,121 @@
+<section class="login-page py-4 py-lg-5">
+  <div class="container-fluid px-3 px-lg-4">
+    <div class="row g-4 g-xl-5 align-items-stretch justify-content-center">
+      <div class="col-12 col-lg-5">
+        <div class="card border-0 shadow-lg login-hero h-100">
+          <div class="card-body p-4 p-xl-5 d-flex flex-column">
+            <span class="badge rounded-pill text-bg-light hero-badge mb-3">Circulo Animal</span>
+            <h1 class="display-6 fw-bold mb-3">Vuelve a tu cuenta y sigue ayudando a encontrar hogares y reencuentros.</h1>
+            <p class="lead text-light-emphasis mb-4">
+              Accede a tus publicaciones, reportes y acciones de la comunidad desde un solo lugar.
+            </p>
+
+            <div class="row g-3 mt-1">
+              <div class="col-12 col-sm-6">
+                <div class="mini-stat card border-0 h-100">
+                  <div class="card-body">
+                    <div class="mini-stat__label">Acceso rapido</div>
+                    <div class="mini-stat__value">Administra tus mascotas y reportes en segundos</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-12 col-sm-6">
+                <div class="mini-stat card border-0 h-100">
+                  <div class="card-body">
+                    <div class="mini-stat__label">Comunidad activa</div>
+                    <div class="mini-stat__value">Mantente conectado con ayudas y adopciones</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="alert alert-light border-0 mt-4 mb-0 login-alert" role="alert">
+              Inicia sesion para continuar con tus publicaciones y notificaciones importantes.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-lg-7 col-xl-5">
+        <div class="card border-0 shadow-lg login-card">
+          <div class="card-body p-4 p-xl-5">
+            <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-4">
+              <div>
+                <h2 class="h3 fw-bold mb-1">Iniciar sesion</h2>
+                <p class="text-secondary mb-0">Ingresa con tu correo y contraseña.</p>
+              </div>
+
+              <div class="d-flex gap-2 flex-wrap">
+                <span class="badge progress-badge" [class.is-active]="!!email">Correo</span>
+                <span class="badge progress-badge" [class.is-active]="!!password">Contraseña</span>
+              </div>
+            </div>
+
+            <form (ngSubmit)="login()">
+              <div class="row g-3">
+                <div class="col-12">
+                  <div class="form-floating">
+                    <input
+                      type="email"
+                      class="form-control"
+                      id="exampleInputEmail1"
+                      name="email"
+                      placeholder="nombre@correo.com"
+                      [(ngModel)]="email"
+                      required>
+                    <label for="exampleInputEmail1">Correo electronico</label>
+                  </div>
+                </div>
+
+                <div class="col-12">
+                  <div class="form-floating">
+                    <input
+                      type="password"
+                      class="form-control"
+                      id="exampleInputPassword1"
+                      name="password"
+                      placeholder="Contraseña"
+                      [(ngModel)]="password"
+                      required>
+                    <label for="exampleInputPassword1">Contraseña</label>
+                  </div>
+                </div>
+
+                <div class="col-12">
+                  <div class="card border-0 access-card">
+                    <div class="card-body p-3 p-lg-4">
+                      <h3 class="h6 fw-bold mb-2">Tu acceso incluye</h3>
+                      <div class="access-list">
+                        <span class="access-item">Gestion de publicaciones</span>
+                        <span class="access-item">Seguimiento de mascotas</span>
+                        <span class="access-item">Acceso a tu perfil</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-12 d-grid d-sm-flex justify-content-sm-end">
+                  <button
+                    type="submit"
+                    class="btn btn-success btn-lg px-4 login-button"
+                    [disabled]="enviandoFormulario || !formularioCompleto">
+                    <span class="spinner-border spinner-border-sm me-2" role="status" *ngIf="enviandoFormulario"></span>
+                    Iniciar sesion
+                  </button>
+                </div>
+
+                <div class="col-12">
+                  <div class="switch-auth text-center">
+                    <span class="text-secondary">Si no estas registrado,</span>
+                    <a routerLink="/register" class="btn btn-link switch-auth__link">crea tu cuenta aqui</a>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

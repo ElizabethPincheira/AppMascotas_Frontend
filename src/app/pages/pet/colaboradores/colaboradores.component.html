@@ -1,0 +1,72 @@
+<section class="colaboradores-page">
+  <div class="colaboradores-shell">
+    <section class="colaboradores-hero">
+      <div class="colaboradores-hero__content">
+        <span class="colaboradores-hero__eyebrow">Ser parte</span>
+        <h1>Súmate a la red de personas que ayudan a mascotas y animales desde su oficio o su tiempo libre.</h1>
+        <p>
+          Esta sección está pensada para quienes quieran colaborar activamente con la fundación:
+          reparto de alimento, atención veterinaria, búsqueda de mascotas perdidas o acogida temporal.
+        </p>
+
+        <div class="colaboradores-hero__actions">
+          <a class="hero-link hero-link--solid" routerLink="/tienda">Ver Tienda solidaria</a>
+          <a class="hero-link hero-link--ghost" routerLink="/donar">Apoyar de otra forma</a>
+        </div>
+      </div>
+
+      <div class="colaboradores-hero__aside">
+        <article class="hero-note">
+          <span class="hero-note__label">Visibilidad futura</span>
+          <p>
+            Los colaboradores de reparto de alimento podrán aparecer en la pestaña Tienda cuando el módulo esté conectado al backend.
+          </p>
+        </article>
+        <article class="hero-note">
+          <span class="hero-note__label">Red local</span>
+          <p>
+            La idea es construir apoyo por región, provincia y comuna, para que cada ayuda llegue donde realmente se necesita.
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <section class="areas-section">
+      <div class="section-heading">
+        <div>
+          <span class="section-heading__eyebrow">Formas de ayudar</span>
+          <h2>Áreas donde puedes ser parte</h2>
+        </div>
+      </div>
+
+      <div class="areas-grid">
+        <article class="area-card" *ngFor="let area of collaborationAreas">
+          <span class="area-card__tag">{{ area.tag }}</span>
+          <h3>{{ area.title }}</h3>
+          <p>{{ area.text }}</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="process-section">
+      <div class="process-card">
+        <span class="section-heading__eyebrow">Cómo funcionará</span>
+        <h2>Una red simple, local y útil para animales que necesitan ayuda real</h2>
+        <div class="process-list">
+          <div class="process-item" *ngFor="let step of processSteps; let i = index">
+            <span class="process-item__index">0{{ i + 1 }}</span>
+            <p>{{ step }}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="cta-card">
+        <h3>Muy pronto podrás postular como colaborador desde la plataforma.</h3>
+        <p>
+          Por ahora esta página presenta las líneas de ayuda que serán parte del ecosistema. El siguiente paso puede ser crear el formulario de inscripción de colaboradores.
+        </p>
+        <a class="cta-card__link" routerLink="/register">Crear cuenta</a>
+      </div>
+    </section>
+  </div>
+</section>
