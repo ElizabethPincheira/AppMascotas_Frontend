@@ -15,6 +15,9 @@ export interface Mascota {
   descripcion?: string;
   caracteristicasAdicionales?: string;
   contacto?: string;
+  latitud?: number;
+  longitud?: number;
+  distanciaKm?: number;
   fechaNacimiento?: string | Date;
   createdAt?: string | Date;
   updatedAt?: string | Date;

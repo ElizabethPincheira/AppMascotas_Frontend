@@ -18,13 +18,24 @@ export class PetsPageComponent {
   }
 
   mascotas: Mascota[] = [];
+  ubicacionUsuarioDisponible = false;
   readonly estadosPerdidos = ['Robado', 'Extraviado', 'Encontrado', 'Recuperado'];
   readonly estadosAdopcion = ['Busca hogar', 'Adoptado'];
 
   constructor(private mascotaService: MascotaService) { }
 
   async ngOnInit() {
-    this.mascotas = [...await this.mascotaService.getMascotas()];
+    const posicion = await this.obtenerUbicacionUsuario();
+    this.mascotas = [
+      ...await this.mascotaService.getMascotas(
+        posicion
+          ? {
+              latitud: posicion.latitude,
+              longitud: posicion.longitude,
+            }
+          : undefined,
+      ),
+    ];
   }
 
   get mascotasPerdidasRecientes(): Mascota[] {
@@ -41,5 +52,31 @@ export class PetsPageComponent {
 
   hasAnySectionData(): boolean {
     return this.mascotasPerdidasRecientes.length > 0 || this.mascotasEnAdopcion.length > 0;
+  }
+
+  private async obtenerUbicacionUsuario(): Promise<{ latitude: number; longitude: number } | null> {
+    if (!navigator.geolocation) {
+      return null;
+    }
+
+    try {
+      const position = await new Promise<GeolocationPosition>((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(resolve, reject, {
+          enableHighAccuracy: true,
+          timeout: 8000,
+          maximumAge: 300000,
+        });
+      });
+
+      this.ubicacionUsuarioDisponible = true;
+
+      return {
+        latitude: Number(position.coords.latitude.toFixed(6)),
+        longitude: Number(position.coords.longitude.toFixed(6)),
+      };
+    } catch {
+      this.ubicacionUsuarioDisponible = false;
+      return null;
+    }
   }
 }

@@ -9,9 +9,8 @@ export class MascotaService {
 
   private apiUrl = `${environment.apiUrl}mascotas/`;
 
-  async getMascotas(): Promise<any[]> {
-    let url = this.apiUrl;
-    const response = await axios.get(url);
+  async getMascotas(params?: Record<string, unknown>): Promise<any[]> {
+    const response = await axios.get(this.apiUrl, { params });
     return response.data;
   }
 

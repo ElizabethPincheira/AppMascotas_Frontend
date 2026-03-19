@@ -132,6 +132,22 @@ export class CardMascotaComponent {
     return 'Comparte esta publicación y ayuda a encontrarlo';
   }
 
+  getDistanceText(): string | null {
+    if (!this.isLostCase() || typeof this.mascota.distanciaKm !== 'number' || !Number.isFinite(this.mascota.distanciaKm)) {
+      return null;
+    }
+
+    if (this.mascota.distanciaKm < 1) {
+      return 'A menos de 1 km de ti';
+    }
+
+    return `A ${this.mascota.distanciaKm.toFixed(1)} km de ti`;
+  }
+
+  isLostCase(): boolean {
+    return ['Robado', 'Extraviado', 'Encontrado', 'Recuperado'].includes(this.mascota.estado);
+  }
+
   getEstadoClase(estado: string): string {
 
     switch (estado) {

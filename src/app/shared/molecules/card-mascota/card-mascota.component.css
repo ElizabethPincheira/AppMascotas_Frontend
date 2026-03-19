@@ -197,6 +197,11 @@
   line-height: 1.2;
 }
 
+.quickfact-pill--distance {
+  background: rgba(219, 126, 47, 0.14);
+  color: #8b4714;
+}
+
 .mascota-card__info-grid {
   display: grid;
   grid-template-columns: 1fr;

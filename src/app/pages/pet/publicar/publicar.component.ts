@@ -34,8 +34,15 @@ export class PublicarComponent {
   regionPerdida = '';
   provinciaPerdida = '';
   comunaPerdida = '';
+  latitud: number | null = null;
+  longitud: number | null = null;
+  direccionGps = '';
   caracteristicasAdicionales = '';
   contacto = '';
+  modoUbicacion: 'manual' | 'gps' = 'manual';
+  ubicacionGpsCargando = false;
+  ubicacionGpsLista = false;
+  resolviendoDireccionGps = false;
 
   regiones: string[] = [];
   provincias: string[] = [];
@@ -77,13 +84,18 @@ export class PublicarComponent {
   }
 
   get formularioCompleto(): boolean {
+    const tieneUbicacionManual = !!(this.regionPerdida && this.provinciaPerdida && this.comunaPerdida);
+    const tieneUbicacionGps = this.latitud !== null && this.longitud !== null;
+    const tieneUbicacion = this.modoUbicacion === 'gps' ? tieneUbicacionGps : tieneUbicacionManual;
+
     return !!(
       this.nombre.trim() &&
       this.especie.trim() &&
       this.raza.trim() &&
       this.estado.trim() &&
       this.fechaNacimiento &&
-      this.contacto.trim()
+      this.contacto.trim() &&
+      tieneUbicacion
     );
   }
 
@@ -138,6 +150,67 @@ export class PublicarComponent {
     }
   }
 
+  seleccionarModoUbicacion(modo: 'manual' | 'gps'): void {
+    this.modoUbicacion = modo;
+
+    if (modo === 'manual') {
+      this.latitud = null;
+      this.longitud = null;
+      this.direccionGps = '';
+      this.ubicacionGpsLista = false;
+      return;
+    }
+
+    this.regionPerdida = '';
+    this.provinciaPerdida = '';
+    this.comunaPerdida = '';
+    this.provincias = [];
+    this.comunas = [];
+  }
+
+  async usarUbicacionActual(): Promise<void> {
+    if (!navigator.geolocation || this.ubicacionGpsCargando) {
+      await Swal.fire({
+        icon: 'info',
+        title: 'GPS no disponible',
+        text: 'Tu navegador no permite obtener la ubicación actual.'
+      });
+      return;
+    }
+
+    this.ubicacionGpsCargando = true;
+
+    try {
+      const position = await new Promise<GeolocationPosition>((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(resolve, reject, {
+          enableHighAccuracy: true,
+          timeout: 12000,
+          maximumAge: 0
+        });
+      });
+
+      this.latitud = Number(position.coords.latitude.toFixed(6));
+      this.longitud = Number(position.coords.longitude.toFixed(6));
+      this.ubicacionGpsLista = true;
+      this.direccionGps = await this.obtenerDireccionDesdeCoordenadas(this.latitud, this.longitud);
+    } catch (error) {
+      this.latitud = null;
+      this.longitud = null;
+      this.direccionGps = '';
+      this.ubicacionGpsLista = false;
+
+      await Swal.fire({
+        icon: 'warning',
+        title: 'No pudimos obtener tu ubicación',
+        text: 'Puedes intentarlo nuevamente o volver a ingresar la ubicación manualmente.'
+      });
+
+      console.error(error);
+    } finally {
+      this.ubicacionGpsCargando = false;
+    }
+  }
+
   async onImagesSelected(event: Event): Promise<void> {
     const input = event.target as HTMLInputElement;
     const files = input.files;
@@ -177,9 +250,11 @@ export class PublicarComponent {
         estado: this.estado,
         fechaNacimiento: this.fechaNacimiento,
         perdidoDesde: this.perdidoDesde || undefined,
-        regionPerdida: this.regionPerdida || undefined,
-        provinciaPerdida: this.provinciaPerdida || undefined,
-        comunaPerdida: this.comunaPerdida || undefined,
+        regionPerdida: this.modoUbicacion === 'manual' ? this.regionPerdida || undefined : undefined,
+        provinciaPerdida: this.modoUbicacion === 'manual' ? this.provinciaPerdida || undefined : undefined,
+        comunaPerdida: this.modoUbicacion === 'manual' ? this.comunaPerdida || undefined : undefined,
+        latitud: this.modoUbicacion === 'gps' ? this.latitud ?? undefined : undefined,
+        longitud: this.modoUbicacion === 'gps' ? this.longitud ?? undefined : undefined,
         caracteristicasAdicionales: this.caracteristicasAdicionales.trim() || undefined,
         contacto: this.contacto.trim()
       };
@@ -247,6 +322,11 @@ export class PublicarComponent {
     this.regionPerdida = mascota.regionPerdida ?? '';
     this.provinciaPerdida = mascota.provinciaPerdida ?? '';
     this.comunaPerdida = mascota.comunaPerdida ?? '';
+    this.latitud = typeof mascota.latitud === 'number' ? mascota.latitud : null;
+    this.longitud = typeof mascota.longitud === 'number' ? mascota.longitud : null;
+    this.modoUbicacion = this.latitud !== null && this.longitud !== null ? 'gps' : 'manual';
+    this.ubicacionGpsLista = this.modoUbicacion === 'gps';
+    this.direccionGps = this.ubicacionGpsLista ? 'Ubicación GPS guardada' : '';
     this.caracteristicasAdicionales = mascota.caracteristicasAdicionales ?? '';
     this.contacto = mascota.contacto ?? '';
     this.imagePreviews = (mascota.imagenes ?? []).map((imagen) =>
@@ -277,5 +357,41 @@ export class PublicarComponent {
 
   private capitalize(value: string): string {
     return value.charAt(0).toUpperCase() + value.slice(1);
+  }
+
+  private async obtenerDireccionDesdeCoordenadas(latitud: number, longitud: number): Promise<string> {
+    this.resolviendoDireccionGps = true;
+
+    try {
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitud}&lon=${longitud}&accept-language=es`,
+      );
+
+      if (!response.ok) {
+        return this.formatearCoordenadas(latitud, longitud);
+      }
+
+      const data = await response.json();
+      const address = data?.address ?? {};
+      const segmentos = [
+        address.road,
+        address.house_number,
+        address.suburb,
+        address.city || address.town || address.village,
+        address.state,
+      ]
+        .filter(Boolean)
+        .join(', ');
+
+      return segmentos || data?.display_name || this.formatearCoordenadas(latitud, longitud);
+    } catch {
+      return this.formatearCoordenadas(latitud, longitud);
+    } finally {
+      this.resolviendoDireccionGps = false;
+    }
+  }
+
+  private formatearCoordenadas(latitud: number, longitud: number): string {
+    return `Ubicación detectada (${latitud}, ${longitud})`;
   }
 }

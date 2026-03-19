@@ -83,7 +83,44 @@
         </div>
       </div>
 
-      <div class="form-grid">
+      <div class="location-switch">
+        <button
+          type="button"
+          class="location-switch__option"
+          [class.is-active]="modoUbicacion === 'manual'"
+          (click)="seleccionarModoUbicacion('manual')">
+          Ingresar manualmente
+        </button>
+
+        <button
+          type="button"
+          class="location-switch__option"
+          [class.is-active]="modoUbicacion === 'gps'"
+          (click)="seleccionarModoUbicacion('gps')">
+          Usar GPS
+        </button>
+      </div>
+
+      <div class="gps-panel" *ngIf="modoUbicacion === 'gps'">
+        <div>
+          <strong>Ubicación por GPS</strong>
+          <p>Usa tu ubicación actual para que otras personas vean primero las mascotas más cercanas.</p>
+        </div>
+
+        <button type="button" class="gps-panel__button" (click)="usarUbicacionActual()" [disabled]="ubicacionGpsCargando">
+          {{ ubicacionGpsCargando ? 'Obteniendo ubicación...' : 'Detectar mi ubicación' }}
+        </button>
+
+        <div class="gps-panel__status" *ngIf="resolviendoDireccionGps">
+          Buscando dirección...
+        </div>
+
+        <div class="gps-panel__status" *ngIf="ubicacionGpsLista && !resolviendoDireccionGps">
+          Dirección detectada: {{ direccionGps }}
+        </div>
+      </div>
+
+      <div class="form-grid" *ngIf="modoUbicacion === 'manual'">
         <label class="form-field">
           <span>Región</span>
           <select [(ngModel)]="regionPerdida" name="regionPerdida" (ngModelChange)="onRegionChange()">
@@ -113,6 +150,17 @@
           <textarea
             [(ngModel)]="caracteristicasAdicionales"
             name="caracteristicasAdicionales"
+            rows="4"
+            placeholder="Color, collar, tamaño, cicatrices, comportamiento, etc."></textarea>
+        </label>
+      </div>
+
+      <div class="form-grid" *ngIf="modoUbicacion === 'gps'">
+        <label class="form-field form-field--full">
+          <span>Características adicionales</span>
+          <textarea
+            [(ngModel)]="caracteristicasAdicionales"
+            name="caracteristicasAdicionalesGps"
             rows="4"
             placeholder="Color, collar, tamaño, cicatrices, comportamiento, etc."></textarea>
         </label>
