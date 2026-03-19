@@ -5,7 +5,6 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import Swal from 'sweetalert2';
 import { ImagenesService } from '../../../core/services/imagenes.service';
 import { MascotaService } from '../../../core/services/mascota.service';
-import { UbicacionesService } from '../../../core/services/ubicaciones.service';
 import { Mascota } from '../../../shared/models/mascota.model';
 
 @Component({
@@ -18,7 +17,6 @@ import { Mascota } from '../../../shared/models/mascota.model';
 export class PublicarComponent {
   private readonly mascotaService = inject(MascotaService);
   private readonly imagenesService = inject(ImagenesService);
-  private readonly ubicacionesService = inject(UbicacionesService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
 
@@ -31,26 +29,16 @@ export class PublicarComponent {
   estado = 'Extraviado';
   fechaNacimiento = '';
   perdidoDesde = '';
-  regionPerdida = '';
-  provinciaPerdida = '';
-  comunaPerdida = '';
   latitud: number | null = null;
   longitud: number | null = null;
   direccionGps = '';
   caracteristicasAdicionales = '';
   contacto = '';
-  modoUbicacion: 'manual' | 'gps' = 'manual';
+  modoUbicacion: 'mapa' | 'gps' = 'mapa';
   ubicacionGpsCargando = false;
   ubicacionGpsLista = false;
   resolviendoDireccionGps = false;
 
-  regiones: string[] = [];
-  provincias: string[] = [];
-  comunas: string[] = [];
-
-  cargandoRegiones = false;
-  cargandoProvincias = false;
-  cargandoComunas = false;
   enviandoFormulario = false;
 
   imagePreviews: string[] = [];
@@ -72,9 +60,14 @@ export class PublicarComponent {
     'Otra'
   ];
 
-  async ngOnInit(): Promise<void> {
-    await this.cargarRegiones();
+  readonly mapWidth = 960;
+  readonly mapHeight = 540;
+  readonly tileSize = 256;
+  mapCenterLat = -35.6751;
+  mapCenterLng = -71.543;
+  mapZoom = 5;
 
+  async ngOnInit(): Promise<void> {
     this.mascotaId = this.route.snapshot.paramMap.get('id');
     this.modoEdicion = !!this.mascotaId;
 
@@ -84,9 +77,7 @@ export class PublicarComponent {
   }
 
   get formularioCompleto(): boolean {
-    const tieneUbicacionManual = !!(this.regionPerdida && this.provinciaPerdida && this.comunaPerdida);
     const tieneUbicacionGps = this.latitud !== null && this.longitud !== null;
-    const tieneUbicacion = this.modoUbicacion === 'gps' ? tieneUbicacionGps : tieneUbicacionManual;
 
     return !!(
       this.nombre.trim() &&
@@ -95,119 +86,191 @@ export class PublicarComponent {
       this.estado.trim() &&
       this.fechaNacimiento &&
       this.contacto.trim() &&
-      tieneUbicacion
+      tieneUbicacionGps
     );
   }
 
-  async cargarRegiones(): Promise<void> {
-    this.cargandoRegiones = true;
-    try {
-      this.regiones = await this.ubicacionesService.getUbicaciones();
-    } finally {
-      this.cargandoRegiones = false;
-    }
+  get mapaUrl(): string {
+    return '';
   }
 
-  async onRegionChange(): Promise<void> {
-    this.provinciaPerdida = '';
-    this.comunaPerdida = '';
-    this.provincias = [];
-    this.comunas = [];
+  get mapTiles(): Array<{ src: string; left: number; top: number }> {
+    const centerWorld = this.project(this.mapCenterLat, this.mapCenterLng);
+    const startX = centerWorld.x - this.mapWidth / 2;
+    const startY = centerWorld.y - this.mapHeight / 2;
+    const endX = centerWorld.x + this.mapWidth / 2;
+    const endY = centerWorld.y + this.mapHeight / 2;
+    const scale = this.tileSize * Math.pow(2, this.mapZoom);
+    const maxTileIndex = Math.pow(2, this.mapZoom);
 
-    if (!this.regionPerdida) {
-      return;
+    const tileStartX = Math.floor(startX / this.tileSize);
+    const tileEndX = Math.floor(endX / this.tileSize);
+    const tileStartY = Math.floor(startY / this.tileSize);
+    const tileEndY = Math.floor(endY / this.tileSize);
+    const tiles: Array<{ src: string; left: number; top: number }> = [];
+
+    for (let tileX = tileStartX; tileX <= tileEndX; tileX += 1) {
+      for (let tileY = tileStartY; tileY <= tileEndY; tileY += 1) {
+        if (tileY < 0 || tileY >= maxTileIndex) {
+          continue;
+        }
+
+        const wrappedTileX = ((tileX % maxTileIndex) + maxTileIndex) % maxTileIndex;
+
+        tiles.push({
+          src: `https://tile.openstreetmap.org/${this.mapZoom}/${wrappedTileX}/${tileY}.png`,
+          left: tileX * this.tileSize - startX,
+          top: tileY * this.tileSize - startY,
+        });
+      }
     }
 
-    await this.cargarProvincias();
+    return tiles;
   }
 
-  async onProvinciaChange(): Promise<void> {
-    this.comunaPerdida = '';
-    this.comunas = [];
-
-    if (!this.regionPerdida || !this.provinciaPerdida) {
-      return;
-    }
-
-    await this.cargarComunas();
-  }
-
-  private async cargarProvincias(): Promise<void> {
-    this.cargandoProvincias = true;
-    try {
-      this.provincias = await this.ubicacionesService.getUbicaciones(this.regionPerdida);
-    } finally {
-      this.cargandoProvincias = false;
-    }
-  }
-
-  private async cargarComunas(): Promise<void> {
-    this.cargandoComunas = true;
-    try {
-      this.comunas = await this.ubicacionesService.getUbicaciones(this.regionPerdida, this.provinciaPerdida);
-    } finally {
-      this.cargandoComunas = false;
-    }
-  }
-
-  seleccionarModoUbicacion(modo: 'manual' | 'gps'): void {
+  seleccionarModoUbicacion(modo: 'mapa' | 'gps'): void {
     this.modoUbicacion = modo;
 
-    if (modo === 'manual') {
+    if (modo === 'mapa') {
+      this.ubicacionGpsLista = this.latitud !== null && this.longitud !== null;
+      if (!this.direccionGps && this.ubicacionGpsLista) {
+        this.direccionGps = 'Punto marcado en el mapa';
+      }
+      return;
+    }
+
+    if (modo === 'gps') {
       this.latitud = null;
       this.longitud = null;
       this.direccionGps = '';
       this.ubicacionGpsLista = false;
+    }
+  }
+
+  async seleccionarPuntoMapa(event: MouseEvent): Promise<void> {
+    const mapa = event.currentTarget as HTMLElement | null;
+
+    if (!mapa) {
       return;
     }
 
-    this.regionPerdida = '';
-    this.provinciaPerdida = '';
-    this.comunaPerdida = '';
-    this.provincias = [];
-    this.comunas = [];
+    const rect = mapa.getBoundingClientRect();
+    const relativeX = (event.clientX - rect.left) / rect.width;
+    const relativeY = (event.clientY - rect.top) / rect.height;
+    const pixelX = relativeX * this.mapWidth;
+    const pixelY = relativeY * this.mapHeight;
+    const { latitud, longitud } = this.pixelToLatLng(pixelX, pixelY);
+
+    this.latitud = Number(latitud.toFixed(6));
+    this.longitud = Number(longitud.toFixed(6));
+    this.ubicacionGpsLista = true;
+    this.modoUbicacion = 'mapa';
+    this.direccionGps = await this.obtenerDireccionDesdeCoordenadas(this.latitud, this.longitud);
+  }
+
+  get markerLeft(): string {
+    if (this.latitud === null || this.longitud === null) {
+      return '50%';
+    }
+
+    const { x } = this.latLngToPixel(this.latitud, this.longitud);
+    const ratio = x / this.mapWidth;
+
+    return `${Math.min(Math.max(ratio * 100, 0), 100)}%`;
+  }
+
+  get markerTop(): string {
+    if (this.latitud === null || this.longitud === null) {
+      return '50%';
+    }
+
+    const { y } = this.latLngToPixel(this.latitud, this.longitud);
+    const ratio = y / this.mapHeight;
+
+    return `${Math.min(Math.max(ratio * 100, 0), 100)}%`;
   }
 
   async usarUbicacionActual(): Promise<void> {
-    if (!navigator.geolocation || this.ubicacionGpsCargando) {
-      await Swal.fire({
-        icon: 'info',
-        title: 'GPS no disponible',
-        text: 'Tu navegador no permite obtener la ubicación actual.'
-      });
+    if (this.ubicacionGpsCargando) {
+      return;
+    }
+
+    const position = await this.obtenerPosicionActual();
+
+    if (!position) {
       return;
     }
 
     this.ubicacionGpsCargando = true;
 
     try {
-      const position = await new Promise<GeolocationPosition>((resolve, reject) => {
+      this.latitud = Number(position.coords.latitude.toFixed(6));
+      this.longitud = Number(position.coords.longitude.toFixed(6));
+      this.ubicacionGpsLista = true;
+      this.direccionGps = await this.obtenerDireccionDesdeCoordenadas(this.latitud, this.longitud);
+    } finally {
+      this.ubicacionGpsCargando = false;
+    }
+  }
+
+  async centrarMapaEnUbicacionActual(): Promise<void> {
+    if (this.ubicacionGpsCargando) {
+      return;
+    }
+
+    const position = await this.obtenerPosicionActual();
+
+    if (!position) {
+      return;
+    }
+
+    this.ubicacionGpsCargando = true;
+
+    try {
+      this.latitud = Number(position.coords.latitude.toFixed(6));
+      this.longitud = Number(position.coords.longitude.toFixed(6));
+      this.mapCenterLat = this.latitud;
+      this.mapCenterLng = this.longitud;
+      this.mapZoom = 14;
+      this.ubicacionGpsLista = true;
+      this.direccionGps = await this.obtenerDireccionDesdeCoordenadas(this.latitud, this.longitud);
+      this.modoUbicacion = 'mapa';
+    } finally {
+      this.ubicacionGpsCargando = false;
+    }
+  }
+
+  zoomMapa(delta: number): void {
+    this.mapZoom = Math.min(Math.max(this.mapZoom + delta, 4), 17);
+  }
+
+  private async obtenerPosicionActual(): Promise<GeolocationPosition | null> {
+    if (!navigator.geolocation) {
+      await Swal.fire({
+        icon: 'info',
+        title: 'GPS no disponible',
+        text: 'Tu navegador no permite obtener la ubicación actual.'
+      });
+      return null;
+    }
+
+    try {
+      return await new Promise<GeolocationPosition>((resolve, reject) => {
         navigator.geolocation.getCurrentPosition(resolve, reject, {
           enableHighAccuracy: true,
           timeout: 12000,
           maximumAge: 0
         });
       });
-
-      this.latitud = Number(position.coords.latitude.toFixed(6));
-      this.longitud = Number(position.coords.longitude.toFixed(6));
-      this.ubicacionGpsLista = true;
-      this.direccionGps = await this.obtenerDireccionDesdeCoordenadas(this.latitud, this.longitud);
     } catch (error) {
-      this.latitud = null;
-      this.longitud = null;
-      this.direccionGps = '';
-      this.ubicacionGpsLista = false;
-
       await Swal.fire({
         icon: 'warning',
         title: 'No pudimos obtener tu ubicación',
-        text: 'Puedes intentarlo nuevamente o volver a ingresar la ubicación manualmente.'
+        text: 'Puedes intentarlo nuevamente o marcar el punto directamente en el mapa.'
       });
 
       console.error(error);
-    } finally {
-      this.ubicacionGpsCargando = false;
+      return null;
     }
   }
 
@@ -250,11 +313,8 @@ export class PublicarComponent {
         estado: this.estado,
         fechaNacimiento: this.fechaNacimiento,
         perdidoDesde: this.perdidoDesde || undefined,
-        regionPerdida: this.modoUbicacion === 'manual' ? this.regionPerdida || undefined : undefined,
-        provinciaPerdida: this.modoUbicacion === 'manual' ? this.provinciaPerdida || undefined : undefined,
-        comunaPerdida: this.modoUbicacion === 'manual' ? this.comunaPerdida || undefined : undefined,
-        latitud: this.modoUbicacion === 'gps' ? this.latitud ?? undefined : undefined,
-        longitud: this.modoUbicacion === 'gps' ? this.longitud ?? undefined : undefined,
+        latitud: this.latitud ?? undefined,
+        longitud: this.longitud ?? undefined,
         caracteristicasAdicionales: this.caracteristicasAdicionales.trim() || undefined,
         contacto: this.contacto.trim()
       };
@@ -319,27 +379,16 @@ export class PublicarComponent {
     this.estado = mascota.estado ?? 'Extraviado';
     this.fechaNacimiento = this.toInputDate(mascota.fechaNacimiento);
     this.perdidoDesde = this.toInputDate((mascota as any).perdidoDesde);
-    this.regionPerdida = mascota.regionPerdida ?? '';
-    this.provinciaPerdida = mascota.provinciaPerdida ?? '';
-    this.comunaPerdida = mascota.comunaPerdida ?? '';
     this.latitud = typeof mascota.latitud === 'number' ? mascota.latitud : null;
     this.longitud = typeof mascota.longitud === 'number' ? mascota.longitud : null;
-    this.modoUbicacion = this.latitud !== null && this.longitud !== null ? 'gps' : 'manual';
-    this.ubicacionGpsLista = this.modoUbicacion === 'gps';
-    this.direccionGps = this.ubicacionGpsLista ? 'Ubicación GPS guardada' : '';
+    this.modoUbicacion = 'mapa';
+    this.ubicacionGpsLista = this.latitud !== null && this.longitud !== null;
+    this.direccionGps = this.ubicacionGpsLista ? 'Punto guardado en el mapa' : '';
     this.caracteristicasAdicionales = mascota.caracteristicasAdicionales ?? '';
     this.contacto = mascota.contacto ?? '';
     this.imagePreviews = (mascota.imagenes ?? []).map((imagen) =>
       imagen.startsWith('data:') ? imagen : `data:image/jpeg;base64,${imagen}`
     );
-
-    if (this.regionPerdida) {
-      await this.cargarProvincias();
-    }
-
-    if (this.provinciaPerdida) {
-      await this.cargarComunas();
-    }
   }
 
   private toInputDate(value?: string | Date): string {
@@ -357,6 +406,46 @@ export class PublicarComponent {
 
   private capitalize(value: string): string {
     return value.charAt(0).toUpperCase() + value.slice(1);
+  }
+
+  private latLngToPixel(latitud: number, longitud: number): { x: number; y: number } {
+    const center = this.project(this.mapCenterLat, this.mapCenterLng);
+    const point = this.project(latitud, longitud);
+
+    return {
+      x: point.x - center.x + this.mapWidth / 2,
+      y: point.y - center.y + this.mapHeight / 2,
+    };
+  }
+
+  private pixelToLatLng(x: number, y: number): { latitud: number; longitud: number } {
+    const center = this.project(this.mapCenterLat, this.mapCenterLng);
+    const worldX = center.x - this.mapWidth / 2 + x;
+    const worldY = center.y - this.mapHeight / 2 + y;
+
+    return this.unproject(worldX, worldY);
+  }
+
+  private project(latitud: number, longitud: number): { x: number; y: number } {
+    const scale = 256 * Math.pow(2, this.mapZoom);
+    const sinLat = Math.sin((latitud * Math.PI) / 180);
+
+    return {
+      x: ((longitud + 180) / 360) * scale,
+      y: (0.5 - Math.log((1 + sinLat) / (1 - sinLat)) / (4 * Math.PI)) * scale,
+    };
+  }
+
+  private unproject(x: number, y: number): { latitud: number; longitud: number } {
+    const scale = 256 * Math.pow(2, this.mapZoom);
+    const longitud = (x / scale) * 360 - 180;
+    const mercatorY = 0.5 - y / scale;
+    const latitud = 90 - (360 * Math.atan(Math.exp(-mercatorY * 2 * Math.PI))) / Math.PI;
+
+    return {
+      latitud,
+      longitud,
+    };
   }
 
   private async obtenerDireccionDesdeCoordenadas(latitud: number, longitud: number): Promise<string> {

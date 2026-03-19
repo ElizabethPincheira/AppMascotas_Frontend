@@ -87,9 +87,9 @@
         <button
           type="button"
           class="location-switch__option"
-          [class.is-active]="modoUbicacion === 'manual'"
-          (click)="seleccionarModoUbicacion('manual')">
-          Ingresar manualmente
+          [class.is-active]="modoUbicacion === 'mapa'"
+          (click)="seleccionarModoUbicacion('mapa')">
+          Marcar en el mapa
         </button>
 
         <button
@@ -101,10 +101,65 @@
         </button>
       </div>
 
+      <div class="gps-panel" *ngIf="modoUbicacion === 'mapa'">
+        <div>
+          <strong>Marca el punto donde se perdió</strong>
+          <p>Haz clic sobre el mapa de Chile para dejar el punto aproximado y guardar las coordenadas.</p>
+        </div>
+
+        <div class="map-picker__actions">
+          <button
+            type="button"
+            class="gps-panel__button"
+            (click)="centrarMapaEnUbicacionActual()"
+            [disabled]="ubicacionGpsCargando">
+            {{ ubicacionGpsCargando ? 'Ubicando...' : 'Ir a mi ubicación actual' }}
+          </button>
+
+          <div class="map-picker__zoom">
+            <button type="button" class="map-picker__zoom-button" (click)="zoomMapa(1)">+</button>
+            <button type="button" class="map-picker__zoom-button" (click)="zoomMapa(-1)">-</button>
+          </div>
+        </div>
+
+        <div class="map-picker" (click)="seleccionarPuntoMapa($event)">
+          <div class="map-picker__tiles" aria-hidden="true">
+            <img
+              *ngFor="let tile of mapTiles"
+              class="map-picker__tile"
+              [src]="tile.src"
+              [style.left.px]="tile.left"
+              [style.top.px]="tile.top"
+              alt="">
+          </div>
+
+          <button
+            *ngIf="ubicacionGpsLista"
+            type="button"
+            class="map-picker__marker"
+            [style.left]="markerLeft"
+            [style.top]="markerTop"
+            aria-label="Punto marcado">
+          </button>
+
+          <div class="map-picker__hint" *ngIf="!ubicacionGpsLista">
+            Haz clic en el mapa para dejar el punto
+          </div>
+        </div>
+
+        <div class="gps-panel__status" *ngIf="resolviendoDireccionGps">
+          Buscando dirección...
+        </div>
+
+        <div class="gps-panel__status" *ngIf="ubicacionGpsLista && !resolviendoDireccionGps">
+          Punto marcado: {{ direccionGps }}
+        </div>
+      </div>
+
       <div class="gps-panel" *ngIf="modoUbicacion === 'gps'">
         <div>
           <strong>Ubicación por GPS</strong>
-          <p>Usa tu ubicación actual para que otras personas vean primero las mascotas más cercanas.</p>
+          <p>Usa tu ubicación actual si quieres guardar el punto automáticamente desde tu celular o navegador.</p>
         </div>
 
         <button type="button" class="gps-panel__button" (click)="usarUbicacionActual()" [disabled]="ubicacionGpsCargando">
@@ -120,47 +175,12 @@
         </div>
       </div>
 
-      <div class="form-grid" *ngIf="modoUbicacion === 'manual'">
-        <label class="form-field">
-          <span>Región</span>
-          <select [(ngModel)]="regionPerdida" name="regionPerdida" (ngModelChange)="onRegionChange()">
-            <option value="">Selecciona una región</option>
-            <option *ngFor="let region of regiones" [value]="region">{{ region }}</option>
-          </select>
-        </label>
-
-        <label class="form-field">
-          <span>Provincia</span>
-          <select [(ngModel)]="provinciaPerdida" name="provinciaPerdida" (ngModelChange)="onProvinciaChange()" [disabled]="!regionPerdida || cargandoProvincias">
-            <option value="">Selecciona una provincia</option>
-            <option *ngFor="let provincia of provincias" [value]="provincia">{{ provincia }}</option>
-          </select>
-        </label>
-
-        <label class="form-field">
-          <span>Comuna</span>
-          <select [(ngModel)]="comunaPerdida" name="comunaPerdida" [disabled]="!provinciaPerdida || cargandoComunas">
-            <option value="">Selecciona una comuna</option>
-            <option *ngFor="let comuna of comunas" [value]="comuna">{{ comuna }}</option>
-          </select>
-        </label>
-
+      <div class="form-grid">
         <label class="form-field form-field--full">
           <span>Características adicionales</span>
           <textarea
             [(ngModel)]="caracteristicasAdicionales"
             name="caracteristicasAdicionales"
-            rows="4"
-            placeholder="Color, collar, tamaño, cicatrices, comportamiento, etc."></textarea>
-        </label>
-      </div>
-
-      <div class="form-grid" *ngIf="modoUbicacion === 'gps'">
-        <label class="form-field form-field--full">
-          <span>Características adicionales</span>
-          <textarea
-            [(ngModel)]="caracteristicasAdicionales"
-            name="caracteristicasAdicionalesGps"
             rows="4"
             placeholder="Color, collar, tamaño, cicatrices, comportamiento, etc."></textarea>
         </label>
