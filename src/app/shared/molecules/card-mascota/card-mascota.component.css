@@ -132,6 +132,35 @@
     linear-gradient(180deg, rgba(255, 252, 245, 0.96), rgba(246, 241, 230, 0.98));
 }
 
+.mascota-card__distance-highlight {
+  display: grid;
+  gap: 0.16rem;
+  margin-bottom: 1rem;
+  padding: 0.95rem 1rem;
+  border-radius: 20px;
+  background:
+    radial-gradient(circle at left center, rgba(255, 214, 168, 0.45), transparent 28%),
+    linear-gradient(135deg, #fff0dc 0%, #ffd7a7 48%, #f6b15d 100%);
+  box-shadow:
+    inset 0 0 0 1px rgba(168, 97, 17, 0.14),
+    0 14px 28px rgba(196, 123, 37, 0.18);
+}
+
+.mascota-card__distance-label {
+  color: #96521c;
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.mascota-card__distance-value {
+  color: #5f2f08;
+  font-size: 1.22rem;
+  font-weight: 900;
+  line-height: 1.15;
+}
+
 .mascota-card__header {
   display: flex;
   justify-content: space-between;
@@ -195,11 +224,6 @@
   font-size: 0.82rem;
   font-weight: 800;
   line-height: 1.2;
-}
-
-.quickfact-pill--distance {
-  background: rgba(219, 126, 47, 0.14);
-  color: #8b4714;
 }
 
 .mascota-card__info-grid {

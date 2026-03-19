@@ -77,8 +77,12 @@
   </div>
 
   <div class="card-body mascota-card__body">
+    <div class="mascota-card__distance-highlight" *ngIf="getDistanceText() as distance">
+      <span class="mascota-card__distance-label">Cerca de ti</span>
+      <strong class="mascota-card__distance-value">{{ distance }}</strong>
+    </div>
+
     <div class="mascota-card__quickfacts">
-      <span class="quickfact-pill quickfact-pill--distance" *ngIf="getDistanceText() as distance">{{ distance }}</span>
       <span class="quickfact-pill" *ngIf="mascota.especie">{{ mascota.especie }}</span>
       <span class="quickfact-pill" *ngIf="getAgeText() as age">{{ age }}</span>
       <span class="quickfact-pill" *ngIf="getPublishedText() as published">{{ published }}</span>
