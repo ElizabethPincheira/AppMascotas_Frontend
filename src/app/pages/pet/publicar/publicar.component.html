@@ -1,1 +1,144 @@
-<p>publicar works!</p>
+<section class="publicar-page">
+  <div class="publicar-shell">
+    <section class="publicar-hero">
+      <div class="publicar-hero__content">
+        <span class="publicar-hero__eyebrow">Inscribir mascota</span>
+        <h1>Registra a tu mascota y deja lista su publicación para ayudarla a volver o encontrar hogar.</h1>
+        <p>
+          Completa la ficha con los datos más importantes, agrega fotos y deja una ubicación clara.
+          Así la comunidad podrá reconocerla y actuar más rápido.
+        </p>
+      </div>
+
+      <div class="publicar-hero__aside">
+        <article class="hero-note">
+          <span class="hero-note__label">Consejo</span>
+          <p>Usa una foto frontal, una ubicación precisa y una descripción fácil de reconocer.</p>
+        </article>
+        <article class="hero-note">
+          <span class="hero-note__label">Imágenes</span>
+          <p>Puedes subir hasta 5 fotos para hacer la publicación más visible.</p>
+        </article>
+      </div>
+    </section>
+
+    <form class="publicar-card" (ngSubmit)="submit()">
+      <div class="section-heading">
+        <div>
+          <span class="section-heading__eyebrow">Ficha base</span>
+          <h2>Datos principales</h2>
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <label class="form-field form-field--full">
+          <span>Nombre</span>
+          <input type="text" [(ngModel)]="nombre" name="nombre" placeholder="Ej: Luna" required>
+        </label>
+
+        <label class="form-field">
+          <span>Especie</span>
+          <select [(ngModel)]="especie" name="especie" required>
+            <option value="">Selecciona una especie</option>
+            <option *ngFor="let item of especies" [value]="item">{{ item }}</option>
+          </select>
+        </label>
+
+        <label class="form-field">
+          <span>Raza</span>
+          <input type="text" [(ngModel)]="raza" name="raza" placeholder="Ej: Mestiza" required>
+        </label>
+
+        <label class="form-field">
+          <span>Estado</span>
+          <select [(ngModel)]="estado" name="estado" required>
+            <option *ngFor="let item of estados" [value]="item">{{ item }}</option>
+          </select>
+        </label>
+
+        <label class="form-field">
+          <span>Fecha de nacimiento</span>
+          <input type="date" [(ngModel)]="fechaNacimiento" name="fechaNacimiento" required>
+        </label>
+
+        <label class="form-field">
+          <span>Perdido desde</span>
+          <input type="date" [(ngModel)]="perdidoDesde" name="perdidoDesde">
+        </label>
+
+        <label class="form-field">
+          <span>Contacto</span>
+          <input type="text" [(ngModel)]="contacto" name="contacto" placeholder="Teléfono o correo" required>
+        </label>
+      </div>
+
+      <div class="section-heading">
+        <div>
+          <span class="section-heading__eyebrow">Ubicación</span>
+          <h2>Zona donde fue vista o se perdió</h2>
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <label class="form-field">
+          <span>Región</span>
+          <select [(ngModel)]="regionPerdida" name="regionPerdida" (ngModelChange)="onRegionChange()">
+            <option value="">Selecciona una región</option>
+            <option *ngFor="let region of regiones" [value]="region">{{ region }}</option>
+          </select>
+        </label>
+
+        <label class="form-field">
+          <span>Provincia</span>
+          <select [(ngModel)]="provinciaPerdida" name="provinciaPerdida" (ngModelChange)="onProvinciaChange()" [disabled]="!regionPerdida || cargandoProvincias">
+            <option value="">Selecciona una provincia</option>
+            <option *ngFor="let provincia of provincias" [value]="provincia">{{ provincia }}</option>
+          </select>
+        </label>
+
+        <label class="form-field">
+          <span>Comuna</span>
+          <select [(ngModel)]="comunaPerdida" name="comunaPerdida" [disabled]="!provinciaPerdida || cargandoComunas">
+            <option value="">Selecciona una comuna</option>
+            <option *ngFor="let comuna of comunas" [value]="comuna">{{ comuna }}</option>
+          </select>
+        </label>
+
+        <label class="form-field form-field--full">
+          <span>Características adicionales</span>
+          <textarea
+            [(ngModel)]="caracteristicasAdicionales"
+            name="caracteristicasAdicionales"
+            rows="4"
+            placeholder="Color, collar, tamaño, cicatrices, comportamiento, etc."></textarea>
+        </label>
+      </div>
+
+      <div class="section-heading">
+        <div>
+          <span class="section-heading__eyebrow">Fotos</span>
+          <h2>Haz la publicación más reconocible</h2>
+        </div>
+      </div>
+
+      <div class="upload-panel">
+        <label class="upload-box">
+          <span class="upload-box__title">Seleccionar imágenes</span>
+          <span class="upload-box__text">Sube hasta 5 fotos claras de tu mascota</span>
+          <input type="file" accept="image/*" multiple (change)="onImagesSelected($event)">
+        </label>
+
+        <div class="upload-preview" *ngIf="imagePreviews.length">
+          <img *ngFor="let image of imagePreviews" [src]="image" alt="Vista previa de mascota">
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <a class="secondary-link" routerLink="/">Volver al inicio</a>
+        <button type="submit" class="submit-button" [disabled]="!formularioCompleto || enviandoFormulario">
+          {{ enviandoFormulario ? 'Guardando...' : 'Inscribir mascota' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</section>

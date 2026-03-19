@@ -52,9 +52,30 @@
 
         <ng-template #loggedUserActions>
           <div class="site-navbar__actions site-navbar__actions--logged">
-            <span class="site-navbar__welcome">Hola {{ user.nombre }}</span>
-            <a class="btn site-navbar__login" routerLink="/">Mi inicio</a>
-            <button class="btn site-navbar__logout" type="button" (click)="logout()">Salir</button>
+            <div class="dropdown site-navbar__profile-menu">
+              <button
+                class="btn site-navbar__profile-toggle dropdown-toggle"
+                type="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false">
+                <span class="site-navbar__avatar">{{ user.nombre?.charAt(0) || 'U' }}</span>
+                <span class="site-navbar__welcome">Hola {{ user.nombre }}</span>
+              </button>
+
+              <ul class="dropdown-menu dropdown-menu-end site-navbar__dropdown">
+                
+               
+                <li>
+                  <a class="dropdown-item site-navbar__dropdown-item" routerLink="/publicar">Inscribir a mis mascotas</a>
+                </li>
+                <li><hr class="dropdown-divider site-navbar__dropdown-divider"></li>
+                <li>
+                  <button class="dropdown-item site-navbar__dropdown-item site-navbar__dropdown-item--danger" type="button" (click)="logout()">
+                    Salir
+                  </button>
+                </li>
+              </ul>
+            </div>
           </div>
         </ng-template>
       </div>
