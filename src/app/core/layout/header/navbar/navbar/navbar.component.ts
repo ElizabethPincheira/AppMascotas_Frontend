@@ -16,6 +16,7 @@ export class NavbarComponent {
     { label: 'Perdidos', path: '/perdidos' },
     { label: 'Adopcion', path: '/adopcion' },
     { label: 'Tienda', path: '/tienda' },
+    { label: 'Ser parte', path: '/colaboradores' },
     { label: 'Fauna', path: '/fauna' },
     { label: 'Donar', path: '/donar' },
   ];
