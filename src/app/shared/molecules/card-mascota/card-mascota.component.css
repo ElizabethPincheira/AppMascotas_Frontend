@@ -40,11 +40,11 @@
   background:
     linear-gradient(180deg, rgba(29, 47, 33, 0.04), rgba(29, 47, 33, 0.12)),
     linear-gradient(135deg, #dbe9cf, #e9d5b4);
+  overflow: hidden;
 }
 
-.mascota-card__media .carousel,
-.mascota-card__media .carousel-inner,
-.mascota-card__media .carousel-item {
+.mascota-card__carousel {
+  position: relative;
   height: 100%;
 }
 
@@ -96,20 +96,55 @@
 }
 
 .mascota-card__control {
+  position: absolute;
   width: 38px;
   height: 38px;
   top: 50%;
   transform: translateY(-50%);
   background: rgba(29, 40, 28, 0.35);
+  border: 0;
   border-radius: 50%;
+  color: #fff9ef;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  line-height: 1;
+  z-index: 2;
 }
 
-.mascota-card__control.carousel-control-prev {
+.mascota-card__control--prev {
   left: 12px;
 }
 
-.mascota-card__control.carousel-control-next {
+.mascota-card__control--next {
   right: 12px;
+}
+
+.mascota-card__dots {
+  position: absolute;
+  left: 50%;
+  bottom: 12px;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  z-index: 2;
+}
+
+.mascota-card__dot {
+  width: 9px;
+  height: 9px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(255, 248, 237, 0.42);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+}
+
+.mascota-card__dot.is-active {
+  width: 24px;
+  background: #fff8ed;
 }
 
 .mascota-card__overlay {
@@ -336,5 +371,11 @@
   .mascota-card__media {
     height: 360px;
     min-height: 360px;
+  }
+
+  .mascota-card__control {
+    width: 46px;
+    height: 46px;
+    font-size: 2.2rem;
   }
 }

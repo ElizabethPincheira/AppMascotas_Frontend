@@ -1,28 +1,13 @@
 <article class="card mascota-card border-0 shadow-sm">
-  <div class="mascota-card__media">
-    <div [id]="carouselId" class="carousel slide h-100" data-bs-ride="carousel">
-      <div class="carousel-inner h-100">
-        <ng-container *ngIf="mascota.imagenes?.length; else fallbackSlide">
-          <div
-            *ngFor="let imagen of mascota.imagenes; let first = first"
-            [ngClass]="{ 'carousel-item': true, 'active': first }"
-            class="h-100">
-            <img
-              [src]="getImageSrc(imagen)"
-              class="d-block w-100 h-100 mascota-card__image"
-              [alt]="mascota.nombre">
-          </div>
-        </ng-container>
-
-        <ng-template #fallbackSlide>
-          <div class="carousel-item active h-100">
-            <img
-              [src]="getImageSrc()"
-              class="d-block w-100 h-100 mascota-card__image"
-              [alt]="mascota.nombre">
-          </div>
-        </ng-template>
-      </div>
+  <div
+    class="mascota-card__media"
+    (touchstart)="onTouchStart($event)"
+    (touchend)="onTouchEnd($event)">
+    <div class="mascota-card__carousel">
+      <img
+        [src]="currentImage"
+        class="mascota-card__image"
+        [alt]="mascota.nombre">
 
       <div class="mascota-card__topbar">
         <span class="badge mascota-card__badge" [ngClass]="getEstadoClase(mascota.estado)">
@@ -48,31 +33,40 @@
 
         <div class="mascota-card__meta">
           <span class="mascota-card__meta-pill" *ngIf="getPrimaryLocation() as primaryLocation">{{ primaryLocation }}</span>
-          <span class="mascota-card__meta-pill" *ngIf="mascota.imagenes?.length">
-            {{ mascota.imagenes.length }} foto<span *ngIf="mascota.imagenes.length > 1">s</span>
+          <span class="mascota-card__meta-pill">
+            {{ imageList.length }} foto<span *ngIf="imageList.length > 1">s</span>
           </span>
         </div>
       </div>
 
       <button
-        *ngIf="mascota.imagenes?.length && mascota.imagenes.length > 1"
-        class="carousel-control-prev mascota-card__control"
+        *ngIf="hasMultipleImages"
+        class="mascota-card__control mascota-card__control--prev"
         type="button"
-        [attr.data-bs-target]="'#' + carouselId"
-        data-bs-slide="prev">
-        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-        <span class="visually-hidden">Previous</span>
+        (click)="prevImage()"
+        aria-label="Imagen anterior">
+        <span aria-hidden="true">‹</span>
       </button>
 
       <button
-        *ngIf="mascota.imagenes?.length && mascota.imagenes.length > 1"
-        class="carousel-control-next mascota-card__control"
+        *ngIf="hasMultipleImages"
+        class="mascota-card__control mascota-card__control--next"
         type="button"
-        [attr.data-bs-target]="'#' + carouselId"
-        data-bs-slide="next">
-        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-        <span class="visually-hidden">Next</span>
+        (click)="nextImage()"
+        aria-label="Siguiente imagen">
+        <span aria-hidden="true">›</span>
       </button>
+
+      <div class="mascota-card__dots" *ngIf="hasMultipleImages">
+        <button
+          type="button"
+          class="mascota-card__dot"
+          *ngFor="let imagen of imageList; let index = index"
+          [class.is-active]="index === currentImageIndex"
+          [attr.aria-label]="'Ver imagen ' + (index + 1)"
+          (click)="goToImage(index)">
+        </button>
+      </div>
     </div>
   </div>
 
