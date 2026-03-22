@@ -52,26 +52,28 @@
 
         <ng-template #loggedUserActions>
           <div class="site-navbar__actions site-navbar__actions--logged">
-            <div class="dropdown site-navbar__profile-menu">
+            <div class="site-navbar__profile-menu" [class.is-open]="profileMenuOpen">
               <button
-                class="btn site-navbar__profile-toggle dropdown-toggle"
+                class="btn site-navbar__profile-toggle"
                 type="button"
-                data-bs-toggle="dropdown"
-                aria-expanded="false">
+                (click)="toggleProfileMenu()"
+                [attr.aria-expanded]="profileMenuOpen"
+                aria-haspopup="menu">
                 <span class="site-navbar__avatar">{{ user.nombre?.charAt(0) || 'U' }}</span>
                 <span class="site-navbar__welcome">Hola {{ user.nombre }}</span>
+                <span class="site-navbar__profile-caret" aria-hidden="true"></span>
               </button>
 
-              <ul class="dropdown-menu dropdown-menu-end site-navbar__dropdown">
+              <ul class="site-navbar__dropdown" *ngIf="profileMenuOpen">
                 <li>
-                  <a class="dropdown-item site-navbar__dropdown-item" routerLink="/mis-mascotas">Mis mascotas</a>
+                  <a class="site-navbar__dropdown-item" routerLink="/mis-mascotas" (click)="closeProfileMenu()">Mis mascotas</a>
                 </li>
                 <li>
-                  <a class="dropdown-item site-navbar__dropdown-item" routerLink="/publicar">Inscribir a mis mascotas</a>
+                  <a class="site-navbar__dropdown-item" routerLink="/publicar" (click)="closeProfileMenu()">Inscribir a mis mascotas</a>
                 </li>
-                <li><hr class="dropdown-divider site-navbar__dropdown-divider"></li>
+                <li><hr class="site-navbar__dropdown-divider"></li>
                 <li>
-                  <button class="dropdown-item site-navbar__dropdown-item site-navbar__dropdown-item--danger" type="button" (click)="logout()">
+                  <button class="site-navbar__dropdown-item site-navbar__dropdown-item--danger" type="button" (click)="logout()">
                     Salir
                   </button>
                 </li>

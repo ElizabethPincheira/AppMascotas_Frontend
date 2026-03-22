@@ -47,8 +47,24 @@
 }
 
 .site-navbar__toggler {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
   border: 0;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.08);
   box-shadow: none;
+}
+
+.site-navbar__toggler:hover,
+.site-navbar__toggler:focus {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.site-navbar__toggler .navbar-toggler-icon {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28246,242,233,0.96%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2.4' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
 }
 
 .site-navbar__link {
@@ -122,6 +138,11 @@
   position: relative;
 }
 
+.site-navbar__profile-menu.is-open .site-navbar__profile-toggle {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.14);
+}
+
 .site-navbar__profile-toggle {
   display: inline-flex;
   align-items: center;
@@ -134,8 +155,7 @@
 }
 
 .site-navbar__profile-toggle:hover,
-.site-navbar__profile-toggle:focus,
-.site-navbar__profile-toggle.show {
+.site-navbar__profile-toggle:focus {
   color: #fff;
   background: rgba(255, 255, 255, 0.14);
 }
@@ -161,9 +181,29 @@
   font-weight: 800;
 }
 
+.site-navbar__profile-caret {
+  width: 0.7rem;
+  height: 0.7rem;
+  margin-left: 0.1rem;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(45deg) translateY(-2px);
+  opacity: 0.82;
+  transition: transform 0.2s ease;
+}
+
+.site-navbar__profile-menu.is-open .site-navbar__profile-caret {
+  transform: rotate(-135deg) translateY(-1px);
+}
+
 .site-navbar__dropdown {
+  position: absolute;
+  top: calc(100% + 0.7rem);
+  right: 0;
+  z-index: 30;
+  list-style: none;
   min-width: 250px;
-  margin-top: 0.8rem;
+  margin: 0;
   padding: 0.6rem;
   border: 1px solid rgba(84, 103, 69, 0.14);
   border-radius: 18px;
@@ -193,10 +233,18 @@
 .site-navbar__dropdown-item {
   display: flex;
   align-items: center;
+  width: 100%;
   min-height: 44px;
+  padding: 0.72rem 0.85rem;
+  border: 0;
   border-radius: 12px;
+  background: transparent;
   color: var(--text-strong);
+  text-decoration: none;
+  font-size: 0.95rem;
   font-weight: 700;
+  line-height: 1.35;
+  text-align: left;
 }
 
 .site-navbar__dropdown-item:hover,
@@ -247,7 +295,10 @@
   }
 
   .site-navbar__dropdown {
+    position: static;
     width: 100%;
     min-width: 0;
+    margin-top: 0.7rem;
+    box-shadow: none;
   }
 }

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ElementRef, HostListener, inject } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../../../services/auth.service';
 import { CommonModule } from '@angular/common';
@@ -10,7 +10,9 @@ import { CommonModule } from '@angular/common';
   styleUrls: ['./navbar.component.css']
 })
 export class NavbarComponent {
+  private readonly elementRef = inject(ElementRef<HTMLElement>);
   user: any;
+  profileMenuOpen = false;
   readonly navItems = [
     { label: 'Inicio', path: '/', exact: true },
     { label: 'Perdidos', path: '/perdidos' },
@@ -32,7 +34,29 @@ export class NavbarComponent {
     });
   }
 
+  toggleProfileMenu(): void {
+    this.profileMenuOpen = !this.profileMenuOpen;
+  }
+
+  closeProfileMenu(): void {
+    this.profileMenuOpen = false;
+  }
+
+  @HostListener('document:click', ['$event'])
+  handleDocumentClick(event: MouseEvent): void {
+    const target = event.target as Node | null;
+
+    if (!target) {
+      return;
+    }
+
+    if (!this.elementRef.nativeElement.contains(target)) {
+      this.closeProfileMenu();
+    }
+  }
+
   logout() {
+    this.closeProfileMenu();
     this.authService.logout();
     //this.router.navigate(['/']);
   }
