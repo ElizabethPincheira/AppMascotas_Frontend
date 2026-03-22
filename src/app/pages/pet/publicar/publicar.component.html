@@ -245,15 +245,26 @@
           <div class="upload-preview__list">
             <div
               class="upload-preview__item"
-              *ngFor="let image of existingImagePreviews">
+              *ngFor="let image of existingImagePreviews; let index = index">
               <div class="upload-preview__thumb">
                 <img [src]="image" alt="Vista previa de mascota guardada">
               </div>
 
               <div class="upload-preview__content">
                 <span class="upload-preview__status">Imagen guardada</span>
-                <span class="upload-preview__caption">Ya está asociada a esta mascota</span>
+                <span class="upload-preview__caption">
+                  {{ existingImagePreviews.length > 1 ? 'Ya está asociada a esta mascota y puedes quitarla si dejas al menos una foto.' : 'Ya está asociada a esta mascota.' }}
+                </span>
               </div>
+
+              <button
+                *ngIf="existingImagePreviews.length > 1"
+                type="button"
+                class="upload-preview__remove"
+                [disabled]="eliminandoImagenGuardadaIndex === index"
+                (click)="removeExistingImage(index); $event.stopPropagation()">
+                {{ eliminandoImagenGuardadaIndex === index ? 'Quitando...' : 'Quitar' }}
+              </button>
             </div>
           </div>
         </div>

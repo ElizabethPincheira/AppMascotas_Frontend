@@ -48,6 +48,7 @@ export class PublicarComponent {
   newImagePreviews: string[] = [];
   imagePayloads: string[] = [];
   mensajeErrorImagenes = '';
+  eliminandoImagenGuardadaIndex: number | null = null;
   readonly maxImagenes = 5;
   readonly maxTamanoImagenMb = 2;
 
@@ -329,6 +330,50 @@ export class PublicarComponent {
     this.newImagePreviews = this.newImagePreviews.filter((_, imageIndex) => imageIndex !== index);
     this.imagePayloads = this.imagePayloads.filter((_, imageIndex) => imageIndex !== index);
     this.mensajeErrorImagenes = '';
+  }
+
+  async removeExistingImage(index: number): Promise<void> {
+    if (!this.mascotaId || this.existingImagePreviews.length <= 1 || this.eliminandoImagenGuardadaIndex !== null) {
+      return;
+    }
+
+    const confirmacion = await Swal.fire({
+      icon: 'warning',
+      title: 'Eliminar imagen',
+      text: 'Esta foto se quitará de la publicación. Debe quedar al menos una imagen guardada.',
+      showCancelButton: true,
+      confirmButtonText: 'Eliminar',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#d85b58',
+    });
+
+    if (!confirmacion.isConfirmed) {
+      return;
+    }
+
+    this.eliminandoImagenGuardadaIndex = index;
+
+    try {
+      const mascotaActualizada = await this.imagenesService.eliminarImagenMascota(this.mascotaId, index);
+      this.existingImagePreviews = (mascotaActualizada?.imagenes ?? []).map((imagen: string) =>
+        imagen.startsWith('data:') ? imagen : `data:image/jpeg;base64,${imagen}`
+      );
+
+      await Swal.fire({
+        icon: 'success',
+        title: 'Imagen eliminada',
+        text: 'La foto se quitó correctamente de la publicación.',
+      });
+    } catch (error) {
+      await Swal.fire({
+        icon: 'error',
+        title: 'No se pudo eliminar la imagen',
+        text: 'Intenta nuevamente. La mascota debe conservar al menos una foto guardada.',
+      });
+      console.error(error);
+    } finally {
+      this.eliminandoImagenGuardadaIndex = null;
+    }
   }
 
   async submit(): Promise<void> {

@@ -54,6 +54,17 @@ export class ImagenesService {
     return lastResponse;
   }
 
+  async eliminarImagenMascota(id: string, index: number): Promise<any> {
+    const token = localStorage.getItem('token');
+    const response = await axios.delete(`${this.apiUrl}${id}/imagenes/${index}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return response.data;
+  }
+
   private readFileAsDataUrl(file: File): Promise<string> {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
