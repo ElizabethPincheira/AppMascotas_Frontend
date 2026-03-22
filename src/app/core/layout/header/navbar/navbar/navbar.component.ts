@@ -13,6 +13,7 @@ export class NavbarComponent {
   private readonly elementRef = inject(ElementRef<HTMLElement>);
   user: any;
   profileMenuOpen = false;
+  mobileMenuOpen = false;
   readonly navItems = [
     { label: 'Inicio', path: '/', exact: true },
     { label: 'Perdidos', path: '/perdidos' },
@@ -38,8 +39,16 @@ export class NavbarComponent {
     this.profileMenuOpen = !this.profileMenuOpen;
   }
 
+  toggleMobileMenu(): void {
+    this.mobileMenuOpen = !this.mobileMenuOpen;
+  }
+
   closeProfileMenu(): void {
     this.profileMenuOpen = false;
+  }
+
+  closeMobileMenu(): void {
+    this.mobileMenuOpen = false;
   }
 
   @HostListener('document:click', ['$event'])
@@ -55,8 +64,15 @@ export class NavbarComponent {
     }
   }
 
+  @HostListener('document:keydown.escape')
+  handleEscape(): void {
+    this.closeProfileMenu();
+    this.closeMobileMenu();
+  }
+
   logout() {
     this.closeProfileMenu();
+    this.closeMobileMenu();
     this.authService.logout();
     //this.router.navigate(['/']);
   }
