@@ -36,9 +36,9 @@ export const routes: Routes = [
             .then(m => m.AboutPageComponent)
       },
       {
-        path: 'tienda',
+        path: 'tiendas',
         loadComponent: () =>
-          import('./pages/ecommer/tienda/tienda.component')
+          import('./pages/ecommer/tiendas/tiendas.component')
             .then(m => m.TiendaComponent)
       },
       {

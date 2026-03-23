@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
 import { DeliveryStore } from '../delivery-store.model';
 
+
 @Component({
   selector: 'app-store-card',
   standalone: true,
