@@ -1,0 +1,35 @@
+<article class="store-card">
+  <div class="store-card__top">
+    <div>
+      <span class="store-card__location">{{ store.region }} · {{ store.comuna }}</span>
+      <h3>{{ store.name }}</h3>
+    </div>
+    <span class="store-card__eta">{{ store.eta }}</span>
+  </div>
+
+  <p class="store-card__highlight">{{ store.highlight }}</p>
+
+  <div class="store-card__info">
+    <div>
+      <span class="store-card__label">Direccion</span>
+      <strong>{{ store.address }}</strong>
+    </div>
+    <div>
+      <span class="store-card__label">Horario</span>
+      <strong>{{ store.schedule }}</strong>
+    </div>
+    <div>
+      <span class="store-card__label">Cobertura</span>
+      <strong>{{ store.coverage.join(', ') }}</strong>
+    </div>
+  </div>
+
+  <div class="store-card__chips">
+    <span *ngFor="let category of store.categories">{{ category }}</span>
+  </div>
+
+  <div class="store-card__footer">
+    <span class="store-card__support">Cada pedido aporta $1000 a la fundacion</span>
+    <button type="button" class="store-card__button">Simular pedido</button>
+  </div>
+</article>

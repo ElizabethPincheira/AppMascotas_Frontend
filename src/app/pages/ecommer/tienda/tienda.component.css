@@ -137,7 +137,6 @@
 
 .explainer-card,
 .tienda-filters,
-.store-card,
 .empty-state {
   border-radius: 28px;
   background: var(--bg-panel);
@@ -251,117 +250,6 @@
   gap: 22px;
 }
 
-.store-card {
-  padding: 24px;
-  background:
-    radial-gradient(circle at top right, rgba(241, 188, 110, 0.1), transparent 24%),
-    var(--bg-card);
-}
-
-.store-card__top {
-  display: flex;
-  justify-content: space-between;
-  gap: 16px;
-  align-items: flex-start;
-}
-
-.store-card__location {
-  display: inline-flex;
-  margin-bottom: 0.45rem;
-  color: var(--text-soft);
-  font-size: 0.78rem;
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-
-.store-card h3 {
-  margin: 0;
-  font-family: var(--font-display);
-  font-size: 1.65rem;
-  line-height: 1;
-}
-
-.store-card__eta {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.55rem 0.8rem;
-  border-radius: 999px;
-  background: rgba(95, 143, 69, 0.12);
-  color: var(--brand-moss);
-  font-size: 0.82rem;
-  font-weight: 800;
-  white-space: nowrap;
-}
-
-.store-card__highlight {
-  margin: 0.9rem 0 1rem;
-  color: var(--text-main);
-  line-height: 1.72;
-}
-
-.store-card__info {
-  display: grid;
-  gap: 0.9rem;
-  margin-bottom: 1rem;
-}
-
-.store-card__label {
-  display: block;
-  margin-bottom: 0.28rem;
-  color: var(--text-soft);
-  font-size: 0.74rem;
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-
-.store-card__info strong {
-  color: var(--text-strong);
-  line-height: 1.5;
-}
-
-.store-card__chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.6rem;
-  margin-bottom: 1.15rem;
-}
-
-.store-card__chips span {
-  display: inline-flex;
-  padding: 0.48rem 0.72rem;
-  border-radius: 999px;
-  background: #f0f3ea;
-  color: var(--brand-forest);
-  font-size: 0.82rem;
-  font-weight: 700;
-}
-
-.store-card__footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 16px;
-}
-
-.store-card__support {
-  color: var(--brand-earth);
-  font-size: 0.88rem;
-  font-weight: 800;
-}
-
-.store-card__button {
-  min-height: 46px;
-  padding: 0.72rem 1rem;
-  border: 0;
-  border-radius: 14px;
-  background: linear-gradient(180deg, var(--brand-lime) 0%, var(--brand-moss) 100%);
-  color: #fff;
-  font-weight: 800;
-}
-
 .empty-state {
   padding: 62px 30px;
   text-align: center;
@@ -404,18 +292,7 @@
 
   .tienda-hero,
   .tienda-filters,
-  .explainer-card,
-  .store-card {
+  .explainer-card {
     padding: 20px 18px;
-  }
-
-  .store-card__top,
-  .store-card__footer {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .store-card__button {
-    width: 100%;
   }
 }

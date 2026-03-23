@@ -1,26 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
-
-interface DeliveryStore {
-  id: number;
-  name: string;
-  region: string;
-  provincia: string;
-  comuna: string;
-  address: string;
-  eta: string;
-  schedule: string;
-  coverage: string[];
-  categories: string[];
-  highlight: string;
-}
+import { DeliveryStore } from './delivery-store.model';
+import { StoreCardComponent } from './store-card/store-card.component';
 
 @Component({
   selector: 'app-tienda',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, StoreCardComponent],
   templateUrl: './tienda.component.html',
   styleUrls: ['./tienda.component.css']
 })
