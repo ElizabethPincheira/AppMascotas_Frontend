@@ -1,65 +1,73 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
 .store-card {
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  gap: 16px;
+  height: 100%;
   padding: 24px;
   border-radius: 28px;
   border: 1px solid var(--line-soft);
   background:
-    radial-gradient(circle at top right, rgba(241, 188, 110, 0.1), transparent 24%),
-    var(--bg-card);
-  box-shadow: var(--shadow-soft);
+    radial-gradient(circle at top right, rgba(241, 188, 110, 0.18), transparent 28%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.96) 0%, rgba(247, 245, 239, 0.98) 100%);
+  box-shadow: 0 22px 42px rgba(48, 66, 54, 0.12);
+  transition: transform 180ms ease, box-shadow 180ms ease;
 }
 
-.store-card__top {
-  display: flex;
-  justify-content: space-between;
-  gap: 16px;
-  align-items: flex-start;
+.store-card::after {
+  content: '';
+  position: absolute;
+  inset: 0 auto auto 0;
+  width: 100%;
+  height: 5px;
+  background: linear-gradient(90deg, var(--brand-lime) 0%, #f0b15c 100%);
+}
+
+.store-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 28px 54px rgba(48, 66, 54, 0.18);
+}
+
+.store-card__header {
+  display: block;
 }
 
 .store-card__location {
-  display: inline-flex;
-  margin-bottom: 0.45rem;
+  margin: 0.45rem 0 0;
   color: var(--text-soft);
-  font-size: 0.78rem;
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  font-size: 0.92rem;
+  font-weight: 700;
 }
 
 .store-card h3 {
   margin: 0;
   font-family: var(--font-display);
-  font-size: 1.65rem;
-  line-height: 1;
-}
-
-.store-card__eta {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.55rem 0.8rem;
-  border-radius: 999px;
-  background: rgba(95, 143, 69, 0.12);
-  color: var(--brand-moss);
-  font-size: 0.82rem;
-  font-weight: 800;
-  white-space: nowrap;
+  font-size: 1.8rem;
+  line-height: 0.98;
+  letter-spacing: -0.04em;
 }
 
 .store-card__highlight {
-  margin: 0.9rem 0 1rem;
+  margin: 0;
   color: var(--text-main);
+  font-size: 0.98rem;
   line-height: 1.72;
 }
 
-.store-card__info {
+.store-card__stats {
   display: grid;
-  gap: 0.9rem;
-  margin-bottom: 1rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
 }
 
 .store-card__label {
   display: block;
-  margin-bottom: 0.28rem;
+  margin-bottom: 0.38rem;
   color: var(--text-soft);
   font-size: 0.74rem;
   font-weight: 800;
@@ -67,23 +75,42 @@
   text-transform: uppercase;
 }
 
-.store-card__info strong {
+.store-card__stat,
+.store-card__coverage-list {
+  padding: 14px 15px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(123, 146, 106, 0.12);
+}
+
+.store-card__stat {
+  display: grid;
+  align-content: start;
+}
+
+.store-card__stats strong {
   color: var(--text-strong);
-  line-height: 1.5;
+  line-height: 1.45;
+  font-size: 0.95rem;
+}
+
+.store-card__coverage-list p {
+  margin: 0;
+  color: var(--text-main);
+  line-height: 1.6;
 }
 
 .store-card__chips {
   display: flex;
   flex-wrap: wrap;
   gap: 0.6rem;
-  margin-bottom: 1.15rem;
 }
 
 .store-card__chips span {
   display: inline-flex;
-  padding: 0.48rem 0.72rem;
+  padding: 0.52rem 0.78rem;
   border-radius: 999px;
-  background: #f0f3ea;
+  background: #eef3e8;
   color: var(--brand-forest);
   font-size: 0.82rem;
   font-weight: 700;
@@ -94,6 +121,8 @@
   justify-content: space-between;
   align-items: center;
   gap: 16px;
+  margin-top: auto;
+  padding-top: 4px;
 }
 
 .store-card__support {
@@ -104,12 +133,13 @@
 
 .store-card__button {
   min-height: 46px;
-  padding: 0.72rem 1rem;
+  padding: 0.78rem 1.05rem;
   border: 0;
   border-radius: 14px;
-  background: linear-gradient(180deg, var(--brand-lime) 0%, var(--brand-moss) 100%);
+  background: linear-gradient(180deg, #f1b34d 0%, #da872e 100%);
   color: #fff;
   font-weight: 800;
+  box-shadow: 0 12px 24px rgba(218, 135, 46, 0.28);
 }
 
 @media (max-width: 680px) {
@@ -117,10 +147,13 @@
     padding: 20px 18px;
   }
 
-  .store-card__top,
   .store-card__footer {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .store-card__stats {
+    grid-template-columns: 1fr;
   }
 
   .store-card__button {
