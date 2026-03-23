@@ -42,6 +42,12 @@ export const routes: Routes = [
             .then(m => m.TiendaComponent)
       },
       {
+        path: 'tiendas/:id',
+        loadComponent: () =>
+          import('./pages/ecommer/tienda/tienda.component')
+            .then(m => m.StoreDetailComponent)
+      },
+      {
         path: 'colaboradores',
         loadComponent: () =>
           import('./pages/pet/colaboradores/colaboradores.component')

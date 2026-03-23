@@ -24,8 +24,12 @@
     <p>{{ store.coverage.join(', ') }}</p>
   </section>
 
+  <section class="store-card__chips" *ngIf="store.categories.length">
+    <span *ngFor="let category of store.categories">{{ category }}</span>
+  </section>
+
   <div class="store-card__footer">
     <span class="store-card__support">Pedido demo con impacto solidario</span>
-    <button type="button" class="store-card__button">Simular pedido</button>
+    <a class="store-card__button" [routerLink]="['/tiendas', store.id]">Ver tienda</a>
   </div>
 </article>

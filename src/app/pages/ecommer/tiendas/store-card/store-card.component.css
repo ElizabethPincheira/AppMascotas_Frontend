@@ -132,12 +132,16 @@
 }
 
 .store-card__button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   min-height: 46px;
   padding: 0.78rem 1.05rem;
   border: 0;
   border-radius: 14px;
   background: linear-gradient(180deg, #f1b34d 0%, #da872e 100%);
   color: #fff;
+  text-decoration: none;
   font-weight: 800;
   box-shadow: 0 12px 24px rgba(218, 135, 46, 0.28);
 }
