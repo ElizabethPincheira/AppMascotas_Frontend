@@ -17,7 +17,7 @@ export class FooterComponent {
   ];
 
   readonly infoLinks = [
-    { label: 'Tienda', path: '/tienda' },
+    { label: 'Tiendas', path: '/tiendas' },
     { label: 'Fauna', path: '/fauna' },
     { label: 'Donaciones', path: '/donar' },
     { label: 'Conocenos', path: '/about' },

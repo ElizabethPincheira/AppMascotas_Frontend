@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import axios, { Axios } from 'axios';
+import axios from 'axios';
 import { environment } from '../../../environments/environment';
 
 
@@ -27,6 +27,43 @@ export class UsersService {
     const response = await axios.post(this.apiUrl + "user/" + "login", loginData);
 
     console.log(response.data, 'respuesta del backend');
+    return response.data;
+  }
+
+  async updateProfile(profileData: {
+    nombre: string;
+    email: string;
+    telefono?: string;
+    region?: string;
+    provincia?: string;
+    comuna?: string;
+  }): Promise<any> {
+    const token = localStorage.getItem('token');
+
+    const response = await axios.patch(this.apiUrl + 'user/profile', profileData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return response.data;
+  }
+
+  async registerStore(storeData: {
+    nombreTienda: string;
+    descripcionTienda: string;
+    direccionTienda: string;
+    telefonoTienda: string;
+    categoriasTienda: string[];
+  }): Promise<any> {
+    const token = localStorage.getItem('token');
+
+    const response = await axios.patch(this.apiUrl + 'user/store-registration', storeData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
     return response.data;
   }
 

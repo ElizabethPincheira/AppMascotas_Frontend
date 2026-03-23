@@ -1,0 +1,161 @@
+<section class="mi-user-page">
+  <div class="mi-user-shell">
+    <section class="mi-user-hero">
+      <div>
+        <span class="mi-user-hero__eyebrow">Mi cuenta</span>
+        <h1>Gestiona tu perfil y entra rapido a las secciones que mas usas.</h1>
+        <p>
+          Desde este panel puedes revisar tus mascotas, crear nuevas publicaciones, actualizar tus datos
+          y solicitar tu registro como tienda.
+        </p>
+      </div>
+
+      <div class="profile-card">
+        <span class="profile-card__label">Usuario activo</span>
+        <strong>{{ displayName }}</strong>
+        <p>{{ email }}</p>
+      </div>
+    </section>
+
+    <section class="mi-user-panel">
+      <div class="section-heading">
+        <div>
+          <span class="section-heading__eyebrow">Opciones</span>
+          <h2>Accesos de tu cuenta</h2>
+        </div>
+      </div>
+
+      <div class="user-options-grid">
+        <article
+          class="user-option-card"
+          *ngFor="let option of userOptions"
+          [ngClass]="'user-option-card--' + option.tone"
+        >
+          <span class="user-option-card__badge">{{ option.badge }}</span>
+          <h3>{{ option.title }}</h3>
+          <p>{{ option.description }}</p>
+          <a *ngIf="option.path" class="user-option-card__link" [routerLink]="option.path">Ir a esta opcion</a>
+        </article>
+      </div>
+    </section>
+
+    <section class="mi-user-forms">
+      <article class="form-panel">
+        <div class="section-heading">
+          <div>
+            <span class="section-heading__eyebrow">Perfil</span>
+            <h2>Actualiza tus datos</h2>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <label class="form-field">
+            <span>Nombre</span>
+            <input type="text" [(ngModel)]="profileForm.nombre" placeholder="Tu nombre" />
+          </label>
+
+          <label class="form-field">
+            <span>Email</span>
+            <input type="email" [(ngModel)]="profileForm.email" placeholder="correo@ejemplo.cl" />
+          </label>
+
+          <label class="form-field">
+            <span>Telefono</span>
+            <input type="text" [(ngModel)]="profileForm.telefono" placeholder="+56 9 1234 5678" />
+          </label>
+
+          <label class="form-field">
+            <span>Region</span>
+            <select [(ngModel)]="profileForm.region" (ngModelChange)="onRegionChange()">
+              <option value="">Selecciona una region</option>
+              <option *ngFor="let region of regiones" [value]="region">{{ region }}</option>
+            </select>
+          </label>
+
+          <label class="form-field">
+            <span>Provincia</span>
+            <select [(ngModel)]="profileForm.provincia" (ngModelChange)="onProvinciaChange()" [disabled]="!profileForm.region || cargandoProvincias">
+              <option value="">Selecciona una provincia</option>
+              <option *ngFor="let provincia of provincias" [value]="provincia">{{ provincia }}</option>
+            </select>
+          </label>
+
+          <label class="form-field">
+            <span>Comuna</span>
+            <select [(ngModel)]="profileForm.comuna" [disabled]="!profileForm.provincia || cargandoComunas">
+              <option value="">Selecciona una comuna</option>
+              <option *ngFor="let comuna of comunas" [value]="comuna">{{ comuna }}</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="primary-button" (click)="guardarPerfil()" [disabled]="!perfilCompleto || guardandoPerfil">
+            {{ guardandoPerfil ? 'Guardando...' : 'Guardar cambios' }}
+          </button>
+        </div>
+      </article>
+
+      <article class="form-panel">
+        <div class="section-heading">
+          <div>
+            <span class="section-heading__eyebrow">Tienda</span>
+            <h2>Registrate como tienda</h2>
+          </div>
+          <span class="status-badge" [ngClass]="'status-badge--' + estadoTienda">{{ estadoTienda }}</span>
+        </div>
+
+        <div class="form-grid form-grid--single">
+          <label class="form-field">
+            <span>Nombre de la tienda</span>
+            <input type="text" [(ngModel)]="storeForm.nombreTienda" placeholder="Ejemplo: Patitas Express" />
+          </label>
+
+          <label class="form-field">
+            <span>Descripcion</span>
+            <textarea [(ngModel)]="storeForm.descripcionTienda" rows="4" placeholder="Cuentanos que vendes y que hace especial tu tienda"></textarea>
+          </label>
+
+          <label class="form-field">
+            <span>Direccion</span>
+            <input type="text" [(ngModel)]="storeForm.direccionTienda" placeholder="Direccion de retiro o despacho" />
+          </label>
+
+          <label class="form-field">
+            <span>Telefono de contacto</span>
+            <input type="text" [(ngModel)]="storeForm.telefonoTienda" placeholder="+56 9 1234 5678" />
+          </label>
+
+          <label class="form-field">
+            <span>Categorias</span>
+            <input type="text" [(ngModel)]="storeForm.categoriasTexto" placeholder="Alimentos, Accesorios, Veterinaria" />
+          </label>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="primary-button primary-button--earth" (click)="registrarTienda()" [disabled]="!registroTiendaCompleto || enviandoTienda">
+            {{ enviandoTienda ? 'Enviando...' : 'Enviar solicitud de tienda' }}
+          </button>
+        </div>
+      </article>
+    </section>
+
+    <section class="mi-user-actions">
+      <article class="action-banner">
+        <div>
+          <span class="action-banner__eyebrow">Atajos</span>
+          <h2>Haz una accion en segundos</h2>
+          <p>Usa estos botones para moverte rapido dentro de tu panel.</p>
+        </div>
+
+        <div class="action-banner__buttons">
+          <a class="action-banner__button action-banner__button--solid" routerLink="/publicar">Nueva publicacion</a>
+          <a class="action-banner__button action-banner__button--ghost" routerLink="/mis-mascotas">Ver mis mascotas</a>
+          <button type="button" class="action-banner__button action-banner__button--danger" (click)="logout()">
+            Cerrar sesion
+          </button>
+        </div>
+      </article>
+    </section>
+  </div>
+</section>

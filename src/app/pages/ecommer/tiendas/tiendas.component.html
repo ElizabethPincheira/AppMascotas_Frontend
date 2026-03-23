@@ -1,0 +1,54 @@
+<section class="tienda-page">
+  <div class="tienda-shell">
+    
+
+ 
+
+    <section class="tienda-filters" id="filtros">
+      <div class="section-heading">
+        <div>
+          <span class="section-heading__eyebrow">Busqueda territorial</span>
+          <h2>Encuentra tiendas de reparto por ubicacion</h2>
+        </div>
+        <div class="results-badge">{{ filteredStores.length }} resultado(s)</div>
+      </div>
+
+      <div class="filters-grid">
+        <label class="filter-field">
+          <span>Region</span>
+          <select [(ngModel)]="selectedRegion" (ngModelChange)="onRegionChange()">
+            <option value="">Todas las regiones</option>
+            <option *ngFor="let region of regions" [value]="region">{{ region }}</option>
+          </select>
+        </label>
+
+        <label class="filter-field">
+          <span>Provincia</span>
+          <select [(ngModel)]="selectedProvincia" (ngModelChange)="onProvinciaChange()" [disabled]="!selectedRegion">
+            <option value="">Todas las provincias</option>
+            <option *ngFor="let provincia of provincias" [value]="provincia">{{ provincia }}</option>
+          </select>
+        </label>
+
+        <label class="filter-field">
+          <span>Comuna</span>
+          <select [(ngModel)]="selectedComuna" [disabled]="!selectedProvincia">
+            <option value="">Todas las comunas</option>
+            <option *ngFor="let comuna of comunas" [value]="comuna">{{ comuna }}</option>
+          </select>
+        </label>
+      </div>
+    </section>
+
+    <section class="stores-grid" *ngIf="filteredStores.length > 0; else noStores">
+      <app-store-card *ngFor="let store of filteredStores" [store]="store"></app-store-card>
+    </section>
+
+    <ng-template #noStores>
+      <section class="empty-state">
+        <h2>No hay tiendas para este filtro</h2>
+        <p>Prueba cambiando region, provincia o comuna para ver otras opciones de reparto demo.</p>
+      </section>
+    </ng-template>
+  </div>
+</section>

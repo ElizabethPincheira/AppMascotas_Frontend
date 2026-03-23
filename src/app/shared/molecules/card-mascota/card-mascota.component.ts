@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { Mascota } from '../../models/mascota.model';
 
 @Component({
@@ -9,11 +9,76 @@ import { Mascota } from '../../models/mascota.model';
   styleUrls: ['./card-mascota.component.css']
 })
 export class CardMascotaComponent {
+  private _mascota!: Mascota;
+  currentImageIndex = 0;
+  private touchStartX: number | null = null;
 
-  @Input() mascota!: Mascota;
+  @Input() set mascota(value: Mascota) {
+    this._mascota = value;
+    this.currentImageIndex = 0;
+  }
 
-  get carouselId(): string {
-    return `carousel-${this.mascota._id ?? this.mascota.id ?? this.mascota.nombre}`;
+  get mascota(): Mascota {
+    return this._mascota;
+  }
+
+  get imageList(): string[] {
+    return this.mascota?.imagenes?.length ? this.mascota.imagenes : [''];
+  }
+
+  get currentImage(): string {
+    return this.getImageSrc(this.imageList[this.currentImageIndex]);
+  }
+
+  get hasMultipleImages(): boolean {
+    return this.imageList.length > 1;
+  }
+
+  nextImage(): void {
+    if (!this.hasMultipleImages) {
+      return;
+    }
+
+    this.currentImageIndex = (this.currentImageIndex + 1) % this.imageList.length;
+  }
+
+  prevImage(): void {
+    if (!this.hasMultipleImages) {
+      return;
+    }
+
+    this.currentImageIndex = (this.currentImageIndex - 1 + this.imageList.length) % this.imageList.length;
+  }
+
+  goToImage(index: number): void {
+    if (index < 0 || index >= this.imageList.length) {
+      return;
+    }
+
+    this.currentImageIndex = index;
+  }
+
+  onTouchStart(event: TouchEvent): void {
+    this.touchStartX = event.changedTouches[0]?.clientX ?? null;
+  }
+
+  onTouchEnd(event: TouchEvent): void {
+    if (this.touchStartX === null || !this.hasMultipleImages) {
+      return;
+    }
+
+    const touchEndX = event.changedTouches[0]?.clientX ?? this.touchStartX;
+    const deltaX = touchEndX - this.touchStartX;
+
+    if (Math.abs(deltaX) > 35) {
+      if (deltaX < 0) {
+        this.nextImage();
+      } else {
+        this.prevImage();
+      }
+    }
+
+    this.touchStartX = null;
   }
 
   getImageSrc(imagen?: string): string {

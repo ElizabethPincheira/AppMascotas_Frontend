@@ -1,0 +1,35 @@
+<article class="store-card">
+  <header class="store-card__header">
+    <div>
+      <h3>{{ store.name }}</h3>
+      <p class="store-card__location">{{ store.comuna }} · {{ store.region }}</p>
+    </div>
+  </header>
+
+  <p class="store-card__highlight">{{ store.highlight }}</p>
+
+  <section class="store-card__stats">
+    <div class="store-card__stat">
+      <span class="store-card__label">Horario</span>
+      <strong>{{ store.schedule }}</strong>
+    </div>
+    <div class="store-card__stat">
+      <span class="store-card__label">Provincia</span>
+      <strong>{{ store.provincia }}</strong>
+    </div>
+  </section>
+
+  <section class="store-card__coverage-list">
+    <span class="store-card__label">Entrega en</span>
+    <p>{{ store.coverage.join(', ') }}</p>
+  </section>
+
+  <section class="store-card__chips" *ngIf="store.categories.length">
+    <span *ngFor="let category of store.categories">{{ category }}</span>
+  </section>
+
+  <div class="store-card__footer">
+    <span class="store-card__support">Pedido demo con impacto solidario</span>
+    <a class="store-card__button" [routerLink]="['/tiendas', store.id]">Ver tienda</a>
+  </div>
+</article>

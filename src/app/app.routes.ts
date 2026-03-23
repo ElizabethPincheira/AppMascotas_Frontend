@@ -36,10 +36,16 @@ export const routes: Routes = [
             .then(m => m.AboutPageComponent)
       },
       {
-        path: 'tienda',
+        path: 'tiendas',
+        loadComponent: () =>
+          import('./pages/ecommer/tiendas/tiendas.component')
+            .then(m => m.TiendaComponent)
+      },
+      {
+        path: 'tiendas/:id',
         loadComponent: () =>
           import('./pages/ecommer/tienda/tienda.component')
-            .then(m => m.TiendaComponent)
+            .then(m => m.StoreDetailComponent)
       },
       {
         path: 'colaboradores',
@@ -79,6 +85,13 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./pages/pet/mis-mascotas/mis-mascotas.component')
             .then(m => m.MisMascotasComponent)
+      },
+      {
+        path: 'mi-cuenta',
+        canActivate: [authGuard],
+        loadComponent: () =>
+          import('./pages/general/mi-user/mi-user.component')
+            .then(m => m.MiUserComponent)
       }
     ]
   },

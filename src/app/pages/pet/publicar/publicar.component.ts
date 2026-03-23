@@ -3,6 +3,7 @@ import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import Swal from 'sweetalert2';
+import { AuthService } from '../../../core/services/auth.service';
 import { ImagenesService } from '../../../core/services/imagenes.service';
 import { MascotaService } from '../../../core/services/mascota.service';
 import { Mascota } from '../../../shared/models/mascota.model';
@@ -17,6 +18,7 @@ import { Mascota } from '../../../shared/models/mascota.model';
 export class PublicarComponent {
   private readonly mascotaService = inject(MascotaService);
   private readonly imagenesService = inject(ImagenesService);
+  private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
 
@@ -34,6 +36,7 @@ export class PublicarComponent {
   direccionGps = '';
   caracteristicasAdicionales = '';
   contacto = '';
+  modoContacto: 'mail' | 'telefono' = 'mail';
   modoUbicacion: 'mapa' | 'gps' = 'mapa';
   ubicacionGpsCargando = false;
   ubicacionGpsLista = false;
@@ -41,8 +44,13 @@ export class PublicarComponent {
 
   enviandoFormulario = false;
 
-  imagePreviews: string[] = [];
+  existingImagePreviews: string[] = [];
+  newImagePreviews: string[] = [];
   imagePayloads: string[] = [];
+  mensajeErrorImagenes = '';
+  eliminandoImagenGuardadaIndex: number | null = null;
+  readonly maxImagenes = 5;
+  readonly maxTamanoImagenMb = 2;
 
   readonly estados = [
     'Extraviado',
@@ -78,6 +86,8 @@ export class PublicarComponent {
 
   get formularioCompleto(): boolean {
     const tieneUbicacionGps = this.latitud !== null && this.longitud !== null;
+    const fechasValidas = this.isFechaNacimientoValida() && this.isPerdidoDesdeValida();
+    const contactoValido = this.isContactoValido();
 
     return !!(
       this.nombre.trim() &&
@@ -85,13 +95,22 @@ export class PublicarComponent {
       this.raza.trim() &&
       this.estado.trim() &&
       this.fechaNacimiento &&
-      this.contacto.trim() &&
-      tieneUbicacionGps
+      contactoValido &&
+      tieneUbicacionGps &&
+      fechasValidas
     );
   }
 
-  get mapaUrl(): string {
-    return '';
+  get maxFechaHoy(): string {
+    return new Date().toISOString().slice(0, 10);
+  }
+
+  get userEmail(): string {
+    return this.authService.getUser()?.email?.trim?.() || '';
+  }
+
+  get contactoSeleccionado(): string {
+    return this.modoContacto === 'mail' ? this.userEmail : this.contacto.trim();
   }
 
   get mapTiles(): Array<{ src: string; left: number; top: number }> {
@@ -278,21 +297,124 @@ export class PublicarComponent {
     const input = event.target as HTMLInputElement;
     const files = input.files;
 
-    this.imagePreviews = [];
-    this.imagePayloads = [];
+    this.mensajeErrorImagenes = '';
 
     if (!files?.length) {
       return;
     }
 
-    const selectedFiles = Array.from(files).slice(0, 5);
-    const results = await Promise.all(selectedFiles.map((file) => this.readFileAsPreview(file)));
+    const cuposDisponibles =
+      this.maxImagenes - this.existingImagePreviews.length - this.newImagePreviews.length;
 
-    this.imagePreviews = results;
-    this.imagePayloads = await this.imagenesService.filesToBase64(selectedFiles);
+    if (cuposDisponibles <= 0) {
+      input.value = '';
+      this.mensajeErrorImagenes = `Solo puedes subir un máximo de ${this.maxImagenes} imágenes en total.`;
+      await Swal.fire({
+        icon: 'warning',
+        title: 'Límite de imágenes alcanzado',
+        text: `Ya tienes ${this.maxImagenes} imágenes cargadas entre guardadas y nuevas.`,
+      });
+      return;
+    }
+
+    const selectedFiles = Array.from(files).slice(0, cuposDisponibles);
+
+    const preparedImages = await this.imagenesService.prepareImagesForUpload(selectedFiles);
+
+    this.newImagePreviews = [...this.newImagePreviews, ...preparedImages.map((image) => image.preview)];
+    this.imagePayloads = [...this.imagePayloads, ...preparedImages.map((image) => image.base64)];
+    input.value = '';
+  }
+
+  removeNewImage(index: number): void {
+    this.newImagePreviews = this.newImagePreviews.filter((_, imageIndex) => imageIndex !== index);
+    this.imagePayloads = this.imagePayloads.filter((_, imageIndex) => imageIndex !== index);
+    this.mensajeErrorImagenes = '';
+  }
+
+  async removeExistingImage(index: number): Promise<void> {
+    if (!this.mascotaId || this.existingImagePreviews.length <= 1 || this.eliminandoImagenGuardadaIndex !== null) {
+      return;
+    }
+
+    const confirmacion = await Swal.fire({
+      icon: 'warning',
+      title: 'Eliminar imagen',
+      text: 'Esta foto se quitará de la publicación. Debe quedar al menos una imagen guardada.',
+      showCancelButton: true,
+      confirmButtonText: 'Eliminar',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#d85b58',
+    });
+
+    if (!confirmacion.isConfirmed) {
+      return;
+    }
+
+    this.eliminandoImagenGuardadaIndex = index;
+
+    try {
+      const mascotaActualizada = await this.imagenesService.eliminarImagenMascota(this.mascotaId, index);
+      this.existingImagePreviews = (mascotaActualizada?.imagenes ?? []).map((imagen: string) =>
+        imagen.startsWith('data:') ? imagen : `data:image/jpeg;base64,${imagen}`
+      );
+
+      await Swal.fire({
+        icon: 'success',
+        title: 'Imagen eliminada',
+        text: 'La foto se quitó correctamente de la publicación.',
+      });
+    } catch (error) {
+      await Swal.fire({
+        icon: 'error',
+        title: 'No se pudo eliminar la imagen',
+        text: 'Intenta nuevamente. La mascota debe conservar al menos una foto guardada.',
+      });
+      console.error(error);
+    } finally {
+      this.eliminandoImagenGuardadaIndex = null;
+    }
   }
 
   async submit(): Promise<void> {
+    if (this.mensajeErrorImagenes) {
+      await Swal.fire({
+        icon: 'warning',
+        title: 'Revisa las imágenes',
+        text: this.mensajeErrorImagenes,
+      });
+      return;
+    }
+
+    if (!this.isFechaNacimientoValida()) {
+      await Swal.fire({
+        icon: 'warning',
+        title: 'Fecha de nacimiento inválida',
+        text: 'La fecha de nacimiento no puede ser futura.',
+      });
+      return;
+    }
+
+    if (!this.isPerdidoDesdeValida()) {
+      await Swal.fire({
+        icon: 'warning',
+        title: 'Fecha de pérdida inválida',
+        text: 'La fecha de pérdida no puede ser futura. Sí puede ser hoy.',
+      });
+      return;
+    }
+
+    if (!this.isContactoValido()) {
+      await Swal.fire({
+        icon: 'warning',
+        title: 'Contacto incompleto',
+        text: this.modoContacto === 'mail'
+          ? 'Tu perfil no tiene un correo disponible para usar como contacto.'
+          : 'Debes ingresar un teléfono de contacto válido.',
+      });
+      return;
+    }
+
     if (!this.formularioCompleto || this.enviandoFormulario) {
       return;
     }
@@ -316,7 +438,7 @@ export class PublicarComponent {
         latitud: this.latitud ?? undefined,
         longitud: this.longitud ?? undefined,
         caracteristicasAdicionales: this.caracteristicasAdicionales.trim() || undefined,
-        contacto: this.contacto.trim()
+        contacto: this.contactoSeleccionado
       };
 
       const response = this.modoEdicion && this.mascotaId
@@ -326,7 +448,15 @@ export class PublicarComponent {
       const mascotaId = this.mascotaId ?? response?.mascotaId ?? response?._id ?? response?.id;
 
       if (mascotaId && this.imagePayloads.length) {
-        await this.imagenesService.cargarImagenesMascota(mascotaId, this.imagePayloads);
+        try {
+          await this.imagenesService.cargarImagenesMascota(mascotaId, this.imagePayloads);
+        } catch (imageError) {
+          if (!this.modoEdicion) {
+            await this.mascotaService.deleteMascota(mascotaId);
+          }
+
+          throw imageError;
+        }
       }
 
       Swal.close();
@@ -345,21 +475,14 @@ export class PublicarComponent {
       await Swal.fire({
         icon: 'error',
         title: 'No se pudo inscribir',
-        text: 'Revisa los datos e intenta nuevamente.'
+        text: this.imagePayloads.length
+          ? 'La mascota no pudo guardarse porque falló la subida final de imágenes, incluso después de comprimirlas. Intenta con menos fotos a la vez o vuelve a probar.'
+          : 'Revisa los datos e intenta nuevamente.'
       });
       console.error(error);
     } finally {
       this.enviandoFormulario = false;
     }
-  }
-
-  private readFileAsPreview(file: File): Promise<string> {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(String(reader.result));
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
-    });
   }
 
   private async cargarMascotaParaEditar(id: string): Promise<void> {
@@ -385,8 +508,10 @@ export class PublicarComponent {
     this.ubicacionGpsLista = this.latitud !== null && this.longitud !== null;
     this.direccionGps = this.ubicacionGpsLista ? 'Punto guardado en el mapa' : '';
     this.caracteristicasAdicionales = mascota.caracteristicasAdicionales ?? '';
-    this.contacto = mascota.contacto ?? '';
-    this.imagePreviews = (mascota.imagenes ?? []).map((imagen) =>
+    const contactoMascota = mascota.contacto?.trim() ?? '';
+    this.modoContacto = contactoMascota && contactoMascota === this.userEmail ? 'mail' : 'telefono';
+    this.contacto = this.modoContacto === 'telefono' ? contactoMascota : '';
+    this.existingImagePreviews = (mascota.imagenes ?? []).map((imagen) =>
       imagen.startsWith('data:') ? imagen : `data:image/jpeg;base64,${imagen}`
     );
   }
@@ -406,6 +531,43 @@ export class PublicarComponent {
 
   private capitalize(value: string): string {
     return value.charAt(0).toUpperCase() + value.slice(1);
+  }
+
+  private isFechaNacimientoValida(): boolean {
+    if (!this.fechaNacimiento) {
+      return false;
+    }
+
+    const fecha = new Date(`${this.fechaNacimiento}T00:00:00`);
+    const hoy = this.getInicioDelDiaActual();
+
+    return !Number.isNaN(fecha.getTime()) && fecha <= hoy;
+  }
+
+  private isPerdidoDesdeValida(): boolean {
+    if (!this.perdidoDesde) {
+      return true;
+    }
+
+    const fecha = new Date(`${this.perdidoDesde}T00:00:00`);
+    const hoy = this.getInicioDelDiaActual();
+
+    return !Number.isNaN(fecha.getTime()) && fecha <= hoy;
+  }
+
+  private isContactoValido(): boolean {
+    if (this.modoContacto === 'mail') {
+      return !!this.userEmail;
+    }
+
+    const telefono = this.contacto.replace(/\s+/g, '');
+    return telefono.length >= 8;
+  }
+
+  private getInicioDelDiaActual(): Date {
+    const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0);
+    return hoy;
   }
 
   private latLngToPixel(latitud: number, longitud: number): { x: number; y: number } {

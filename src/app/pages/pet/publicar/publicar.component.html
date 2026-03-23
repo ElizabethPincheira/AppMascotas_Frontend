@@ -62,18 +62,49 @@
 
         <label class="form-field">
           <span>Fecha de nacimiento</span>
-          <input type="date" [(ngModel)]="fechaNacimiento" name="fechaNacimiento" required>
+          <input type="date" [(ngModel)]="fechaNacimiento" name="fechaNacimiento" [max]="maxFechaHoy" required>
         </label>
 
         <label class="form-field">
           <span>Perdido desde</span>
-          <input type="date" [(ngModel)]="perdidoDesde" name="perdidoDesde">
+          <input type="date" [(ngModel)]="perdidoDesde" name="perdidoDesde" [max]="maxFechaHoy">
         </label>
 
-        <label class="form-field">
+        <div class="form-field form-field--full">
           <span>Contacto</span>
-          <input type="text" [(ngModel)]="contacto" name="contacto" placeholder="Teléfono o correo" required>
-        </label>
+
+          <div class="location-switch">
+            <label class="location-switch__option" [class.is-active]="modoContacto === 'mail'">
+              <input type="radio" [(ngModel)]="modoContacto" name="modoContacto" value="mail">
+              <span>Contactar por mail</span>
+            </label>
+
+            <label class="location-switch__option" [class.is-active]="modoContacto === 'telefono'">
+              <input type="radio" [(ngModel)]="modoContacto" name="modoContacto" value="telefono">
+              <span>Contactar por teléfono</span>
+            </label>
+          </div>
+
+          <div class="contact-card" *ngIf="modoContacto === 'mail'">
+            <span class="contact-card__label">Correo del perfil</span>
+            <input
+              type="email"
+              [value]="userEmail || 'No hay correo disponible en tu perfil'"
+              readonly>
+            <small *ngIf="!userEmail">Para usar esta opción, tu sesión debe tener un correo guardado.</small>
+          </div>
+
+          <div class="contact-card" *ngIf="modoContacto === 'telefono'">
+            <span class="contact-card__label">Teléfono de contacto</span>
+            <input
+              type="tel"
+              [(ngModel)]="contacto"
+              name="contactoTelefono"
+              placeholder="Ej: +56 9 1234 5678"
+              [required]="modoContacto === 'telefono'">
+            <small>Ingresa un número que revises con frecuencia para responder rápido.</small>
+          </div>
+        </div>
       </div>
 
       <div class="section-heading">
@@ -196,12 +227,71 @@
       <div class="upload-panel">
         <label class="upload-box">
           <span class="upload-box__title">Seleccionar imágenes</span>
-          <span class="upload-box__text">Sube hasta 5 fotos claras de tu mascota</span>
+          <span class="upload-box__text">
+            Sube hasta {{ maxImagenes }} fotos claras de tu mascota. El sistema las optimiza automáticamente antes de subirlas.
+          </span>
+          <span class="upload-box__hint">
+            Recomendado: fotos de hasta 1600 px por lado largo. El objetivo es que cada imagen final quede liviana, normalmente entre 200 KB y 500 KB.
+          </span>
           <input type="file" accept="image/*" multiple (change)="onImagesSelected($event)">
         </label>
 
-        <div class="upload-preview" *ngIf="imagePreviews.length">
-          <img *ngFor="let image of imagePreviews" [src]="image" alt="Vista previa de mascota">
+        <div class="upload-warning" *ngIf="mensajeErrorImagenes">
+          {{ mensajeErrorImagenes }}
+        </div>
+
+        <div class="upload-preview" *ngIf="existingImagePreviews.length">
+          <div class="upload-preview__heading">Imágenes guardadas</div>
+          <div class="upload-preview__list">
+            <div
+              class="upload-preview__item"
+              *ngFor="let image of existingImagePreviews; let index = index">
+              <div class="upload-preview__thumb">
+                <img [src]="image" alt="Vista previa de mascota guardada">
+              </div>
+
+              <div class="upload-preview__content">
+                <span class="upload-preview__status">Imagen guardada</span>
+                <span class="upload-preview__caption">
+                  {{ existingImagePreviews.length > 1 ? 'Ya está asociada a esta mascota y puedes quitarla si dejas al menos una foto.' : 'Ya está asociada a esta mascota.' }}
+                </span>
+              </div>
+
+              <button
+                *ngIf="existingImagePreviews.length > 1"
+                type="button"
+                class="upload-preview__remove"
+                [disabled]="eliminandoImagenGuardadaIndex === index"
+                (click)="removeExistingImage(index); $event.stopPropagation()">
+                {{ eliminandoImagenGuardadaIndex === index ? 'Quitando...' : 'Quitar' }}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="upload-preview" *ngIf="newImagePreviews.length">
+          <div class="upload-preview__heading">Imágenes nuevas ({{ newImagePreviews.length }}/{{ maxImagenes }})</div>
+          <div class="upload-preview__list">
+            <div
+              class="upload-preview__item"
+              *ngFor="let image of newImagePreviews; let index = index">
+              <div class="upload-preview__thumb">
+                <img [src]="image" alt="Vista previa de mascota">
+              </div>
+
+              <div class="upload-preview__content">
+                <span class="upload-preview__status">Imagen nueva</span>
+                <span class="upload-preview__caption">Lista para subirse con la mascota</span>
+              </div>
+
+              <button
+                type="button"
+                class="upload-preview__remove"
+                (click)="removeNewImage(index); $event.stopPropagation()">
+                Quitar
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
