@@ -85,6 +85,13 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./pages/pet/mis-mascotas/mis-mascotas.component')
             .then(m => m.MisMascotasComponent)
+      },
+      {
+        path: 'mi-cuenta',
+        canActivate: [authGuard],
+        loadComponent: () =>
+          import('./pages/general/mi-user/mi-user.component')
+            .then(m => m.MiUserComponent)
       }
     ]
   },

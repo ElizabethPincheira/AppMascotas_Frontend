@@ -68,6 +68,9 @@
 
             <ul class="site-navbar__dropdown" *ngIf="profileMenuOpen">
               <li>
+                <a class="site-navbar__dropdown-item" routerLink="/mi-cuenta" (click)="closeProfileMenu()">Mi cuenta</a>
+              </li>
+              <li>
                 <a class="site-navbar__dropdown-item" routerLink="/mis-mascotas" (click)="closeProfileMenu()">Mis mascotas</a>
               </li>
               <li>
