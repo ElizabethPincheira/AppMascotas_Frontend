@@ -1,0 +1,67 @@
+<section class="registrar-tienda-page">
+  <div class="registrar-tienda-shell">
+    <section class="registrar-tienda-hero">
+      <div>
+        <button class="back-button" (click)="volver()">← Volver a mi cuenta</button>
+        <span class="registrar-tienda-hero__eyebrow">Registrate como tienda</span>
+        <h1>Abre tu tienda en nuestra plataforma</h1>
+        <p>
+          Comparte tus productos con nuestra comunidad. Completa el formulario con la informacion
+          de tu negocio y te notificaremos cuando tu solicitud sea aprobada.
+        </p>
+      </div>
+
+      <div class="status-card">
+        <span class="status-card__label">Estado de solicitud</span>
+        <strong class="status-card__value" [ngClass]="'status-' + estadoTienda">{{ estadoTienda }}</strong>
+      </div>
+    </section>
+
+    <section class="registrar-tienda-form">
+      <article class="form-panel">
+        <div class="section-heading">
+          <div>
+            <span class="section-heading__eyebrow">Informacion de tu tienda</span>
+            <h2>Cuéntanos sobre tu negocio</h2>
+          </div>
+        </div>
+
+        <div class="form-grid form-grid--single">
+          <label class="form-field">
+            <span>Nombre de la tienda</span>
+            <input type="text" [(ngModel)]="storeForm.nombreTienda" placeholder="Ejemplo: Patitas Express" />
+          </label>
+
+          <label class="form-field">
+            <span>Descripcion</span>
+            <textarea [(ngModel)]="storeForm.descripcionTienda" rows="4" placeholder="Cuentanos que vendes y que hace especial tu tienda"></textarea>
+          </label>
+
+          <label class="form-field">
+            <span>Direccion</span>
+            <input type="text" [(ngModel)]="storeForm.direccionTienda" placeholder="Direccion de retiro o despacho" />
+          </label>
+
+          <label class="form-field">
+            <span>Telefono de contacto</span>
+            <input type="text" [(ngModel)]="storeForm.telefonoTienda" placeholder="+56 9 1234 5678" />
+          </label>
+
+          <label class="form-field">
+            <span>Categorias</span>
+            <input type="text" [(ngModel)]="storeForm.categoriasTexto" placeholder="Alimentos, Accesorios, Veterinaria" />
+          </label>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="primary-button primary-button--earth" (click)="registrarTienda()" [disabled]="!registroTiendaCompleto || enviandoTienda">
+            {{ enviandoTienda ? 'Enviando...' : 'Enviar solicitud de tienda' }}
+          </button>
+          <button type="button" class="secondary-button" (click)="volver()" [disabled]="enviandoTienda">
+            Cancelar
+          </button>
+        </div>
+      </article>
+    </section>
+  </div>
+</section>

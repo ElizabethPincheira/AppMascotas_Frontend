@@ -77,4 +77,8 @@ export class NavbarComponent {
     //this.router.navigate(['/']);
   }
 
+  get esUnaTienda(): boolean {
+    return this.user?.esTienda === true;
+  }
+
 }

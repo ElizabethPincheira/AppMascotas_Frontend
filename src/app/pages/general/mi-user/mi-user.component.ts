@@ -36,7 +36,6 @@ export class MiUserComponent {
   cargandoProvincias = false;
   cargandoComunas = false;
   guardandoPerfil = false;
-  enviandoTienda = false;
 
   profileForm = {
     nombre: this.user?.nombre || '',
@@ -45,14 +44,6 @@ export class MiUserComponent {
     region: this.user?.region || '',
     provincia: this.user?.provincia || '',
     comuna: this.user?.comuna || '',
-  };
-
-  storeForm = {
-    nombreTienda: this.user?.nombreTienda || '',
-    descripcionTienda: this.user?.descripcionTienda || '',
-    direccionTienda: this.user?.direccionTienda || '',
-    telefonoTienda: this.user?.telefonoTienda || '',
-    categoriasTexto: Array.isArray(this.user?.categoriasTienda) ? this.user.categoriasTienda.join(', ') : '',
   };
 
   readonly userOptions: UserOption[] = [
@@ -68,6 +59,13 @@ export class MiUserComponent {
       description: 'Crea una nueva publicacion para una mascota perdida, encontrada o en adopcion.',
       path: '/publicar',
       badge: 'Accion rapida',
+      tone: 'earth'
+    },
+    {
+      title: 'Registrate como tienda',
+      description: 'Abre tu tienda en nuestra plataforma y comparte tus productos con la comunidad.',
+      path: '/registrar-tienda',
+      badge: 'Nuevo negocio',
       tone: 'earth'
     },
     {
@@ -99,10 +97,6 @@ export class MiUserComponent {
     return this.user?.email || 'Sin correo registrado';
   }
 
-  get estadoTienda(): string {
-    return this.user?.estadoSolicitudTienda || 'ninguna';
-  }
-
   get perfilCompleto(): boolean {
     return !!(
       this.profileForm.nombre.trim() &&
@@ -110,15 +104,6 @@ export class MiUserComponent {
       this.profileForm.region &&
       this.profileForm.provincia &&
       this.profileForm.comuna
-    );
-  }
-
-  get registroTiendaCompleto(): boolean {
-    return !!(
-      this.storeForm.nombreTienda.trim() &&
-      this.storeForm.descripcionTienda.trim() &&
-      this.storeForm.direccionTienda.trim() &&
-      this.storeForm.telefonoTienda.trim()
     );
   }
 
@@ -198,44 +183,6 @@ export class MiUserComponent {
       });
     } finally {
       this.guardandoPerfil = false;
-    }
-  }
-
-  async registrarTienda(): Promise<void> {
-    this.enviandoTienda = true;
-
-    try {
-      const categoriasTienda = this.storeForm.categoriasTexto
-        .split(',')
-        .map((item: string) => item.trim())
-        .filter(Boolean);
-
-      const response = await this.usersService.registerStore({
-        nombreTienda: this.storeForm.nombreTienda.trim(),
-        descripcionTienda: this.storeForm.descripcionTienda.trim(),
-        direccionTienda: this.storeForm.direccionTienda.trim(),
-        telefonoTienda: this.storeForm.telefonoTienda.trim(),
-        categoriasTienda,
-      });
-
-      this.user = response.user;
-      this.authService.setUser(response.user);
-
-      await Swal.fire({
-        icon: 'success',
-        title: 'Solicitud enviada',
-        text: response.message || 'Tu solicitud como tienda fue registrada.',
-        confirmButtonText: 'Perfecto'
-      });
-    } catch (error: any) {
-      await Swal.fire({
-        icon: 'error',
-        title: 'No se pudo registrar la tienda',
-        text: error?.response?.data?.message || 'Ocurrio un problema al enviar tu solicitud.',
-        confirmButtonText: 'Entendido'
-      });
-    } finally {
-      this.enviandoTienda = false;
     }
   }
 

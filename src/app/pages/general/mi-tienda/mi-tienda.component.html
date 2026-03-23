@@ -1,0 +1,215 @@
+<section class="mi-tienda-page">
+  <div class="mi-tienda-shell">
+    <section class="mi-tienda-hero">
+      <div>
+        <button class="back-button" (click)="volver()">← Volver a mi cuenta</button>
+        <span class="mi-tienda-hero__eyebrow">Mi tienda</span>
+        <h1>{{ nombreTienda }}</h1>
+        <p>{{ descripcionTienda }}</p>
+      </div>
+
+      <div class="status-card">
+        <span class="status-card__label">Estado de solicitud</span>
+        <strong class="status-card__value" [ngClass]="'status-' + estadoTienda">{{ estadoTienda }}</strong>
+      </div>
+    </section>
+
+    <section class="mi-tienda-info">
+      <article class="info-panel">
+        <div class="section-heading">
+          <div>
+            <span class="section-heading__eyebrow">Información</span>
+            <h2>Detalles de tu tienda</h2>
+          </div>
+        </div>
+
+        <div class="info-grid">
+          <div class="info-field">
+            <span class="info-field__label">Nombre de la tienda</span>
+            <p class="info-field__value">{{ nombreTienda }}</p>
+          </div>
+
+          <div class="info-field">
+            <span class="info-field__label">Descripción</span>
+            <p class="info-field__value">{{ descripcionTienda }}</p>
+          </div>
+
+          <div class="info-field">
+            <span class="info-field__label">Dirección</span>
+            <p class="info-field__value">{{ direccionTienda }}</p>
+          </div>
+
+          <div class="info-field">
+            <span class="info-field__label">Teléfono de contacto</span>
+            <p class="info-field__value">{{ telefonoTienda }}</p>
+          </div>
+
+          <div class="info-field">
+            <span class="info-field__label">Categorías</span>
+            <div class="categories-list">
+              <span *ngFor="let categoria of categoriasTienda" class="category-badge">
+                {{ categoria }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="info-panel info-panel--highlighted">
+        <div class="section-heading">
+          <div>
+            <span class="section-heading__eyebrow">Estado</span>
+            <h2>Solicitud de tienda</h2>
+          </div>
+        </div>
+
+        <div class="status-info">
+          <p *ngIf="estadoTienda === 'pendiente'" class="status-message status-message--pending">
+            Tu solicitud está siendo revisada. Te notificaremos cuando sea aprobada.
+          </p>
+          <p *ngIf="estadoTienda === 'aprobada'" class="status-message status-message--approved">
+            ¡Tu tienda ha sido aprobada! Ahora apareces en el directorio de tiendas.
+          </p>
+          <p *ngIf="estadoTienda === 'rechazada'" class="status-message status-message--rejected">
+            Tu solicitud fue rechazada. Por favor, contacta con soporte para más información.
+          </p>
+          <p *ngIf="estadoTienda === 'ninguna'" class="status-message status-message--default">
+            No tienes una solicitud de tienda activa.
+          </p>
+        </div>
+      </article>
+    </section>
+
+    <section class="mi-tienda-productos">
+      <article class="productos-panel">
+        <div class="section-heading">
+          <div>
+            <span class="section-heading__eyebrow">Catálogo</span>
+            <h2>Mis productos</h2>
+          </div>
+          <button class="btn-primary" (click)="toggleFormulario()" *ngIf="!mostrarFormulario">
+            + Agregar producto
+          </button>
+        </div>
+
+        <!-- Formulario de agregar producto -->
+        <div class="producto-form" *ngIf="mostrarFormulario">
+          <div class="form-grid">
+            <label class="form-field">
+              <span>Nombre del producto</span>
+              <input type="text" [(ngModel)]="nuevoProductoForm.nombre" placeholder="Ej: Alimento Premium" />
+            </label>
+
+            <label class="form-field">
+              <span>Descripción</span>
+              <textarea [(ngModel)]="nuevoProductoForm.descripcion" rows="3" placeholder="Describe tu producto..."></textarea>
+            </label>
+
+            <label class="form-field">
+              <span>Precio (CLP)</span>
+              <input type="number" [(ngModel)]="nuevoProductoForm.precio" placeholder="0.00" step="0.01" min="0" />
+            </label>
+
+            <label class="form-field">
+              <span>Stock disponible</span>
+              <input type="number" [(ngModel)]="nuevoProductoForm.stock" placeholder="0" min="0" />
+            </label>
+          </div>
+
+          <div class="form-field form-field--full">
+            <span>Imagen del producto</span>
+            <label class="file-upload" (click)="fileInput.click()">
+              <input 
+                #fileInput
+                type="file" 
+                accept="image/*" 
+                (change)="onImagenSeleccionada($event)"
+                [disabled]="comprimiendoImagen"
+                class="file-input"
+              />
+              <span *ngIf="!imagenPreview" class="file-upload__hint">
+                📸 Haz clic para seleccionar una imagen
+              </span>
+            </label>
+
+            <div *ngIf="imagenPreview" class="image-preview">
+              <img [src]="imagenPreview" alt="Vista previa" />
+              <button type="button" class="btn-remove-image" (click)="removerImagen()" [disabled]="comprimiendoImagen">
+                ✕ Remover imagen
+              </button>
+            </div>
+
+            <div *ngIf="comprimiendoImagen" class="compressing-message">
+              Comprimiendo imagen...
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button class="btn-primary" (click)="agregarProducto()" [disabled]="!formularioValido || enviandoProducto || comprimiendoImagen">
+              {{ enviandoProducto ? 'Agregando...' : 'Agregar producto' }}
+            </button>
+            <button class="btn-secondary" (click)="cancelarFormulario()" [disabled]="enviandoProducto">
+              Cancelar
+            </button>
+          </div>
+        </div>
+
+        <!-- Lista de productos -->
+        <div class="productos-lista" *ngIf="!mostrarFormulario">
+          <div *ngIf="cargandoProductos" class="loading-message">
+            Cargando productos...
+          </div>
+
+          <div *ngIf="!cargandoProductos && productos.length === 0" class="empty-message">
+            <p>No tienes productos agregados aún.</p>
+            <button class="btn-primary" (click)="toggleFormulario()">
+              Agregar tu primer producto
+            </button>
+          </div>
+
+          <div *ngIf="!cargandoProductos && productos.length > 0" class="productos-grid">
+            <article class="producto-card" *ngFor="let producto of productos" [class.producto-sin-stock]="producto.stock === 0">
+              <div class="producto-card__image" *ngIf="producto.imagen">
+                <img [src]="producto.imagen" alt="{{ producto.nombre }}" />
+              </div>
+
+              <div class="producto-card__header">
+                <h3>{{ producto.nombre }}</h3>
+                <span class="stock-badge" [ngClass]="producto.stock === 0 ? 'stock-badge--sin-stock' : 'stock-badge--con-stock'">
+                  {{ producto.stock === 0 ? 'Sin stock' : 'En stock' }}
+                </span>
+              </div>
+
+              <p class="producto-card__description">{{ producto.descripcion }}</p>
+
+              <div class="producto-card__info">
+                <div class="info-row">
+                  <span class="info-label">Precio:</span>
+                  <span class="info-value">${{ producto.precio | number: '1.0-0' }}</span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">Stock:</span>
+                  <div class="stock-controls">
+                    <input 
+                      type="number" 
+                      [(ngModel)]="producto.stock" 
+                      min="0" 
+                      class="stock-input"
+                      (change)="actualizarStock(producto, producto.stock)"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div class="producto-card__actions">
+                <button class="btn-danger" (click)="eliminarProducto(producto._id)">
+                  Eliminar
+                </button>
+              </div>
+            </article>
+          </div>
+        </div>
+      </article>
+    </section>
+  </div>
+</section>

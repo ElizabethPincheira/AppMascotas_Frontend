@@ -92,6 +92,20 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./pages/general/mi-user/mi-user.component')
             .then(m => m.MiUserComponent)
+      },
+      {
+        path: 'registrar-tienda',
+        canActivate: [authGuard],
+        loadComponent: () =>
+          import('./pages/general/registrar-tienda/registrar-tienda.component')
+            .then(m => m.RegistrarTiendaComponent)
+      },
+      {
+        path: 'mi-tienda',
+        canActivate: [authGuard],
+        loadComponent: () =>
+          import('./pages/general/mi-tienda/mi-tienda.component')
+            .then(m => m.MiTiendaComponent)
       }
     ]
   },
