@@ -38,7 +38,11 @@
               <h2>{{ usuario.nombre }}</h2>
               <p>{{ usuario.email }}</p>
             </div>
-            <span class="admin-user-card__badge" [class.admin-user-card__badge--store]="usuario.esTienda">
+            <span
+              class="admin-user-card__badge"
+              [class.admin-user-card__badge--store]="usuario.esTienda"
+              [class.admin-user-card__badge--inactive]="usuario.isActive === false"
+            >
               {{ usuario.esTienda ? 'Tienda' : 'Usuario' }}
             </span>
           </div>
@@ -57,10 +61,38 @@
               <strong>{{ usuario.telefono || 'Sin telefono' }}</strong>
             </div>
             <div>
+              <span>Estado cuenta</span>
+              <strong>{{ usuario.isActive === false ? 'Inactivo' : 'Activo' }}</strong>
+            </div>
+            <div>
               <span>Estado tienda</span>
               <strong>{{ usuario.estadoSolicitudTienda || 'No aplica' }}</strong>
             </div>
           </div>
+
+          <div class="admin-user-card__actions">
+            <button
+              type="button"
+              class="admin-user-card__action admin-user-card__action--status"
+              (click)="toggleEstadoUsuario(usuario)"
+              [disabled]="procesandoUsuarioId === usuario._id || esMiUsuario(usuario)"
+            >
+              {{ procesandoUsuarioId === usuario._id ? 'Procesando...' : (usuario.isActive === false ? 'Activar' : 'Inactivar') }}
+            </button>
+
+            <button
+              type="button"
+              class="admin-user-card__action admin-user-card__action--delete"
+              (click)="eliminarUsuario(usuario)"
+              [disabled]="procesandoUsuarioId === usuario._id || esMiUsuario(usuario)"
+            >
+              {{ procesandoUsuarioId === usuario._id ? 'Procesando...' : 'Eliminar' }}
+            </button>
+          </div>
+
+          <p class="admin-user-card__hint" *ngIf="esMiUsuario(usuario)">
+            No puedes desactivar ni eliminar tu propio usuario desde este panel.
+          </p>
         </article>
       </div>
     </section>

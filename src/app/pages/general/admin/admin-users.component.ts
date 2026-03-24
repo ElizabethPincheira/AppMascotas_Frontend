@@ -1,6 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import Swal from 'sweetalert2';
+import { AuthService } from '../../../core/services/auth.service';
 import { UsersService } from '../../../core/services/users.service';
 
 interface AdminUser {
@@ -14,6 +16,8 @@ interface AdminUser {
   roles?: string[];
   esTienda?: boolean;
   estadoSolicitudTienda?: string;
+  estado?: string;
+  isActive?: boolean;
   createdAt?: string;
 }
 
@@ -25,10 +29,13 @@ interface AdminUser {
   styleUrl: './admin-users.component.css'
 })
 export class AdminUsersComponent {
+  private readonly authService = inject(AuthService);
   private readonly usersService = inject(UsersService);
 
+  currentUser = this.authService.getUser();
   usuarios: AdminUser[] = [];
   cargandoUsuarios = true;
+  procesandoUsuarioId: string | null = null;
 
   async ngOnInit(): Promise<void> {
     try {
@@ -64,5 +71,103 @@ export class AdminUsersComponent {
 
   formatUbicacion(usuario: AdminUser): string {
     return [usuario.comuna, usuario.provincia, usuario.region].filter(Boolean).join(', ') || 'Sin ubicacion';
+  }
+
+  esMiUsuario(usuario: AdminUser): boolean {
+    return `${usuario._id}` === `${this.currentUser?._id}`;
+  }
+
+  async toggleEstadoUsuario(usuario: AdminUser): Promise<void> {
+    if (this.esMiUsuario(usuario)) {
+      return;
+    }
+
+    const activar = !usuario.isActive;
+    const accion = activar ? 'activar' : 'inactivar';
+
+    const result = await Swal.fire({
+      icon: 'question',
+      title: `¿Quieres ${accion} este usuario?`,
+      text: activar
+        ? 'El usuario podrá volver a ingresar a la plataforma.'
+        : 'El usuario dejará de poder iniciar sesión mientras esté inactivo.',
+      showCancelButton: true,
+      confirmButtonText: activar ? 'Activar' : 'Inactivar',
+      cancelButtonText: 'Cancelar',
+    });
+
+    if (!result.isConfirmed) {
+      return;
+    }
+
+    this.procesandoUsuarioId = usuario._id;
+
+    try {
+      const response = await this.usersService.updateAdminUserStatus(usuario._id, activar);
+      const updatedUser = response?.user;
+
+      this.usuarios = this.usuarios.map((item) =>
+        item._id === usuario._id ? { ...item, ...updatedUser } : item
+      );
+
+      await Swal.fire({
+        icon: 'success',
+        title: activar ? 'Usuario activado' : 'Usuario inactivado',
+        text: response?.message || 'El estado del usuario fue actualizado.',
+        confirmButtonText: 'Continuar',
+      });
+    } catch (error: any) {
+      await Swal.fire({
+        icon: 'error',
+        title: 'No se pudo actualizar',
+        text: error?.response?.data?.message || 'Ocurrio un problema al cambiar el estado del usuario.',
+        confirmButtonText: 'Entendido',
+      });
+    } finally {
+      this.procesandoUsuarioId = null;
+    }
+  }
+
+  async eliminarUsuario(usuario: AdminUser): Promise<void> {
+    if (this.esMiUsuario(usuario)) {
+      return;
+    }
+
+    const result = await Swal.fire({
+      icon: 'warning',
+      title: '¿Eliminar usuario?',
+      text: `Se eliminará a ${usuario.nombre} de forma permanente.`,
+      showCancelButton: true,
+      confirmButtonText: 'Eliminar',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#dc2626',
+    });
+
+    if (!result.isConfirmed) {
+      return;
+    }
+
+    this.procesandoUsuarioId = usuario._id;
+
+    try {
+      const response = await this.usersService.deleteAdminUser(usuario._id);
+      this.usuarios = this.usuarios.filter((item) => item._id !== usuario._id);
+
+      await Swal.fire({
+        icon: 'success',
+        title: 'Usuario eliminado',
+        text: response?.message || 'El usuario fue eliminado correctamente.',
+        confirmButtonText: 'Continuar',
+      });
+    } catch (error: any) {
+      await Swal.fire({
+        icon: 'error',
+        title: 'No se pudo eliminar',
+        text: error?.response?.data?.message || 'Ocurrio un problema al eliminar el usuario.',
+        confirmButtonText: 'Entendido',
+      });
+    } finally {
+      this.procesandoUsuarioId = null;
+    }
   }
 }

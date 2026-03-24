@@ -111,4 +111,30 @@ export class UsersService {
     return response.data;
   }
 
+  async updateAdminUserStatus(userId: string, isActive: boolean): Promise<any> {
+    const token = localStorage.getItem('token');
+
+    const response = await axios.patch(this.apiUrl + `user/admin/users/${userId}/status`, {
+      isActive,
+    }, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return response.data;
+  }
+
+  async deleteAdminUser(userId: string): Promise<any> {
+    const token = localStorage.getItem('token');
+
+    const response = await axios.delete(this.apiUrl + `user/admin/users/${userId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return response.data;
+  }
+
 }
