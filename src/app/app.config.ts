@@ -36,6 +36,22 @@ function setupAxios404Redirect(): () => void {
   };
 }
 
+function hydrateAuthenticatedUser(): () => Promise<void> {
+  const authService = inject(AuthService);
+
+  return async () => {
+    if (!authService.getToken()) {
+      return;
+    }
+
+    try {
+      await authService.refreshCurrentUser();
+    } catch {
+      // Si el token ya no es valido, refreshCurrentUser limpia la sesion.
+    }
+  };
+}
+
 export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),
@@ -45,6 +61,11 @@ export const appConfig: ApplicationConfig = {
       provide: APP_INITIALIZER,
       multi: true,
       useFactory: setupAxios404Redirect,
+    },
+    {
+      provide: APP_INITIALIZER,
+      multi: true,
+      useFactory: hydrateAuthenticatedUser,
     },
   ]
 };
