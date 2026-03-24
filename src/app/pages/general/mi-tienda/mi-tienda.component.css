@@ -325,6 +325,119 @@
   box-shadow: 0 14px 28px rgba(0, 102, 255, 0.12);
 }
 
+.schedule-panel {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  padding: 1.25rem;
+  border-radius: 1rem;
+  background: linear-gradient(180deg, #fcfcfc 0%, #f7f7f7 100%);
+  border: 1px solid #ececec;
+}
+
+.schedule-panel__header h3 {
+  margin: 0.55rem 0 0;
+  font-size: 1.12rem;
+  color: #1f2937;
+}
+
+.schedule-table {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.schedule-table__head,
+.schedule-row {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr 0.9fr 0.9fr;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.schedule-table__head {
+  padding: 0 0.2rem;
+  color: #6b7280;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.schedule-row {
+  padding: 0.95rem 1rem;
+  border-radius: 1rem;
+  border: 1px solid #dde3ec;
+  background: white;
+  box-shadow: 0 10px 22px rgba(17, 24, 39, 0.04);
+}
+
+.schedule-row strong {
+  color: #1f2937;
+}
+
+.schedule-row input[type='time'] {
+  width: 100%;
+  min-height: 46px;
+  padding: 0.7rem 0.85rem;
+  border: 1px solid #d7dce4;
+  border-radius: 0.85rem;
+  background: linear-gradient(180deg, #ffffff 0%, #f7f9fc 100%);
+}
+
+.schedule-row input[type='time']:disabled {
+  color: #94a3b8;
+  background: #f8fafc;
+}
+
+.schedule-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+  font-weight: 600;
+  color: #334155;
+  cursor: pointer;
+}
+
+.schedule-switch input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.schedule-switch__track {
+  position: relative;
+  width: 52px;
+  height: 30px;
+  border-radius: 999px;
+  background: #d7dee8;
+  transition: background 0.2s ease;
+  box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.08);
+}
+
+.schedule-switch__thumb {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.18);
+  transition: transform 0.2s ease;
+}
+
+.schedule-switch__label {
+  min-width: 72px;
+}
+
+.schedule-switch:has(input:checked) .schedule-switch__track {
+  background: linear-gradient(180deg, #22c55e 0%, #16a34a 100%);
+}
+
+.schedule-switch:has(input:checked) .schedule-switch__thumb {
+  transform: translateX(22px);
+}
+
 @media (max-width: 768px) {
   .mi-tienda-page {
     gap: 2rem;
@@ -362,6 +475,18 @@
   }
 
   .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .delivery-editor__selectors {
+    grid-template-columns: 1fr;
+  }
+
+  .schedule-table__head {
+    display: none;
+  }
+
+  .schedule-row {
     grid-template-columns: 1fr;
   }
 

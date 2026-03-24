@@ -18,6 +18,79 @@
       <article class="info-panel">
         <div class="section-heading">
           <div>
+            <span class="section-heading__eyebrow">Edicion</span>
+            <h2>Edita los detalles de tu tienda</h2>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <label class="form-field">
+            <span>Nombre de la tienda</span>
+            <input type="text" [(ngModel)]="detallesForm.nombreTienda" placeholder="Nombre visible de tu tienda" />
+          </label>
+
+          <label class="form-field">
+            <span>Telefono</span>
+            <input type="text" [(ngModel)]="detallesForm.telefonoTienda" placeholder="+56 9 1234 5678" />
+          </label>
+
+          <label class="form-field form-field--full">
+            <span>Descripcion</span>
+            <textarea [(ngModel)]="detallesForm.descripcionTienda" rows="4" placeholder="Describe tu tienda, propuesta y tipo de productos"></textarea>
+          </label>
+
+          <label class="form-field form-field--full">
+            <span>Direccion</span>
+            <input type="text" [(ngModel)]="detallesForm.direccionTienda" placeholder="Direccion o punto de referencia" />
+          </label>
+
+          <label class="form-field form-field--full">
+            <span>Categorias</span>
+            <input type="text" [(ngModel)]="detallesForm.categoriasTexto" placeholder="Alimentos, Accesorios, Veterinaria" />
+          </label>
+        </div>
+
+        <div class="schedule-panel">
+          <div class="schedule-panel__header">
+            <span class="section-heading__eyebrow">Horario</span>
+            <h3>Define tus dias y horas de atencion</h3>
+          </div>
+
+          <div class="schedule-table">
+            <div class="schedule-table__head">
+              <span>Dia</span>
+              <span>Estado</span>
+              <span>Apertura</span>
+              <span>Cierre</span>
+            </div>
+
+            <div class="schedule-row" *ngFor="let row of horarioForm">
+              <strong>{{ row.dia }}</strong>
+
+              <label class="schedule-switch">
+                <input type="checkbox" [(ngModel)]="row.abierto" (ngModelChange)="onHorarioToggle(row)" />
+                <span class="schedule-switch__track">
+                  <span class="schedule-switch__thumb"></span>
+                </span>
+                <span class="schedule-switch__label">{{ row.abierto ? 'Abierto' : 'Cerrado' }}</span>
+              </label>
+
+              <input type="time" [(ngModel)]="row.apertura" [disabled]="!row.abierto" />
+              <input type="time" [(ngModel)]="row.cierre" [disabled]="!row.abierto" />
+            </div>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button class="btn-primary" (click)="guardarDetallesTienda()" [disabled]="!detallesValidos || guardandoDetalles">
+            {{ guardandoDetalles ? 'Guardando...' : 'Guardar detalles de la tienda' }}
+          </button>
+        </div>
+      </article>
+
+      <article class="info-panel">
+        <div class="section-heading">
+          <div>
             <span class="section-heading__eyebrow">Información</span>
             <h2>Detalles de tu tienda</h2>
           </div>

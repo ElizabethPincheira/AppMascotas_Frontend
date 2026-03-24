@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import axios from 'axios';
 import { environment } from '../../../environments/environment';
-import { DeliveryStore, StoreProduct } from '../../pages/ecommer/tiendas/delivery-store.model';
+import { DeliveryStore, StoreProduct, StoreScheduleEntry } from '../../pages/ecommer/tiendas/delivery-store.model';
 
 export interface Store {
   _id: string;
@@ -11,6 +11,12 @@ export interface Store {
   telefonoTienda: string;
   categoriasTienda: string[];
   comunasRepartoTienda?: string[];
+  horarioTienda?: Array<{
+    dia: string;
+    abierto: boolean;
+    apertura?: string;
+    cierre?: string;
+  }>;
   regionTienda?: string;
   provinciaTienda?: string;
   comunaTienda?: string;
@@ -73,7 +79,7 @@ export class TiendasService {
       comuna: store.comunaTienda || store.comuna || 'Sin comuna',
       address: store.direccionTienda,
       eta: 'A coordinar con la tienda',
-      schedule: 'Horario informado por la tienda',
+      schedule: this.buildScheduleSummary(store.horarioTienda),
       deliveryFee: 'Consultar',
       rating: 5,
       coverage: (store.comunasRepartoTienda && store.comunasRepartoTienda.length > 0)
@@ -85,6 +91,7 @@ export class TiendasService {
       heroImage: this.fallbackImage,
       gallery: [this.fallbackImage],
       products: products.map((product) => this.toStoreProduct(product)),
+      weeklySchedule: this.normalizeSchedule(store.horarioTienda),
     };
   }
 
@@ -105,5 +112,42 @@ export class TiendasService {
         product.activo ? 'Disponible' : 'No disponible',
       ],
     };
+  }
+
+  private buildScheduleSummary(schedule?: Array<{ dia: string; abierto: boolean; apertura?: string; cierre?: string }>): string {
+    if (!schedule || schedule.length === 0) {
+      return 'Horario informado por la tienda';
+    }
+
+    const openDays = schedule.filter((entry) => entry.abierto && entry.apertura && entry.cierre);
+
+    if (openDays.length === 0) {
+      return 'Actualmente cerrada';
+    }
+
+    const uniqueRanges = [...new Set(openDays.map((entry) => `${entry.apertura} - ${entry.cierre}`))];
+
+    if (uniqueRanges.length === 1) {
+      const firstDay = openDays[0].dia.slice(0, 3);
+      const lastDay = openDays[openDays.length - 1].dia.slice(0, 3);
+      const dayLabel = openDays.length === 1 ? firstDay : `${firstDay} a ${lastDay}`;
+
+      return `${dayLabel} ${uniqueRanges[0]}`;
+    }
+
+    return openDays
+      .map((entry) => `${entry.dia.slice(0, 3)} ${entry.apertura} - ${entry.cierre}`)
+      .join(' · ');
+  }
+
+  private normalizeSchedule(
+    schedule?: Array<{ dia: string; abierto: boolean; apertura?: string; cierre?: string }>
+  ): StoreScheduleEntry[] {
+    return (schedule ?? []).map((entry) => ({
+      dia: entry.dia,
+      abierto: entry.abierto,
+      apertura: entry.apertura || '',
+      cierre: entry.cierre || '',
+    }));
   }
 }

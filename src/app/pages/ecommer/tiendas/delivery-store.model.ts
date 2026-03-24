@@ -18,6 +18,7 @@ export interface DeliveryStore {
   heroImage: string;
   gallery: string[];
   products: StoreProduct[];
+  weeklySchedule: StoreScheduleEntry[];
 }
 
 export interface StoreProduct {
@@ -28,4 +29,11 @@ export interface StoreProduct {
   image: string;
   description: string;
   tags: string[];
+}
+
+export interface StoreScheduleEntry {
+  dia: string;
+  abierto: boolean;
+  apertura?: string;
+  cierre?: string;
 }

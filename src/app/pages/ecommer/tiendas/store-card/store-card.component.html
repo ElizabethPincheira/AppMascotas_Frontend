@@ -8,14 +8,29 @@
 
   <p class="store-card__highlight">{{ store.highlight }}</p>
 
-  <section class="store-card__stats">
-    <div class="store-card__stat">
-      <span class="store-card__label">Horario</span>
-      <strong>{{ store.schedule }}</strong>
+  <section class="store-card__schedule">
+    <span class="store-card__label">Horario de atencion</span>
+    <strong>{{ todaySchedule }}</strong>
+    <button type="button" class="store-card__schedule-toggle" (click)="toggleWeeklySchedule()">
+      {{ showWeeklySchedule ? 'Ocultar semana' : 'Ver semana completa' }}
+    </button>
+
+    <div class="store-card__schedule-list" *ngIf="showWeeklySchedule">
+      <div class="store-card__schedule-item" *ngFor="let item of orderedWeeklySchedule">
+        <span>{{ item.dia }}</span>
+        <strong>{{ item.abierto ? (item.apertura + ' - ' + item.cierre) : 'Cerrado' }}</strong>
+      </div>
     </div>
+  </section>
+
+  <section class="store-card__stats">
     <div class="store-card__stat">
       <span class="store-card__label">Provincia</span>
       <strong>{{ store.provincia }}</strong>
+    </div>
+    <div class="store-card__stat">
+      <span class="store-card__label">Comuna base</span>
+      <strong>{{ store.comuna }}</strong>
     </div>
   </section>
 

@@ -8,6 +8,13 @@ import { ProductosService, Producto, CreateProductoDto } from '../../../core/ser
 import { UsersService } from '../../../core/services/users.service';
 import { UbicacionesService } from '../../../core/services/ubicaciones.service';
 
+interface StoreScheduleRow {
+  dia: string;
+  abierto: boolean;
+  apertura: string;
+  cierre: string;
+}
+
 @Component({
   selector: 'app-mi-tienda',
   standalone: true,
@@ -37,6 +44,17 @@ export class MiTiendaComponent implements OnInit {
   cargandoRegiones = false;
   cargandoProvincias = false;
   cargandoComunas = false;
+  guardandoDetalles = false;
+
+  readonly diasSemana = [
+    'Lunes',
+    'Martes',
+    'Miercoles',
+    'Jueves',
+    'Viernes',
+    'Sabado',
+    'Domingo',
+  ];
 
   repartoForm = {
     regionTienda: this.user?.regionTienda || this.user?.region || '',
@@ -44,6 +62,16 @@ export class MiTiendaComponent implements OnInit {
     comunaTienda: this.user?.comunaTienda || this.user?.comuna || '',
     comunasRepartoTienda: Array.isArray(this.user?.comunasRepartoTienda) ? [...this.user.comunasRepartoTienda] : [],
   };
+
+  detallesForm = {
+    nombreTienda: this.user?.nombreTienda || '',
+    descripcionTienda: this.user?.descripcionTienda || '',
+    direccionTienda: this.user?.direccionTienda || '',
+    telefonoTienda: this.user?.telefonoTienda || '',
+    categoriasTexto: Array.isArray(this.user?.categoriasTienda) ? this.user.categoriasTienda.join(', ') : '',
+  };
+
+  horarioForm: StoreScheduleRow[] = this.buildScheduleForm(this.user?.horarioTienda);
 
   nuevoProductoForm: CreateProductoDto = {
     nombre: '',
@@ -118,6 +146,15 @@ export class MiTiendaComponent implements OnInit {
       this.repartoForm.regionTienda &&
       this.repartoForm.provinciaTienda &&
       this.repartoForm.comunasRepartoTienda.length > 0
+    );
+  }
+
+  get detallesValidos(): boolean {
+    return !!(
+      this.detallesForm.nombreTienda.trim() &&
+      this.detallesForm.descripcionTienda.trim() &&
+      this.detallesForm.direccionTienda.trim() &&
+      this.detallesForm.telefonoTienda.trim()
     );
   }
 
@@ -399,6 +436,71 @@ export class MiTiendaComponent implements OnInit {
     }
   }
 
+  async guardarDetallesTienda(): Promise<void> {
+    this.guardandoDetalles = true;
+
+    try {
+      const categoriasTienda = this.detallesForm.categoriasTexto
+        .split(',')
+        .map((item: string) => item.trim())
+        .filter(Boolean);
+
+      const horarioTienda = this.horarioForm.map((row) => ({
+        dia: row.dia,
+        abierto: row.abierto,
+        apertura: row.abierto ? row.apertura : '',
+        cierre: row.abierto ? row.cierre : '',
+      }));
+
+      const response = await this.usersService.updateStoreProfile({
+        nombreTienda: this.detallesForm.nombreTienda.trim(),
+        descripcionTienda: this.detallesForm.descripcionTienda.trim(),
+        direccionTienda: this.detallesForm.direccionTienda.trim(),
+        telefonoTienda: this.detallesForm.telefonoTienda.trim(),
+        regionTienda: this.repartoForm.regionTienda,
+        provinciaTienda: this.repartoForm.provinciaTienda,
+        comunaTienda: this.repartoForm.comunasRepartoTienda[0] || this.repartoForm.comunaTienda,
+        categoriasTienda,
+        comunasRepartoTienda: this.repartoForm.comunasRepartoTienda,
+        horarioTienda,
+      });
+
+      this.user = response.user;
+      this.authService.setUser(response.user);
+      this.detallesForm.categoriasTexto = Array.isArray(response.user?.categoriasTienda)
+        ? response.user.categoriasTienda.join(', ')
+        : '';
+      this.horarioForm = this.buildScheduleForm(response.user?.horarioTienda);
+
+      await Swal.fire({
+        icon: 'success',
+        title: 'Tienda actualizada',
+        text: 'Los detalles y horarios de tu tienda fueron guardados.',
+        confirmButtonText: 'Continuar'
+      });
+    } catch (error: any) {
+      await Swal.fire({
+        icon: 'error',
+        title: 'No se pudo actualizar la tienda',
+        text: error?.response?.data?.message || 'Ocurrio un problema al guardar los detalles de la tienda.',
+        confirmButtonText: 'Entendido'
+      });
+    } finally {
+      this.guardandoDetalles = false;
+    }
+  }
+
+  onHorarioToggle(row: StoreScheduleRow): void {
+    if (row.abierto) {
+      row.apertura = row.apertura || '09:00';
+      row.cierre = row.cierre || '18:00';
+      return;
+    }
+
+    row.apertura = '';
+    row.cierre = '';
+  }
+
   private async cargarRegionesReparto(): Promise<void> {
     this.cargandoRegiones = true;
 
@@ -407,5 +509,20 @@ export class MiTiendaComponent implements OnInit {
     } finally {
       this.cargandoRegiones = false;
     }
+  }
+
+  private buildScheduleForm(
+    schedule?: Array<{ dia: string; abierto: boolean; apertura?: string; cierre?: string }>
+  ): StoreScheduleRow[] {
+    return this.diasSemana.map((dia) => {
+      const existing = schedule?.find((entry) => entry.dia === dia);
+
+      return {
+        dia,
+        abierto: existing?.abierto ?? false,
+        apertura: existing?.apertura ?? '',
+        cierre: existing?.cierre ?? '',
+      };
+    });
   }
 }

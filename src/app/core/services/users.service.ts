@@ -71,4 +71,32 @@ export class UsersService {
     return response.data;
   }
 
+  async updateStoreProfile(storeData: {
+    nombreTienda: string;
+    descripcionTienda: string;
+    direccionTienda: string;
+    telefonoTienda: string;
+    regionTienda: string;
+    provinciaTienda: string;
+    comunaTienda: string;
+    categoriasTienda: string[];
+    comunasRepartoTienda: string[];
+    horarioTienda: Array<{
+      dia: string;
+      abierto: boolean;
+      apertura?: string;
+      cierre?: string;
+    }>;
+  }): Promise<any> {
+    const token = localStorage.getItem('token');
+
+    const response = await axios.patch(this.apiUrl + 'user/store-profile', storeData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return response.data;
+  }
+
 }

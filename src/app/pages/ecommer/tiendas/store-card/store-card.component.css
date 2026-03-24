@@ -59,6 +59,57 @@
   line-height: 1.72;
 }
 
+.store-card__schedule {
+  display: grid;
+  gap: 0.35rem;
+  padding: 15px 16px;
+  border-radius: 20px;
+  background: linear-gradient(180deg, rgba(95, 143, 69, 0.1) 0%, rgba(95, 143, 69, 0.05) 100%);
+  border: 1px solid rgba(95, 143, 69, 0.14);
+}
+
+.store-card__schedule strong {
+  color: var(--brand-forest);
+  font-size: 1rem;
+  line-height: 1.45;
+}
+
+.store-card__schedule-toggle {
+  justify-self: start;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--brand-earth);
+  font-size: 0.84rem;
+  font-weight: 800;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.store-card__schedule-list {
+  display: grid;
+  gap: 0.55rem;
+  margin-top: 0.3rem;
+}
+
+.store-card__schedule-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 0.55rem;
+  border-top: 1px dashed rgba(123, 146, 106, 0.22);
+}
+
+.store-card__schedule-item span {
+  color: var(--text-main);
+  font-size: 0.9rem;
+}
+
+.store-card__schedule-item strong {
+  font-size: 0.9rem;
+  text-align: right;
+}
+
 .store-card__stats {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
