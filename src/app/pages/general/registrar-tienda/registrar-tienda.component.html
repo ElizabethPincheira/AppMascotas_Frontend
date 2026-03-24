@@ -83,6 +83,10 @@
               </label>
             </div>
 
+            <div class="delivery-communes__selected" *ngIf="storeForm.comunasRepartoSeleccionadas.length > 0">
+              <span *ngFor="let comuna of storeForm.comunasRepartoSeleccionadas">{{ comuna }}</span>
+            </div>
+
             <ng-template #noComunas>
               <p class="delivery-communes__helper">Selecciona region y provincia para definir comunas de reparto.</p>
             </ng-template>

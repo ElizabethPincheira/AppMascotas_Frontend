@@ -94,10 +94,21 @@
   font-size: 0.95rem;
 }
 
-.store-card__coverage-list p {
-  margin: 0;
-  color: var(--text-main);
-  line-height: 1.6;
+.store-card__coverage-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+}
+
+.store-card__coverage-chips span {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.48rem 0.74rem;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #f4f8ee 0%, #e9f1de 100%);
+  color: var(--brand-forest);
+  font-size: 0.82rem;
+  font-weight: 700;
 }
 
 .store-card__chips {

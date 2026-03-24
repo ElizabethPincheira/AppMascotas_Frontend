@@ -88,6 +88,75 @@
           </p>
         </div>
       </article>
+
+      <article class="info-panel">
+        <div class="section-heading">
+          <div>
+            <span class="section-heading__eyebrow">Reparto</span>
+            <h2>Configura tus comunas de reparto</h2>
+          </div>
+        </div>
+
+        <div class="delivery-editor">
+          <p class="delivery-editor__helper">
+            Selecciona las comunas donde tu tienda realiza despacho. Esta cobertura se usa para ordenar y filtrar las tiendas por cercania.
+          </p>
+
+          <div class="delivery-editor__selectors">
+            <label class="form-field">
+              <span>Region de la tienda</span>
+              <select [(ngModel)]="repartoForm.regionTienda" (ngModelChange)="onRegionRepartoChange()">
+                <option value="">Selecciona una region</option>
+                <option *ngFor="let region of regionesDisponibles" [value]="region">{{ region }}</option>
+              </select>
+            </label>
+
+            <label class="form-field">
+              <span>Provincia de la tienda</span>
+              <select
+                [(ngModel)]="repartoForm.provinciaTienda"
+                (ngModelChange)="onProvinciaRepartoChange()"
+                [disabled]="!repartoForm.regionTienda || cargandoProvincias"
+              >
+                <option value="">Selecciona una provincia</option>
+                <option *ngFor="let provincia of provinciasDisponibles" [value]="provincia">{{ provincia }}</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="delivery-editor__summary" *ngIf="repartoForm.comunasRepartoTienda.length > 0">
+            <span class="delivery-editor__summary-label">Cobertura actual</span>
+            <div class="delivery-editor__summary-tags">
+              <span *ngFor="let comuna of repartoForm.comunasRepartoTienda">{{ comuna }}</span>
+            </div>
+          </div>
+
+          <div class="delivery-editor__list" *ngIf="comunasDisponibles.length > 0; else noDeliveryCommunes">
+            <label class="delivery-editor__item" *ngFor="let comuna of comunasDisponibles">
+              <input
+                type="checkbox"
+                [checked]="isComunaRepartoSelected(comuna)"
+                (change)="toggleComunaReparto(comuna, $any($event.target).checked)"
+              />
+              <span>{{ comuna }}</span>
+            </label>
+          </div>
+
+          <ng-template #noDeliveryCommunes>
+            <p class="delivery-editor__helper" *ngIf="cargandoComunas; else noDeliveryData">Cargando comunas disponibles...</p>
+          </ng-template>
+
+          <ng-template #noDeliveryData>
+            <p class="delivery-editor__helper">No hay comunas disponibles para editar en este momento.</p>
+          </ng-template>
+
+          <div class="form-actions">
+            <button class="btn-primary" (click)="guardarCoberturaReparto()" [disabled]="!coberturaValida || guardandoCobertura">
+              {{ guardandoCobertura ? 'Guardando...' : 'Guardar cobertura de reparto' }}
+            </button>
+          </div>
+        </div>
+      </article>
     </section>
 
     <section class="mi-tienda-productos">

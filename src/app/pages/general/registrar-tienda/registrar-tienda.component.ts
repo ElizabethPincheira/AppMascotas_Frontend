@@ -48,8 +48,11 @@ export class RegistrarTiendaComponent {
       await this.onRegionChange(false);
     }
 
-    if (this.storeForm.provinciaTienda) {
+    if (this.storeForm.provinciaTienda && this.provincias.includes(this.storeForm.provinciaTienda)) {
       await this.onProvinciaChange(false);
+    } else if (this.storeForm.provinciaTienda) {
+      this.storeForm.provinciaTienda = '';
+      this.storeForm.comunaTienda = '';
     }
   }
 
@@ -103,7 +106,7 @@ export class RegistrarTiendaComponent {
 
     this.comunas = [];
 
-    if (!this.storeForm.regionTienda || !this.storeForm.provinciaTienda) {
+    if (!this.storeForm.regionTienda || !this.storeForm.provinciaTienda || !this.provincias.includes(this.storeForm.provinciaTienda)) {
       return;
     }
 

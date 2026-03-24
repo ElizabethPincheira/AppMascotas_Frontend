@@ -11,18 +11,20 @@ export class UbicacionesService {
     private apiUrl = `${environment.apiUrl}ubicaciones/`;
 
     async getUbicaciones(region?: string, provincia?: string): Promise<string[]> {
-        let url = this.apiUrl;
+        const normalizedRegion = region?.trim();
+        const normalizedProvincia = provincia?.trim();
 
-        const params = new URLSearchParams();
+        const params: Record<string, string> = {};
 
-        if (region) params.append('region', region);
-        if (provincia) params.append('provincia', provincia);
-
-        if (params.toString()) {
-            url += `?${params.toString()}`;
+        if (normalizedRegion) {
+            params['region'] = normalizedRegion;
         }
 
-        const response = await axios.get(url);
+        if (normalizedProvincia) {
+            params['provincia'] = normalizedProvincia;
+        }
+
+        const response = await axios.get(this.apiUrl, { params });
         return response.data;
     }
 }

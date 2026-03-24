@@ -89,7 +89,7 @@ export class RegisterPageComponent {
     this.comunaSeleccionada = '';
     this.comunas = [];
 
-    if (!this.regionSeleccionada || !this.provinciaSeleccionada) {
+    if (!this.regionSeleccionada || !this.provinciaSeleccionada || !this.provincias.includes(this.provinciaSeleccionada)) {
       return;
     }
 

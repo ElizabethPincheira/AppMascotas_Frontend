@@ -21,7 +21,9 @@
 
   <section class="store-card__coverage-list">
     <span class="store-card__label">Entrega en</span>
-    <p>{{ store.coverage.join(', ') }}</p>
+    <div class="store-card__coverage-chips">
+      <span *ngFor="let comuna of store.coverage">{{ comuna }}</span>
+    </div>
   </section>
 
   <section class="store-card__chips" *ngIf="store.categories.length">

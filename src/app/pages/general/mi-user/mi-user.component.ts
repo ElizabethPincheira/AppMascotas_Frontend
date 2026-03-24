@@ -84,8 +84,11 @@ export class MiUserComponent {
       await this.onRegionChange(false);
     }
 
-    if (this.profileForm.provincia) {
+    if (this.profileForm.provincia && this.provincias.includes(this.profileForm.provincia)) {
       await this.onProvinciaChange(false);
+    } else if (this.profileForm.provincia) {
+      this.profileForm.provincia = '';
+      this.profileForm.comuna = '';
     }
   }
 
@@ -136,7 +139,7 @@ export class MiUserComponent {
 
     this.comunas = [];
 
-    if (!this.profileForm.region || !this.profileForm.provincia) {
+    if (!this.profileForm.region || !this.profileForm.provincia || !this.provincias.includes(this.profileForm.provincia)) {
       return;
     }
 

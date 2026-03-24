@@ -5,6 +5,8 @@ import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
 import { AuthService } from '../../../core/services/auth.service';
 import { ProductosService, Producto, CreateProductoDto } from '../../../core/services/productos.service';
+import { UsersService } from '../../../core/services/users.service';
+import { UbicacionesService } from '../../../core/services/ubicaciones.service';
 
 @Component({
   selector: 'app-mi-tienda',
@@ -17,6 +19,8 @@ export class MiTiendaComponent implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
   private readonly productosService = inject(ProductosService);
+  private readonly usersService = inject(UsersService);
+  private readonly ubicacionesService = inject(UbicacionesService);
 
   user = this.authService.getUser();
   productos: Producto[] = [];
@@ -26,6 +30,20 @@ export class MiTiendaComponent implements OnInit {
   editandoProductoId: string | null = null;
   imagenPreview: string | null = null;
   comprimiendoImagen = false;
+  guardandoCobertura = false;
+  regionesDisponibles: string[] = [];
+  provinciasDisponibles: string[] = [];
+  comunasDisponibles: string[] = [];
+  cargandoRegiones = false;
+  cargandoProvincias = false;
+  cargandoComunas = false;
+
+  repartoForm = {
+    regionTienda: this.user?.regionTienda || this.user?.region || '',
+    provinciaTienda: this.user?.provinciaTienda || this.user?.provincia || '',
+    comunaTienda: this.user?.comunaTienda || this.user?.comuna || '',
+    comunasRepartoTienda: Array.isArray(this.user?.comunasRepartoTienda) ? [...this.user.comunasRepartoTienda] : [],
+  };
 
   nuevoProductoForm: CreateProductoDto = {
     nombre: '',
@@ -36,6 +54,19 @@ export class MiTiendaComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     await this.cargarProductos();
+    await this.cargarRegionesReparto();
+
+    if (this.repartoForm.regionTienda) {
+      await this.onRegionRepartoChange(false);
+    }
+
+    if (this.repartoForm.provinciaTienda && this.provinciasDisponibles.includes(this.repartoForm.provinciaTienda)) {
+      await this.onProvinciaRepartoChange(false);
+    } else if (this.repartoForm.provinciaTienda) {
+      this.repartoForm.provinciaTienda = '';
+      this.repartoForm.comunaTienda = '';
+      this.repartoForm.comunasRepartoTienda = [];
+    }
   }
 
   private async cargarProductos(): Promise<void> {
@@ -80,6 +111,14 @@ export class MiTiendaComponent implements OnInit {
 
   get estadoTienda(): string {
     return this.user?.estadoSolicitudTienda || 'ninguna';
+  }
+
+  get coberturaValida(): boolean {
+    return !!(
+      this.repartoForm.regionTienda &&
+      this.repartoForm.provinciaTienda &&
+      this.repartoForm.comunasRepartoTienda.length > 0
+    );
   }
 
   get formularioValido(): boolean {
@@ -246,5 +285,127 @@ export class MiTiendaComponent implements OnInit {
 
   volver(): void {
     this.router.navigate(['/mi-cuenta']);
+  }
+
+  async onRegionRepartoChange(resetChildren = true): Promise<void> {
+    if (resetChildren) {
+      this.repartoForm.provinciaTienda = '';
+      this.repartoForm.comunasRepartoTienda = [];
+      this.comunasDisponibles = [];
+    }
+
+    this.provinciasDisponibles = [];
+
+    if (!this.repartoForm.regionTienda) {
+      return;
+    }
+
+    this.cargandoProvincias = true;
+
+    try {
+      this.provinciasDisponibles = await this.ubicacionesService.getUbicaciones(this.repartoForm.regionTienda);
+    } finally {
+      this.cargandoProvincias = false;
+    }
+  }
+
+  async onProvinciaRepartoChange(resetComuna = true): Promise<void> {
+    if (resetComuna) {
+      this.repartoForm.comunasRepartoTienda = [];
+    }
+
+    this.comunasDisponibles = [];
+
+    if (
+      !this.repartoForm.regionTienda ||
+      !this.repartoForm.provinciaTienda ||
+      !this.provinciasDisponibles.includes(this.repartoForm.provinciaTienda)
+    ) {
+      return;
+    }
+
+    this.cargandoComunas = true;
+
+    try {
+      this.comunasDisponibles = await this.ubicacionesService.getUbicaciones(
+        this.repartoForm.regionTienda,
+        this.repartoForm.provinciaTienda,
+      );
+    } finally {
+      this.cargandoComunas = false;
+    }
+  }
+
+  isComunaRepartoSelected(comuna: string): boolean {
+    return this.repartoForm.comunasRepartoTienda.includes(comuna);
+  }
+
+  toggleComunaReparto(comuna: string, checked: boolean): void {
+    if (checked) {
+      if (!this.repartoForm.comunasRepartoTienda.includes(comuna)) {
+        this.repartoForm.comunasRepartoTienda = [
+          ...this.repartoForm.comunasRepartoTienda,
+          comuna,
+        ];
+      }
+
+      return;
+    }
+
+    this.repartoForm.comunasRepartoTienda = this.repartoForm.comunasRepartoTienda
+      .filter((item) => item !== comuna);
+  }
+
+  async guardarCoberturaReparto(): Promise<void> {
+    this.guardandoCobertura = true;
+
+    try {
+      const comunaTienda =
+        this.repartoForm.comunasRepartoTienda[0] ||
+        this.repartoForm.comunaTienda ||
+        '';
+
+      const response = await this.usersService.registerStore({
+        nombreTienda: this.user?.nombreTienda || '',
+        descripcionTienda: this.user?.descripcionTienda || '',
+        direccionTienda: this.user?.direccionTienda || '',
+        telefonoTienda: this.user?.telefonoTienda || '',
+        regionTienda: this.repartoForm.regionTienda,
+        provinciaTienda: this.repartoForm.provinciaTienda,
+        comunaTienda,
+        categoriasTienda: Array.isArray(this.user?.categoriasTienda) ? this.user.categoriasTienda : [],
+        comunasRepartoTienda: this.repartoForm.comunasRepartoTienda,
+      });
+
+      this.user = response.user;
+      this.authService.setUser(response.user);
+      this.repartoForm.comunaTienda = comunaTienda;
+
+      await Swal.fire({
+        icon: 'success',
+        title: 'Cobertura actualizada',
+        text: 'Las comunas de reparto de tu tienda fueron guardadas.',
+        confirmButtonText: 'Continuar'
+      });
+    } catch (error: any) {
+      await Swal.fire({
+        icon: 'error',
+        title: 'No se pudo guardar',
+        text: error?.response?.data?.message || 'Ocurrio un problema al actualizar las comunas de reparto.',
+        confirmButtonText: 'Entendido'
+      });
+    } finally {
+      this.guardandoCobertura = false;
+    }
+  }
+
+  private async cargarRegionesReparto(): Promise<void> {
+    this.cargandoRegiones = true;
+
+    try {
+      this.regionesDisponibles = await this.ubicacionesService.getUbicaciones();
+    } finally {
+      this.cargandoRegiones = false;
+    }
   }
 }
