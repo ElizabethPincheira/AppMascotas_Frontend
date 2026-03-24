@@ -76,8 +76,8 @@
               <li>
                 <a class="site-navbar__dropdown-item" routerLink="/mis-mascotas" (click)="closeProfileMenu()">Mis mascotas</a>
               </li>
-              <li>
-                <a class="site-navbar__dropdown-item" routerLink="/publicar" (click)="closeProfileMenu()">Inscribir a mis mascotas</a>
+               <li *ngIf="esAdministrador">
+                <a class="site-navbar__dropdown-item" routerLink="/admin" (click)="closeProfileMenu()">Administrador</a>
               </li>
               <li><hr class="site-navbar__dropdown-divider"></li>
               <li>
@@ -127,6 +127,18 @@
             {{ item.label }}
           </span>
         </ng-template>
+      </li>
+
+      <li *ngIf="user?.nombre">
+        <a class="site-navbar__drawer-link" routerLink="/mi-cuenta" (click)="closeMobileMenu()">Mi cuenta</a>
+      </li>
+
+      <li *ngIf="esUnaTienda">
+        <a class="site-navbar__drawer-link" routerLink="/mi-tienda" (click)="closeMobileMenu()">Mi tienda</a>
+      </li>
+
+      <li *ngIf="esAdministrador">
+        <a class="site-navbar__drawer-link" routerLink="/admin" (click)="closeMobileMenu()">Administrador</a>
       </li>
     </ul>
   </aside>

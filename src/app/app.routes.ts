@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { MainLayoutComponent } from './core/layout/main-layout/main-layout/main-layout.component';
 import { AuthLayoutComponent } from './core/layout/auth-layout/auth-layout/auth-layout.component';
 import { authGuard } from './core/guards/auth.guard';
+import { adminGuard } from './core/guards/admin.guard';
 import { noAuthGuard } from './core/guards/no-auth.guard';
 
 export const routes: Routes = [
@@ -106,6 +107,13 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./pages/general/mi-tienda/mi-tienda.component')
             .then(m => m.MiTiendaComponent)
+      },
+      {
+        path: 'admin',
+        canActivate: [authGuard, adminGuard],
+        loadComponent: () =>
+          import('./pages/general/admin/admin.component')
+            .then(m => m.AdminComponent)
       }
     ]
   },

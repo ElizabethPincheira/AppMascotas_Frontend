@@ -81,4 +81,12 @@ export class NavbarComponent {
     return this.user?.esTienda === true;
   }
 
+  get esAdministrador(): boolean {
+    const roles = Array.isArray(this.user?.roles)
+      ? this.user.roles.map((role: string) => role.toLowerCase())
+      : [];
+
+    return roles.includes('admin') || roles.includes('administrador');
+  }
+
 }

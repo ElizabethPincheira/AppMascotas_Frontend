@@ -1,0 +1,28 @@
+<section class="admin-page">
+  <div class="admin-shell">
+    <section class="admin-hero">
+      <div>
+        <span class="admin-hero__eyebrow">Administrador</span>
+        <h1>Panel administrativo</h1>
+        <p>
+          Bienvenido, {{ displayName }}. Desde aqui puedes acceder rapidamente a las secciones
+          que requieren supervision dentro de la plataforma.
+        </p>
+      </div>
+
+      <div class="admin-hero__badge">
+        <span>Acceso restringido</span>
+        <strong>Solo administradores</strong>
+      </div>
+    </section>
+
+    <section class="admin-shortcuts">
+      <article class="admin-card" *ngFor="let shortcut of shortcuts">
+        <span class="admin-card__eyebrow">Herramienta</span>
+        <h2>{{ shortcut.title }}</h2>
+        <p>{{ shortcut.description }}</p>
+        <a class="admin-card__link" [routerLink]="shortcut.path">Abrir seccion</a>
+      </article>
+    </section>
+  </div>
+</section>
