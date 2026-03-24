@@ -354,6 +354,7 @@
 .estado-recuperado { background: #397e56; color: #fff; }
 .estado-busca-hogar { background: #46889d; color: #fff; }
 .estado-adoptado { background: #ebc55a; color: #2d2a17; }
+.estado-situacion-calle { background: #8b6f47; color: #fff; }
 .estado-buscando-pareja { background: #c96a95; color: #fff; }
 .estado-emparejado { background: #7655b3; color: #fff; }
 .estado-default { background: #6f7a72; color: #fff; }

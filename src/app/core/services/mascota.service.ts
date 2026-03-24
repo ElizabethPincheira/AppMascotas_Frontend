@@ -40,6 +40,11 @@ export class MascotaService {
     return response.data;
   }
 
+  async createMascotaPublica(payload: Record<string, unknown>): Promise<any> {
+    const response = await axios.post(`${this.apiUrl}public`, payload);
+    return response.data;
+  }
+
   async updateMascota(id: string, payload: Record<string, unknown>): Promise<any> {
     const token = localStorage.getItem('token');
     const response = await axios.patch(`${this.apiUrl}${id}`, payload, {
@@ -59,6 +64,11 @@ export class MascotaService {
       }
     });
 
+    return response.data;
+  }
+
+  async cargarImagenesPublicas(id: string, imagenes: string[]): Promise<any> {
+    const response = await axios.patch(`${this.apiUrl}${id}/public-imagenes`, { imagenes });
     return response.data;
   }
 

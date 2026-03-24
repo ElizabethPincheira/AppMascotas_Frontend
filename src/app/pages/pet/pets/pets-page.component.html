@@ -35,6 +35,26 @@
         </app-card-mascota>
       </div>
     </div>
+
+    <div class="section-block" *ngIf="mascotasEnCalle.length > 0">
+      <div class="section-heading">
+        <div>
+          <h2>Animales En Situacion De Calle</h2>
+          <p>Publicaciones para ayudarles a encontrar un hogar, resguardo o adopcion responsable.</p>
+        </div>
+        <div>
+          <a class="more-link" routerLink="/situacion-de-calle">Ver mas</a>
+          <a class="more-link" routerLink="/situacion-de-calle/publicar">Publicar</a>
+        </div>
+      </div>
+
+      <div class="cards-grid">
+        <app-card-mascota
+          *ngFor="let mascota of mascotasEnCalle; trackBy: trackById"
+          [mascota]="mascota">
+        </app-card-mascota>
+      </div>
+    </div>
   </div>
 
   <ng-template #emptyState>

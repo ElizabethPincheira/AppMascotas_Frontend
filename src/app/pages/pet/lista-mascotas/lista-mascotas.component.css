@@ -118,6 +118,7 @@
 }
 
 .lista-mascotas-hero__link {
+  margin-top: 1.35rem;
   background: rgba(255, 255, 255, 0.12);
   color: #fff;
 }

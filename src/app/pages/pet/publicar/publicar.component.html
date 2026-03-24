@@ -4,9 +4,7 @@
       <div class="publicar-hero__content">
         <span class="publicar-hero__eyebrow">Inscribir mascota</span>
         <h1>
-          {{ modoEdicion
-            ? 'Actualiza la ficha de tu mascota y mantén su publicación siempre al día.'
-            : 'Registra a tu mascota y deja lista su publicación para ayudarla a volver o encontrar hogar.' }}
+          {{ textoHero }}
         </h1>
         <p>
           Completa la ficha con los datos más importantes, agrega fotos y deja una ubicación clara.
@@ -36,8 +34,8 @@
 
       <div class="form-grid">
         <label class="form-field form-field--full">
-          <span>Nombre</span>
-          <input type="text" [(ngModel)]="nombre" name="nombre" placeholder="Ej: Luna" required>
+          <span>{{ labelNombre }}</span>
+          <input type="text" [(ngModel)]="nombre" name="nombre" [placeholder]="placeholderNombre" [required]="!esSituacionDeCalle">
         </label>
 
         <label class="form-field">
@@ -49,31 +47,33 @@
         </label>
 
         <label class="form-field">
-          <span>Raza</span>
-          <input type="text" [(ngModel)]="raza" name="raza" placeholder="Ej: Mestiza" required>
+          <span>{{ labelRaza }}</span>
+          <input type="text" [(ngModel)]="raza" name="raza" [placeholder]="placeholderRaza" [required]="!esSituacionDeCalle">
         </label>
 
         <label class="form-field">
           <span>Estado</span>
           <select [(ngModel)]="estado" name="estado" required>
-            <option *ngFor="let item of estados" [value]="item">{{ item }}</option>
+            <option *ngFor="let item of estadosDisponibles" [value]="item">{{ item }}</option>
           </select>
+          <small>{{ helperEstado }}</small>
         </label>
 
         <label class="form-field">
-          <span>Fecha de nacimiento</span>
-          <input type="date" [(ngModel)]="fechaNacimiento" name="fechaNacimiento" [max]="maxFechaHoy" required>
+          <span>{{ labelFechaNacimiento }}</span>
+          <input type="date" [(ngModel)]="fechaNacimiento" name="fechaNacimiento" [max]="maxFechaHoy" [required]="!esSituacionDeCalle">
         </label>
 
         <label class="form-field">
-          <span>Perdido desde</span>
+          <span>{{ labelPerdidoDesde }}</span>
           <input type="date" [(ngModel)]="perdidoDesde" name="perdidoDesde" [max]="maxFechaHoy">
         </label>
 
         <div class="form-field form-field--full">
           <span>Contacto</span>
+          <small>{{ helperContacto }}</small>
 
-          <div class="location-switch">
+          <div class="location-switch" *ngIf="debeMostrarSelectorContacto">
             <label class="location-switch__option" [class.is-active]="modoContacto === 'mail'">
               <input type="radio" [(ngModel)]="modoContacto" name="modoContacto" value="mail">
               <span>Contactar por mail</span>
@@ -85,13 +85,24 @@
             </label>
           </div>
 
-          <div class="contact-card" *ngIf="modoContacto === 'mail'">
+          <div class="contact-card" *ngIf="modoContacto === 'mail' && puedeUsarCorreoPerfil">
             <span class="contact-card__label">Correo del perfil</span>
             <input
               type="email"
               [value]="userEmail || 'No hay correo disponible en tu perfil'"
               readonly>
             <small *ngIf="!userEmail">Para usar esta opción, tu sesión debe tener un correo guardado.</small>
+          </div>
+
+          <div class="contact-card" *ngIf="modoContacto === 'mail' && !puedeUsarCorreoPerfil">
+            <span class="contact-card__label">Correo de contacto</span>
+            <input
+              type="email"
+              [(ngModel)]="contacto"
+              name="contactoMail"
+              placeholder="correo@ejemplo.cl"
+              [required]="modoContacto === 'mail' && !esSituacionDeCalle">
+            <small>Usaremos este correo para que puedan contactarte por este caso.</small>
           </div>
 
           <div class="contact-card" *ngIf="modoContacto === 'telefono'">
@@ -101,7 +112,7 @@
               [(ngModel)]="contacto"
               name="contactoTelefono"
               placeholder="Ej: +56 9 1234 5678"
-              [required]="modoContacto === 'telefono'">
+              [required]="modoContacto === 'telefono' && !esSituacionDeCalle">
             <small>Ingresa un número que revises con frecuencia para responder rápido.</small>
           </div>
         </div>
@@ -110,7 +121,7 @@
       <div class="section-heading">
         <div>
           <span class="section-heading__eyebrow">Ubicación</span>
-          <h2>Zona donde fue vista o se perdió</h2>
+          <h2>{{ labelUbicacion }}</h2>
         </div>
       </div>
 
@@ -134,8 +145,8 @@
 
       <div class="gps-panel" *ngIf="modoUbicacion === 'mapa'">
         <div>
-          <strong>Marca el punto donde se perdió</strong>
-          <p>Haz clic sobre el mapa de Chile para dejar el punto aproximado y guardar las coordenadas.</p>
+          <strong>{{ esSituacionDeCalle ? 'Marca el punto donde fue visto' : 'Marca el punto donde se perdio' }}</strong>
+          <p>{{ textoMapa }}</p>
         </div>
 
         <div class="map-picker__actions">
@@ -190,7 +201,7 @@
       <div class="gps-panel" *ngIf="modoUbicacion === 'gps'">
         <div>
           <strong>Ubicación por GPS</strong>
-          <p>Usa tu ubicación actual si quieres guardar el punto automáticamente desde tu celular o navegador.</p>
+          <p>{{ textoGps }}</p>
         </div>
 
         <button type="button" class="gps-panel__button" (click)="usarUbicacionActual()" [disabled]="ubicacionGpsCargando">

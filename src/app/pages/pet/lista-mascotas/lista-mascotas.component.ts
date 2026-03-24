@@ -14,10 +14,11 @@ import { Mascota } from '../../../shared/models/mascota.model';
 })
 export class ListaMascotasComponent {
   mascotas: Mascota[] = [];
-  modo: 'perdidos' | 'adopcion' = 'perdidos';
+  modo: 'perdidos' | 'adopcion' | 'calle' = 'perdidos';
   ubicacionUsuarioDisponible = false;
   readonly estadosPerdidos = ['Robado', 'Extraviado', 'Encontrado', 'Recuperado'];
   readonly estadosAdopcion = ['Busca hogar', 'Adoptado'];
+  readonly estadosCalle = ['Situacion de calle'];
 
   constructor(
     private mascotaService: MascotaService,
@@ -46,7 +47,9 @@ export class ListaMascotasComponent {
   get mascotasFiltradas(): Mascota[] {
     const allowedStates = this.modo === 'adopcion'
       ? this.estadosAdopcion
-      : this.estadosPerdidos;
+      : this.modo === 'calle'
+        ? this.estadosCalle
+        : this.estadosPerdidos;
 
     return this.mascotas
       .filter((mascota) => allowedStates.includes(mascota.estado))
@@ -65,7 +68,15 @@ export class ListaMascotasComponent {
   }
 
   get pageTitle(): string {
-    return this.modo === 'adopcion' ? 'Mascotas En Adopcion' : 'Mascotas Perdidas';
+    if (this.modo === 'adopcion') {
+      return 'Mascotas En Adopcion';
+    }
+
+    if (this.modo === 'calle') {
+      return 'Animales En Situacion De Calle';
+    }
+
+    return 'Mascotas Perdidas';
   }
 
   get pageDescription(): string {
@@ -73,13 +84,35 @@ export class ListaMascotasComponent {
       ? 'Se ordenan desde las más cercanas a tu ubicación.'
       : 'Si habilitas tu ubicación, las verás desde las más cercanas a las más lejanas.';
 
-    return this.modo === 'adopcion'
-      ? `Explora publicaciones activas de mascotas que buscan una nueva familia. ${suffix}`
-      : `Revisa reportes recientes para ayudar a encontrar y reencontrar mascotas. ${suffix}`;
+    if (this.modo === 'adopcion') {
+      return `Explora publicaciones activas de mascotas que buscan una nueva familia. ${suffix}`;
+    }
+
+    if (this.modo === 'calle') {
+      return `Conoce animales que hoy viven en la calle y que necesitan una familia, refugio o una segunda oportunidad. ${suffix}`;
+    }
+
+    return `Revisa reportes recientes para ayudar a encontrar y reencontrar mascotas. ${suffix}`;
   }
 
   get pageBadge(): string {
-    return this.modo === 'adopcion' ? 'Adopcion activa' : 'Busqueda comunitaria';
+    if (this.modo === 'adopcion') {
+      return 'Adopcion activa';
+    }
+
+    if (this.modo === 'calle') {
+      return 'Dar hogar';
+    }
+
+    return 'Busqueda comunitaria';
+  }
+
+  get ctaLink(): string {
+    return this.modo === 'calle' ? '/situacion-de-calle/publicar' : '/publicar';
+  }
+
+  get ctaLabel(): string {
+    return this.modo === 'calle' ? 'Publicar animal en calle' : 'Publicar caso';
   }
 
   private async obtenerUbicacionUsuario(): Promise<{ latitude: number; longitude: number } | null> {

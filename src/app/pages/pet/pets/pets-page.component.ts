@@ -21,6 +21,7 @@ export class PetsPageComponent {
   ubicacionUsuarioDisponible = false;
   readonly estadosPerdidos = ['Robado', 'Extraviado', 'Encontrado', 'Recuperado'];
   readonly estadosAdopcion = ['Busca hogar', 'Adoptado'];
+  readonly estadosCalle = ['Situacion de calle'];
 
   constructor(private mascotaService: MascotaService) { }
 
@@ -50,8 +51,14 @@ export class PetsPageComponent {
       .slice(0, 4);
   }
 
+  get mascotasEnCalle(): Mascota[] {
+    return this.mascotas
+      .filter((mascota) => this.estadosCalle.includes(mascota.estado))
+      .slice(0, 4);
+  }
+
   hasAnySectionData(): boolean {
-    return this.mascotasPerdidasRecientes.length > 0 || this.mascotasEnAdopcion.length > 0;
+    return this.mascotasPerdidasRecientes.length > 0 || this.mascotasEnAdopcion.length > 0 || this.mascotasEnCalle.length > 0;
   }
 
   private async obtenerUbicacionUsuario(): Promise<{ latitude: number; longitude: number } | null> {

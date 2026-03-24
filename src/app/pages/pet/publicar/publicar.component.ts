@@ -24,6 +24,7 @@ export class PublicarComponent {
 
   mascotaId: string | null = null;
   modoEdicion = false;
+  modoPublicacion: 'normal' | 'calle-publica' = 'normal';
 
   nombre = '';
   especie = '';
@@ -57,6 +58,7 @@ export class PublicarComponent {
     'Robado',
     'Encontrado',
     'Busca hogar',
+    'Situacion de calle',
     'Recuperado'
   ];
 
@@ -76,8 +78,14 @@ export class PublicarComponent {
   mapZoom = 5;
 
   async ngOnInit(): Promise<void> {
+    this.modoPublicacion = this.route.snapshot.data['modoPublicacion'] ?? 'normal';
     this.mascotaId = this.route.snapshot.paramMap.get('id');
     this.modoEdicion = !!this.mascotaId;
+
+    if (this.esPublicacionCallePublica) {
+      this.estado = 'Situacion de calle';
+      this.modoContacto = 'telefono';
+    }
 
     if (this.modoEdicion && this.mascotaId) {
       await this.cargarMascotaParaEditar(this.mascotaId);
@@ -88,13 +96,14 @@ export class PublicarComponent {
     const tieneUbicacionGps = this.latitud !== null && this.longitud !== null;
     const fechasValidas = this.isFechaNacimientoValida() && this.isPerdidoDesdeValida();
     const contactoValido = this.isContactoValido();
+    const nombreValido = this.esSituacionDeCalle ? true : !!this.nombre.trim();
+    const razaValida = this.esSituacionDeCalle ? true : !!this.raza.trim();
 
     return !!(
-      this.nombre.trim() &&
+      nombreValido &&
       this.especie.trim() &&
-      this.raza.trim() &&
+      razaValida &&
       this.estado.trim() &&
-      this.fechaNacimiento &&
       contactoValido &&
       tieneUbicacionGps &&
       fechasValidas
@@ -111,6 +120,92 @@ export class PublicarComponent {
 
   get contactoSeleccionado(): string {
     return this.modoContacto === 'mail' ? this.userEmail : this.contacto.trim();
+  }
+
+  get estaAutenticado(): boolean {
+    return this.authService.isLogged();
+  }
+
+  get esPublicacionCallePublica(): boolean {
+    return this.modoPublicacion === 'calle-publica' && !this.modoEdicion;
+  }
+
+  get esSituacionDeCalle(): boolean {
+    return this.estado === 'Situacion de calle';
+  }
+
+  get helperEstado(): string {
+    return this.esSituacionDeCalle
+      ? 'Usa esta opcion cuando el animal no tiene un dueno identificado y necesita una familia o resguardo.'
+      : 'Elige el estado que mejor representa la situacion actual de la mascota.';
+  }
+
+  get labelPerdidoDesde(): string {
+    return this.esSituacionDeCalle ? 'Vista desde' : 'Perdido desde';
+  }
+
+  get labelNombre(): string {
+    return this.esSituacionDeCalle ? 'Nombre o referencia visual' : 'Nombre';
+  }
+
+  get labelRaza(): string {
+    return this.esSituacionDeCalle ? 'Raza o tipo (opcional)' : 'Raza';
+  }
+
+  get labelFechaNacimiento(): string {
+    return this.esSituacionDeCalle ? 'Fecha de nacimiento aproximada (opcional)' : 'Fecha de nacimiento';
+  }
+
+  get placeholderNombre(): string {
+    return this.esSituacionDeCalle ? 'Ej: Perrita cafe con pañuelo rojo' : 'Ej: Luna';
+  }
+
+  get placeholderRaza(): string {
+    return this.esSituacionDeCalle ? 'Ej: Mestizo, tamaño mediano' : 'Ej: Mestiza';
+  }
+
+  get labelUbicacion(): string {
+    return this.esSituacionDeCalle ? 'Zona donde fue visto' : 'Zona donde fue vista o se perdio';
+  }
+
+  get textoMapa(): string {
+    return this.esSituacionDeCalle
+      ? 'Haz clic sobre el mapa de Chile para marcar el sector donde fue visto y dejar una referencia clara para ayudarlo.'
+      : 'Haz clic sobre el mapa de Chile para dejar el punto aproximado y guardar las coordenadas.';
+  }
+
+  get textoGps(): string {
+    return this.esSituacionDeCalle
+      ? 'Usa tu ubicación actual si estás cerca del lugar donde viste al animal y quieres guardar el punto automáticamente.'
+      : 'Usa tu ubicación actual si quieres guardar el punto automáticamente desde tu celular o navegador.';
+  }
+
+  get estadosDisponibles(): string[] {
+    return this.esPublicacionCallePublica ? ['Situacion de calle'] : this.estados;
+  }
+
+  get puedeUsarCorreoPerfil(): boolean {
+    return this.estaAutenticado && !!this.userEmail;
+  }
+
+  get debeMostrarSelectorContacto(): boolean {
+    return !this.esPublicacionCallePublica || this.puedeUsarCorreoPerfil;
+  }
+
+  get textoHero(): string {
+    if (this.esPublicacionCallePublica) {
+      return 'Reporta un animal en situación de calle para que la comunidad pueda ayudarle a encontrar hogar.';
+    }
+
+    return this.modoEdicion
+      ? 'Actualiza la ficha de tu mascota y mantén su publicación siempre al día.'
+      : 'Registra a tu mascota y deja lista su publicación para ayudarla a volver o encontrar hogar.';
+  }
+
+  get helperContacto(): string {
+    return this.esSituacionDeCalle
+      ? 'Puedes dejar un correo o teléfono si quieres que te contacten, pero no es obligatorio.'
+      : 'Deja un medio de contacto para que puedan avisarte rápidamente.';
   }
 
   get mapTiles(): Array<{ src: string; left: number; top: number }> {
@@ -429,29 +524,35 @@ export class PublicarComponent {
 
     try {
       const payload = {
-        nombre: this.nombre.trim(),
+        nombre: this.nombre.trim() || undefined,
         especie: this.especie.trim().toLowerCase(),
-        raza: this.raza.trim(),
+        raza: this.raza.trim() || undefined,
         estado: this.estado,
-        fechaNacimiento: this.fechaNacimiento,
+        fechaNacimiento: this.fechaNacimiento || undefined,
         perdidoDesde: this.perdidoDesde || undefined,
         latitud: this.latitud ?? undefined,
         longitud: this.longitud ?? undefined,
         caracteristicasAdicionales: this.caracteristicasAdicionales.trim() || undefined,
-        contacto: this.contactoSeleccionado
+        contacto: this.contactoSeleccionado || undefined
       };
 
       const response = this.modoEdicion && this.mascotaId
         ? await this.mascotaService.updateMascota(this.mascotaId, payload)
-        : await this.mascotaService.createMascota(payload);
+        : this.esPublicacionCallePublica
+          ? await this.mascotaService.createMascotaPublica(payload)
+          : await this.mascotaService.createMascota(payload);
 
       const mascotaId = this.mascotaId ?? response?.mascotaId ?? response?._id ?? response?.id;
 
       if (mascotaId && this.imagePayloads.length) {
         try {
-          await this.imagenesService.cargarImagenesMascota(mascotaId, this.imagePayloads);
+          if (this.esPublicacionCallePublica) {
+            await this.mascotaService.cargarImagenesPublicas(mascotaId, this.imagePayloads);
+          } else {
+            await this.imagenesService.cargarImagenesMascota(mascotaId, this.imagePayloads);
+          }
         } catch (imageError) {
-          if (!this.modoEdicion) {
+          if (!this.modoEdicion && !this.esPublicacionCallePublica) {
             await this.mascotaService.deleteMascota(mascotaId);
           }
 
@@ -469,7 +570,7 @@ export class PublicarComponent {
           : 'Tu publicación ya quedó registrada correctamente.'
       });
 
-      await this.router.navigate(['/mis-mascotas']);
+      await this.router.navigate([this.esPublicacionCallePublica ? '/situacion-de-calle' : '/mis-mascotas']);
     } catch (error) {
       Swal.close();
       await Swal.fire({
@@ -534,6 +635,10 @@ export class PublicarComponent {
   }
 
   private isFechaNacimientoValida(): boolean {
+    if (this.esSituacionDeCalle && !this.fechaNacimiento) {
+      return true;
+    }
+
     if (!this.fechaNacimiento) {
       return false;
     }
@@ -556,8 +661,16 @@ export class PublicarComponent {
   }
 
   private isContactoValido(): boolean {
+    if (this.esSituacionDeCalle && !this.contacto.trim() && (!this.puedeUsarCorreoPerfil || this.modoContacto !== 'mail')) {
+      return true;
+    }
+
     if (this.modoContacto === 'mail') {
-      return !!this.userEmail;
+      if (this.puedeUsarCorreoPerfil) {
+        return true;
+      }
+
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.contacto.trim());
     }
 
     const telefono = this.contacto.replace(/\s+/g, '');

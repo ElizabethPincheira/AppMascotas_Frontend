@@ -18,6 +18,7 @@ export class NavbarComponent {
     { label: 'Inicio', path: '/', exact: true },
     { label: 'Perdidos', path: '/perdidos' },
     { label: 'Adopcion', path: '/adopcion' },
+    { label: 'En calle', path: '/situacion-de-calle' },
     { label: 'Tiendas', path: '/tiendas' },
     { label: 'Ser parte', path: '/colaboradores' },
     { label: 'Fauna', path: '/fauna' },

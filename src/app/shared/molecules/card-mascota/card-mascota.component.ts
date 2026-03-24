@@ -178,6 +178,8 @@ export class CardMascotaComponent {
         return 'Estoy esperando que alguien me reconozca.';
       case 'Busca hogar':
         return 'Estoy buscando una familia que me quiera.';
+      case 'Situacion de calle':
+        return 'Necesito una oportunidad para salir de la calle y encontrar un hogar.';
       case 'Adoptado':
         return 'Ya encontré una familia, gracias por ayudar.';
       default:
@@ -192,6 +194,10 @@ export class CardMascotaComponent {
 
     if (this.mascota.estado === 'Busca hogar') {
       return 'Difunde esta publicación para encontrar un hogar';
+    }
+
+    if (this.mascota.estado === 'Situacion de calle') {
+      return 'Comparte esta publicación para ayudarle a encontrar hogar';
     }
 
     return 'Comparte esta publicación y ayuda a encontrarlo';
@@ -233,6 +239,9 @@ export class CardMascotaComponent {
 
       case 'Adoptado':
         return 'estado-adoptado';
+
+      case 'Situacion de calle':
+        return 'estado-situacion-calle';
 
       case 'Buscando pareja':
         return 'estado-buscando-pareja';

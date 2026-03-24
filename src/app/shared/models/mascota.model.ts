@@ -11,7 +11,7 @@ export interface Mascota {
   regionPerdida?: string;
   provinciaPerdida?: string;
   comunaPerdida?: string;
-  estado: 'Robado' | 'Extraviado' | 'Encontrado'|'Recuperado'|'Busca hogar'|'Adoptado'|'Buscando pareja'|'Emparejado';
+  estado: 'Robado' | 'Extraviado' | 'Encontrado'|'Recuperado'|'Busca hogar'|'Adoptado'|'Situacion de calle'|'Buscando pareja'|'Emparejado';
   descripcion?: string;
   caracteristicasAdicionales?: string;
   contacto?: string;

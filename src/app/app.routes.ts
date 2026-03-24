@@ -31,6 +31,13 @@ export const routes: Routes = [
         data: { modo: 'adopcion' },
       },
       {
+        path: 'situacion-de-calle',
+        loadComponent: () =>
+          import('./pages/pet/lista-mascotas/lista-mascotas.component')
+            .then(m => m.ListaMascotasComponent),
+        data: { modo: 'calle' },
+      },
+      {
         path: 'about',
         loadComponent: () =>
           import('./pages/pet/about/about-page.component')
@@ -72,6 +79,13 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./pages/pet/publicar/publicar.component')
             .then(m => m.PublicarComponent)
+      },
+      {
+        path: 'situacion-de-calle/publicar',
+        loadComponent: () =>
+          import('./pages/pet/publicar/publicar.component')
+            .then(m => m.PublicarComponent),
+        data: { modoPublicacion: 'calle-publica' },
       },
       {
         path: 'publicar/:id',
