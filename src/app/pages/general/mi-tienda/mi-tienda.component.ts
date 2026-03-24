@@ -7,6 +7,7 @@ import { AuthService } from '../../../core/services/auth.service';
 import { ProductosService, Producto, CreateProductoDto } from '../../../core/services/productos.service';
 import { UsersService } from '../../../core/services/users.service';
 import { UbicacionesService } from '../../../core/services/ubicaciones.service';
+import { STORE_CATEGORIES } from '../../ecommer/tiendas/store-categories.data';
 
 interface StoreScheduleRow {
   dia: string;
@@ -45,6 +46,7 @@ export class MiTiendaComponent implements OnInit {
   cargandoProvincias = false;
   cargandoComunas = false;
   guardandoDetalles = false;
+  readonly categoriasDisponibles = STORE_CATEGORIES;
 
   readonly diasSemana = [
     'Lunes',
@@ -68,7 +70,8 @@ export class MiTiendaComponent implements OnInit {
     descripcionTienda: this.user?.descripcionTienda || '',
     direccionTienda: this.user?.direccionTienda || '',
     telefonoTienda: this.user?.telefonoTienda || '',
-    categoriasTexto: Array.isArray(this.user?.categoriasTienda) ? this.user.categoriasTienda.join(', ') : '',
+    categoriaSeleccionada: '',
+    categoriasSeleccionadas: Array.isArray(this.user?.categoriasTienda) ? [...this.user.categoriasTienda] : [],
   };
 
   horarioForm: StoreScheduleRow[] = this.buildScheduleForm(this.user?.horarioTienda);
@@ -154,8 +157,28 @@ export class MiTiendaComponent implements OnInit {
       this.detallesForm.nombreTienda.trim() &&
       this.detallesForm.descripcionTienda.trim() &&
       this.detallesForm.direccionTienda.trim() &&
-      this.detallesForm.telefonoTienda.trim()
+      this.detallesForm.telefonoTienda.trim() &&
+      this.detallesForm.categoriasSeleccionadas.length > 0
     );
+  }
+
+  agregarCategoriaSeleccionada(): void {
+    const categoria = this.detallesForm.categoriaSeleccionada;
+
+    if (!categoria || this.detallesForm.categoriasSeleccionadas.includes(categoria)) {
+      return;
+    }
+
+    this.detallesForm.categoriasSeleccionadas = [
+      ...this.detallesForm.categoriasSeleccionadas,
+      categoria,
+    ];
+    this.detallesForm.categoriaSeleccionada = '';
+  }
+
+  eliminarCategoria(categoria: string): void {
+    this.detallesForm.categoriasSeleccionadas = this.detallesForm.categoriasSeleccionadas
+      .filter((item) => item !== categoria);
   }
 
   get formularioValido(): boolean {
@@ -440,11 +463,6 @@ export class MiTiendaComponent implements OnInit {
     this.guardandoDetalles = true;
 
     try {
-      const categoriasTienda = this.detallesForm.categoriasTexto
-        .split(',')
-        .map((item: string) => item.trim())
-        .filter(Boolean);
-
       const horarioTienda = this.horarioForm.map((row) => ({
         dia: row.dia,
         abierto: row.abierto,
@@ -460,16 +478,17 @@ export class MiTiendaComponent implements OnInit {
         regionTienda: this.repartoForm.regionTienda,
         provinciaTienda: this.repartoForm.provinciaTienda,
         comunaTienda: this.repartoForm.comunasRepartoTienda[0] || this.repartoForm.comunaTienda,
-        categoriasTienda,
+        categoriasTienda: this.detallesForm.categoriasSeleccionadas,
         comunasRepartoTienda: this.repartoForm.comunasRepartoTienda,
         horarioTienda,
       });
 
       this.user = response.user;
       this.authService.setUser(response.user);
-      this.detallesForm.categoriasTexto = Array.isArray(response.user?.categoriasTienda)
-        ? response.user.categoriasTienda.join(', ')
-        : '';
+      this.detallesForm.categoriaSeleccionada = '';
+      this.detallesForm.categoriasSeleccionadas = Array.isArray(response.user?.categoriasTienda)
+        ? [...response.user.categoriasTienda]
+        : [];
       this.horarioForm = this.buildScheduleForm(response.user?.horarioTienda);
 
       await Swal.fire({

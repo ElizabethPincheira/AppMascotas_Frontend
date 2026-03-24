@@ -97,10 +97,32 @@
             <input type="text" [(ngModel)]="storeForm.telefonoTienda" placeholder="+56 9 1234 5678" />
           </label>
 
-          <label class="form-field">
+          <div class="form-field">
             <span>Categorias</span>
-            <input type="text" [(ngModel)]="storeForm.categoriasTexto" placeholder="Alimentos, Accesorios, Veterinaria" />
-          </label>
+            <div class="category-selector">
+              <select [(ngModel)]="storeForm.categoriaSeleccionada">
+                <option value="">Selecciona una categoria</option>
+                <option *ngFor="let categoria of categoriasDisponibles" [value]="categoria" [disabled]="storeForm.categoriasSeleccionadas.includes(categoria)">
+                  {{ categoria }}
+                </option>
+              </select>
+
+              <button type="button" class="secondary-button category-selector__button" (click)="agregarCategoriaSeleccionada()" [disabled]="!storeForm.categoriaSeleccionada">
+                Agregar
+              </button>
+            </div>
+
+            <div class="category-tags" *ngIf="storeForm.categoriasSeleccionadas.length > 0; else noSelectedCategories">
+              <button type="button" class="category-tag" *ngFor="let categoria of storeForm.categoriasSeleccionadas" (click)="eliminarCategoria(categoria)">
+                <span>{{ categoria }}</span>
+                <strong>×</strong>
+              </button>
+            </div>
+
+            <ng-template #noSelectedCategories>
+              <p class="category-helper">Agrega una o más categorias desde la lista para describir tu tienda.</p>
+            </ng-template>
+          </div>
         </div>
 
         <div class="form-actions">

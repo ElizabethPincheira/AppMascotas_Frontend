@@ -44,10 +44,32 @@
             <input type="text" [(ngModel)]="detallesForm.direccionTienda" placeholder="Direccion o punto de referencia" />
           </label>
 
-          <label class="form-field form-field--full">
+          <div class="form-field form-field--full">
             <span>Categorias</span>
-            <input type="text" [(ngModel)]="detallesForm.categoriasTexto" placeholder="Alimentos, Accesorios, Veterinaria" />
-          </label>
+            <div class="category-selector">
+              <select [(ngModel)]="detallesForm.categoriaSeleccionada">
+                <option value="">Selecciona una categoria</option>
+                <option *ngFor="let categoria of categoriasDisponibles" [value]="categoria" [disabled]="detallesForm.categoriasSeleccionadas.includes(categoria)">
+                  {{ categoria }}
+                </option>
+              </select>
+
+              <button type="button" class="btn-secondary category-selector__button" (click)="agregarCategoriaSeleccionada()" [disabled]="!detallesForm.categoriaSeleccionada">
+                Agregar
+              </button>
+            </div>
+
+            <div class="category-editor" *ngIf="detallesForm.categoriasSeleccionadas.length > 0; else noStoreCategories">
+              <button type="button" class="category-editor__tag" *ngFor="let categoria of detallesForm.categoriasSeleccionadas" (click)="eliminarCategoria(categoria)">
+                <span>{{ categoria }}</span>
+                <strong>×</strong>
+              </button>
+            </div>
+
+            <ng-template #noStoreCategories>
+              <p class="category-editor__helper">Selecciona las categorias que mejor representan tu tienda.</p>
+            </ng-template>
+          </div>
         </div>
 
         <div class="schedule-panel">

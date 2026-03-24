@@ -6,6 +6,7 @@ import Swal from 'sweetalert2';
 import { AuthService } from '../../../core/services/auth.service';
 import { UbicacionesService } from '../../../core/services/ubicaciones.service';
 import { UsersService } from '../../../core/services/users.service';
+import { STORE_CATEGORIES } from '../../ecommer/tiendas/store-categories.data';
 
 @Component({
   selector: 'app-registrar-tienda',
@@ -28,6 +29,7 @@ export class RegistrarTiendaComponent {
   cargandoRegiones = false;
   cargandoProvincias = false;
   cargandoComunas = false;
+  readonly categoriasDisponibles = STORE_CATEGORIES;
 
   storeForm = {
     nombreTienda: this.user?.nombreTienda || '',
@@ -37,7 +39,8 @@ export class RegistrarTiendaComponent {
     regionTienda: this.user?.regionTienda || '',
     provinciaTienda: this.user?.provinciaTienda || '',
     comunaTienda: this.user?.comunaTienda || '',
-    categoriasTexto: Array.isArray(this.user?.categoriasTienda) ? this.user.categoriasTienda.join(', ') : '',
+    categoriaSeleccionada: '',
+    categoriasSeleccionadas: Array.isArray(this.user?.categoriasTienda) ? [...this.user.categoriasTienda] : [],
     comunasRepartoSeleccionadas: Array.isArray(this.user?.comunasRepartoTienda) ? [...this.user.comunasRepartoTienda] : [],
   };
 
@@ -73,8 +76,28 @@ export class RegistrarTiendaComponent {
       this.storeForm.regionTienda &&
       this.storeForm.provinciaTienda &&
       this.storeForm.comunaTienda &&
+      this.storeForm.categoriasSeleccionadas.length > 0 &&
       this.storeForm.comunasRepartoSeleccionadas.length > 0
     );
+  }
+
+  agregarCategoriaSeleccionada(): void {
+    const categoria = this.storeForm.categoriaSeleccionada;
+
+    if (!categoria || this.storeForm.categoriasSeleccionadas.includes(categoria)) {
+      return;
+    }
+
+    this.storeForm.categoriasSeleccionadas = [
+      ...this.storeForm.categoriasSeleccionadas,
+      categoria,
+    ];
+    this.storeForm.categoriaSeleccionada = '';
+  }
+
+  eliminarCategoria(categoria: string): void {
+    this.storeForm.categoriasSeleccionadas = this.storeForm.categoriasSeleccionadas
+      .filter((item) => item !== categoria);
   }
 
   async onRegionChange(resetChildren = true): Promise<void> {
@@ -146,11 +169,6 @@ export class RegistrarTiendaComponent {
     this.enviandoTienda = true;
 
     try {
-      const categoriasTienda = this.storeForm.categoriasTexto
-        .split(',')
-        .map((item: string) => item.trim())
-        .filter(Boolean);
-
       const response = await this.usersService.registerStore({
         nombreTienda: this.storeForm.nombreTienda.trim(),
         descripcionTienda: this.storeForm.descripcionTienda.trim(),
@@ -159,7 +177,7 @@ export class RegistrarTiendaComponent {
         regionTienda: this.storeForm.regionTienda,
         provinciaTienda: this.storeForm.provinciaTienda,
         comunaTienda: this.storeForm.comunaTienda,
-        categoriasTienda,
+        categoriasTienda: this.storeForm.categoriasSeleccionadas,
         comunasRepartoTienda: this.storeForm.comunasRepartoSeleccionadas,
       });
 
