@@ -1,5 +1,5 @@
 export interface DeliveryStore {
-  id: number;
+  id: string | number;
   name: string;
   slug: string;
   slogan: string;

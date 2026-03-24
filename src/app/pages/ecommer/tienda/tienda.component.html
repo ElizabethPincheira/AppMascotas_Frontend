@@ -1,4 +1,4 @@
-<ng-container *ngIf="store$ | async as store; else storeNotFound">
+<ng-container *ngIf="!cargando && store as store; else storeState">
   <section class="store-detail-page">
     <div class="store-detail-shell">
       <nav class="breadcrumb">
@@ -135,12 +135,23 @@
   </section>
 </ng-container>
 
+<ng-template #storeState>
+  <section class="store-detail-page">
+    <div class="store-detail-shell">
+      <section class="empty-state" *ngIf="cargando; else storeNotFound">
+        <h1>Cargando tienda...</h1>
+        <p>Estamos buscando la informacion de la tienda seleccionada.</p>
+      </section>
+    </div>
+  </section>
+</ng-template>
+
 <ng-template #storeNotFound>
   <section class="store-detail-page">
     <div class="store-detail-shell">
       <section class="empty-state">
         <h1>Tienda no encontrada</h1>
-        <p>La tienda que buscas no existe o fue removida de esta demo.</p>
+        <p>La tienda que buscas no existe o aun no esta disponible en la base de datos.</p>
         <a routerLink="/tiendas" class="hero-link hero-link--solid">Volver a tiendas</a>
       </section>
     </div>
