@@ -54,7 +54,11 @@ export class UsersService {
     descripcionTienda: string;
     direccionTienda: string;
     telefonoTienda: string;
+    regionTienda: string;
+    provinciaTienda: string;
+    comunaTienda: string;
     categoriasTienda: string[];
+    comunasRepartoTienda: string[];
   }): Promise<any> {
     const token = localStorage.getItem('token');
 

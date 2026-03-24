@@ -10,9 +10,13 @@ export interface Store {
   direccionTienda: string;
   telefonoTienda: string;
   categoriasTienda: string[];
-  region: string;
-  provincia: string;
-  comuna: string;
+  comunasRepartoTienda?: string[];
+  regionTienda?: string;
+  provinciaTienda?: string;
+  comunaTienda?: string;
+  region?: string;
+  provincia?: string;
+  comuna?: string;
 }
 
 export interface BackendProducto {
@@ -64,15 +68,17 @@ export class TiendasService {
       slug: store.nombreTienda.toLowerCase().replace(/\s+/g, '-'),
       name: store.nombreTienda,
       slogan: store.descripcionTienda || 'Tienda registrada en Circulo Animal.',
-      region: store.region,
-      provincia: store.provincia,
-      comuna: store.comuna,
+      region: store.regionTienda || store.region || 'Sin region',
+      provincia: store.provinciaTienda || store.provincia || 'Sin provincia',
+      comuna: store.comunaTienda || store.comuna || 'Sin comuna',
       address: store.direccionTienda,
       eta: 'A coordinar con la tienda',
       schedule: 'Horario informado por la tienda',
       deliveryFee: 'Consultar',
       rating: 5,
-      coverage: [store.comuna],
+      coverage: (store.comunasRepartoTienda && store.comunasRepartoTienda.length > 0)
+        ? store.comunasRepartoTienda
+        : [store.comunaTienda || store.comuna || 'Cobertura a coordinar'],
       categories: store.categoriasTienda || [],
       highlight: store.descripcionTienda || 'Conoce esta tienda registrada en la comunidad.',
       description: store.descripcionTienda || 'Esta tienda forma parte de la red de Circulo Animal.',

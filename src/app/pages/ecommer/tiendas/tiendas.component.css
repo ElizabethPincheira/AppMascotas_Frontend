@@ -195,6 +195,12 @@
   letter-spacing: -0.04em;
 }
 
+.filters-helper {
+  margin: 0.75rem 0 0;
+  color: var(--text-main);
+  line-height: 1.65;
+}
+
 .results-badge {
   display: inline-flex;
   align-items: center;

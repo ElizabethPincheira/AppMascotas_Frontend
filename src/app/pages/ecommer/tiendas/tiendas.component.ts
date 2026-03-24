@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { AuthService } from '../../../core/services/auth.service';
 import { TiendasService } from '../../../core/services/tiendas.service';
 import { DeliveryStore } from './delivery-store.model';
 import { StoreCardComponent } from './store-card/store-card.component';
@@ -14,12 +15,14 @@ import { StoreCardComponent } from './store-card/store-card.component';
 })
 export class TiendaComponent implements OnInit {
   private readonly tiendasService = inject(TiendasService);
+  private readonly authService = inject(AuthService);
 
   selectedRegion = '';
   selectedProvincia = '';
   selectedComuna = '';
   stores: DeliveryStore[] = [];
   cargandoTiendas = false;
+  private readonly currentUser = this.authService.getUser();
 
   async ngOnInit(): Promise<void> {
     await this.cargarTiendasDelBackend();
@@ -56,7 +59,7 @@ export class TiendaComponent implements OnInit {
       this.stores
         .filter((store) => !this.selectedRegion || store.region === this.selectedRegion)
         .filter((store) => !this.selectedProvincia || store.provincia === this.selectedProvincia)
-        .map((store) => store.comuna)
+        .flatMap((store) => store.coverage.length ? store.coverage : [store.comuna])
     )].sort();
   }
 
@@ -64,9 +67,18 @@ export class TiendaComponent implements OnInit {
     return this.stores.filter((store) => {
       const matchesRegion = !this.selectedRegion || store.region === this.selectedRegion;
       const matchesProvincia = !this.selectedProvincia || store.provincia === this.selectedProvincia;
-      const matchesComuna = !this.selectedComuna || store.comuna === this.selectedComuna;
+      const matchesComuna = !this.selectedComuna || store.coverage.includes(this.selectedComuna) || store.comuna === this.selectedComuna;
 
       return matchesRegion && matchesProvincia && matchesComuna;
+    }).sort((a, b) => {
+      const scoreA = this.getDistanceScore(a);
+      const scoreB = this.getDistanceScore(b);
+
+      if (scoreA !== scoreB) {
+        return scoreA - scoreB;
+      }
+
+      return a.name.localeCompare(b.name);
     });
   }
 
@@ -77,5 +89,25 @@ export class TiendaComponent implements OnInit {
 
   onProvinciaChange(): void {
     this.selectedComuna = '';
+  }
+
+  private getDistanceScore(store: DeliveryStore): number {
+    const referenceRegion = this.selectedRegion || this.currentUser?.region || '';
+    const referenceProvincia = this.selectedProvincia || this.currentUser?.provincia || '';
+    const referenceComuna = this.selectedComuna || this.currentUser?.comuna || '';
+
+    if (referenceComuna && store.comuna === referenceComuna) {
+      return 0;
+    }
+
+    if (referenceProvincia && store.provincia === referenceProvincia) {
+      return 1;
+    }
+
+    if (referenceRegion && store.region === referenceRegion) {
+      return 2;
+    }
+
+    return 3;
   }
 }

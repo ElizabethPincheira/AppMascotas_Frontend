@@ -43,6 +43,52 @@
           </label>
 
           <label class="form-field">
+            <span>Region de la tienda</span>
+            <select [(ngModel)]="storeForm.regionTienda" (ngModelChange)="onRegionChange()">
+              <option value="">Selecciona una region</option>
+              <option *ngFor="let region of regiones" [value]="region">{{ region }}</option>
+            </select>
+          </label>
+
+          <label class="form-field">
+            <span>Provincia de la tienda</span>
+            <select
+              [(ngModel)]="storeForm.provinciaTienda"
+              (ngModelChange)="onProvinciaChange()"
+              [disabled]="!storeForm.regionTienda || cargandoProvincias"
+            >
+              <option value="">Selecciona una provincia</option>
+              <option *ngFor="let provincia of provincias" [value]="provincia">{{ provincia }}</option>
+            </select>
+          </label>
+
+          <label class="form-field">
+            <span>Comuna de la tienda</span>
+            <select [(ngModel)]="storeForm.comunaTienda" [disabled]="!storeForm.provinciaTienda || cargandoComunas">
+              <option value="">Selecciona una comuna</option>
+              <option *ngFor="let comuna of comunas" [value]="comuna">{{ comuna }}</option>
+            </select>
+          </label>
+
+          <div class="form-field">
+            <span>Comunas de reparto</span>
+            <div class="delivery-communes" *ngIf="comunas.length > 0; else noComunas">
+              <label class="delivery-commune" *ngFor="let comuna of comunas">
+                <input
+                  type="checkbox"
+                  [checked]="isComunaRepartoSelected(comuna)"
+                  (change)="toggleComunaReparto(comuna, $any($event.target).checked)"
+                />
+                <span>{{ comuna }}</span>
+              </label>
+            </div>
+
+            <ng-template #noComunas>
+              <p class="delivery-communes__helper">Selecciona region y provincia para definir comunas de reparto.</p>
+            </ng-template>
+          </div>
+
+          <label class="form-field">
             <span>Telefono de contacto</span>
             <input type="text" [(ngModel)]="storeForm.telefonoTienda" placeholder="+56 9 1234 5678" />
           </label>

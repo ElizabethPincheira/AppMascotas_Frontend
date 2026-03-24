@@ -52,6 +52,16 @@
               </span>
             </div>
           </div>
+
+          <div class="info-field">
+            <span class="info-field__label">Comunas de reparto</span>
+            <div class="categories-list">
+              <span *ngFor="let comuna of comunasRepartoTienda" class="category-badge">
+                {{ comuna }}
+              </span>
+              <p class="info-field__value" *ngIf="comunasRepartoTienda.length === 0">Sin comunas registradas.</p>
+            </div>
+          </div>
         </div>
       </article>
 

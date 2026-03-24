@@ -74,6 +74,10 @@ export class MiTiendaComponent implements OnInit {
     return Array.isArray(this.user?.categoriasTienda) ? this.user.categoriasTienda : [];
   }
 
+  get comunasRepartoTienda(): string[] {
+    return Array.isArray(this.user?.comunasRepartoTienda) ? this.user.comunasRepartoTienda : [];
+  }
+
   get estadoTienda(): string {
     return this.user?.estadoSolicitudTienda || 'ninguna';
   }
