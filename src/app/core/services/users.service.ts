@@ -99,4 +99,16 @@ export class UsersService {
     return response.data;
   }
 
+  async getAdminUsers(): Promise<any> {
+    const token = localStorage.getItem('token');
+
+    const response = await axios.get(this.apiUrl + 'user/admin/users', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return response.data;
+  }
+
 }

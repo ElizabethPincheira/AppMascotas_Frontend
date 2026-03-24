@@ -114,6 +114,13 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./pages/general/admin/admin.component')
             .then(m => m.AdminComponent)
+      },
+      {
+        path: 'admin/usuarios',
+        canActivate: [authGuard, adminGuard],
+        loadComponent: () =>
+          import('./pages/general/admin/admin-users.component')
+            .then(m => m.AdminUsersComponent)
       }
     ]
   },

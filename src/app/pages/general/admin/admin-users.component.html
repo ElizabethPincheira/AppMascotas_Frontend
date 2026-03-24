@@ -1,0 +1,68 @@
+<section class="admin-users-page">
+  <div class="admin-users-shell">
+    <section class="admin-users-hero">
+      <div>
+        <a class="admin-users-hero__back" routerLink="/admin">← Volver al panel</a>
+        <span class="admin-users-hero__eyebrow">Administrador</span>
+        <h1>Ver usuarios</h1>
+        <p>Consulta los usuarios registrados, sus roles, ubicación y estado como tienda.</p>
+      </div>
+
+      <div class="admin-users-stats">
+        <article>
+          <span>Total usuarios</span>
+          <strong>{{ totalUsuarios }}</strong>
+        </article>
+        <article>
+          <span>Tiendas</span>
+          <strong>{{ totalTiendas }}</strong>
+        </article>
+        <article>
+          <span>Admins</span>
+          <strong>{{ totalAdmins }}</strong>
+        </article>
+      </div>
+    </section>
+
+    <section class="admin-users-list">
+      <div class="admin-users-state" *ngIf="cargandoUsuarios">Cargando usuarios...</div>
+
+      <div class="admin-users-state" *ngIf="!cargandoUsuarios && usuarios.length === 0">
+        No hay usuarios registrados para mostrar.
+      </div>
+
+      <div class="admin-users-grid" *ngIf="!cargandoUsuarios && usuarios.length > 0">
+        <article class="admin-user-card" *ngFor="let usuario of usuarios">
+          <div class="admin-user-card__header">
+            <div>
+              <h2>{{ usuario.nombre }}</h2>
+              <p>{{ usuario.email }}</p>
+            </div>
+            <span class="admin-user-card__badge" [class.admin-user-card__badge--store]="usuario.esTienda">
+              {{ usuario.esTienda ? 'Tienda' : 'Usuario' }}
+            </span>
+          </div>
+
+          <div class="admin-user-card__meta">
+            <div>
+              <span>Roles</span>
+              <strong>{{ formatRoles(usuario.roles) }}</strong>
+            </div>
+            <div>
+              <span>Ubicacion</span>
+              <strong>{{ formatUbicacion(usuario) }}</strong>
+            </div>
+            <div>
+              <span>Telefono</span>
+              <strong>{{ usuario.telefono || 'Sin telefono' }}</strong>
+            </div>
+            <div>
+              <span>Estado tienda</span>
+              <strong>{{ usuario.estadoSolicitudTienda || 'No aplica' }}</strong>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+  </div>
+</section>

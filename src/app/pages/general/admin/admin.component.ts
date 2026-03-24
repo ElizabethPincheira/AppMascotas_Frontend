@@ -22,6 +22,11 @@ export class AdminComponent {
   readonly user = this.authService.getUser();
   readonly shortcuts: AdminShortcut[] = [
     {
+      title: 'Ver usuarios',
+      description: 'Consulta los usuarios registrados, sus roles y si cuentan con tienda activa.',
+      path: '/admin/usuarios',
+    },
+    {
       title: 'Revisar tiendas',
       description: 'Accede a las tiendas registradas y valida la informacion publicada.',
       path: '/tiendas',
