@@ -1,12 +1,15 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, ViewChild, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import Swal from 'sweetalert2';
+import { environment } from '../../../../environments/environment';
 import { AuthService } from '../../../core/services/auth.service';
 import { ImagenesService } from '../../../core/services/imagenes.service';
 import { MascotaService } from '../../../core/services/mascota.service';
 import { Mascota } from '../../../shared/models/mascota.model';
+
+declare const google: any;
 
 @Component({
   selector: 'app-publicar',
@@ -15,12 +18,14 @@ import { Mascota } from '../../../shared/models/mascota.model';
   templateUrl: './publicar.component.html',
   styleUrls: ['./publicar.component.css']
 })
-export class PublicarComponent {
+export class PublicarComponent implements AfterViewInit {
   private readonly mascotaService = inject(MascotaService);
   private readonly imagenesService = inject(ImagenesService);
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
+
+  @ViewChild('googleMapContainer') googleMapContainer?: ElementRef<HTMLDivElement>;
 
   mascotaId: string | null = null;
   modoEdicion = false;
@@ -76,6 +81,12 @@ export class PublicarComponent {
   mapCenterLat = -35.6751;
   mapCenterLng = -71.543;
   mapZoom = 5;
+  private readonly googleMapsApiKey = environment.googleMapsApiKey;
+  googleMapsDisponible = false;
+  googleMapsError = '';
+  private googleMap?: any;
+  private googleMarker?: any;
+  private googleGeocoder?: any;
 
   async ngOnInit(): Promise<void> {
     this.modoPublicacion = this.route.snapshot.data['modoPublicacion'] ?? 'normal';
@@ -90,6 +101,10 @@ export class PublicarComponent {
     if (this.modoEdicion && this.mascotaId) {
       await this.cargarMascotaParaEditar(this.mascotaId);
     }
+  }
+
+  async ngAfterViewInit(): Promise<void> {
+    await this.inicializarGoogleMap();
   }
 
   get formularioCompleto(): boolean {
@@ -208,48 +223,12 @@ export class PublicarComponent {
       : 'Deja un medio de contacto para que puedan avisarte rápidamente.';
   }
 
-  get mapTiles(): Array<{ src: string; left: number; top: number }> {
-    const centerWorld = this.project(this.mapCenterLat, this.mapCenterLng);
-    const startX = centerWorld.x - this.mapWidth / 2;
-    const startY = centerWorld.y - this.mapHeight / 2;
-    const endX = centerWorld.x + this.mapWidth / 2;
-    const endY = centerWorld.y + this.mapHeight / 2;
-    const scale = this.tileSize * Math.pow(2, this.mapZoom);
-    const maxTileIndex = Math.pow(2, this.mapZoom);
-
-    const tileStartX = Math.floor(startX / this.tileSize);
-    const tileEndX = Math.floor(endX / this.tileSize);
-    const tileStartY = Math.floor(startY / this.tileSize);
-    const tileEndY = Math.floor(endY / this.tileSize);
-    const tiles: Array<{ src: string; left: number; top: number }> = [];
-
-    for (let tileX = tileStartX; tileX <= tileEndX; tileX += 1) {
-      for (let tileY = tileStartY; tileY <= tileEndY; tileY += 1) {
-        if (tileY < 0 || tileY >= maxTileIndex) {
-          continue;
-        }
-
-        const wrappedTileX = ((tileX % maxTileIndex) + maxTileIndex) % maxTileIndex;
-
-        tiles.push({
-          src: `https://tile.openstreetmap.org/${this.mapZoom}/${wrappedTileX}/${tileY}.png`,
-          left: tileX * this.tileSize - startX,
-          top: tileY * this.tileSize - startY,
-        });
-      }
-    }
-
-    return tiles;
-  }
-
   seleccionarModoUbicacion(modo: 'mapa' | 'gps'): void {
     this.modoUbicacion = modo;
 
     if (modo === 'mapa') {
       this.ubicacionGpsLista = this.latitud !== null && this.longitud !== null;
-      if (!this.direccionGps && this.ubicacionGpsLista) {
-        this.direccionGps = 'Punto marcado en el mapa';
-      }
+      this.actualizarMapaDesdeEstado();
       return;
     }
 
@@ -259,49 +238,6 @@ export class PublicarComponent {
       this.direccionGps = '';
       this.ubicacionGpsLista = false;
     }
-  }
-
-  async seleccionarPuntoMapa(event: MouseEvent): Promise<void> {
-    const mapa = event.currentTarget as HTMLElement | null;
-
-    if (!mapa) {
-      return;
-    }
-
-    const rect = mapa.getBoundingClientRect();
-    const relativeX = (event.clientX - rect.left) / rect.width;
-    const relativeY = (event.clientY - rect.top) / rect.height;
-    const pixelX = relativeX * this.mapWidth;
-    const pixelY = relativeY * this.mapHeight;
-    const { latitud, longitud } = this.pixelToLatLng(pixelX, pixelY);
-
-    this.latitud = Number(latitud.toFixed(6));
-    this.longitud = Number(longitud.toFixed(6));
-    this.ubicacionGpsLista = true;
-    this.modoUbicacion = 'mapa';
-    this.direccionGps = await this.obtenerDireccionDesdeCoordenadas(this.latitud, this.longitud);
-  }
-
-  get markerLeft(): string {
-    if (this.latitud === null || this.longitud === null) {
-      return '50%';
-    }
-
-    const { x } = this.latLngToPixel(this.latitud, this.longitud);
-    const ratio = x / this.mapWidth;
-
-    return `${Math.min(Math.max(ratio * 100, 0), 100)}%`;
-  }
-
-  get markerTop(): string {
-    if (this.latitud === null || this.longitud === null) {
-      return '50%';
-    }
-
-    const { y } = this.latLngToPixel(this.latitud, this.longitud);
-    const ratio = y / this.mapHeight;
-
-    return `${Math.min(Math.max(ratio * 100, 0), 100)}%`;
   }
 
   async usarUbicacionActual(): Promise<void> {
@@ -322,6 +258,7 @@ export class PublicarComponent {
       this.longitud = Number(position.coords.longitude.toFixed(6));
       this.ubicacionGpsLista = true;
       this.direccionGps = await this.obtenerDireccionDesdeCoordenadas(this.latitud, this.longitud);
+      this.actualizarMapaDesdeEstado();
     } finally {
       this.ubicacionGpsCargando = false;
     }
@@ -345,10 +282,11 @@ export class PublicarComponent {
       this.longitud = Number(position.coords.longitude.toFixed(6));
       this.mapCenterLat = this.latitud;
       this.mapCenterLng = this.longitud;
-      this.mapZoom = 14;
+      this.mapZoom = 15;
       this.ubicacionGpsLista = true;
       this.direccionGps = await this.obtenerDireccionDesdeCoordenadas(this.latitud, this.longitud);
       this.modoUbicacion = 'mapa';
+      this.actualizarMapaDesdeEstado();
     } finally {
       this.ubicacionGpsCargando = false;
     }
@@ -356,6 +294,9 @@ export class PublicarComponent {
 
   zoomMapa(delta: number): void {
     this.mapZoom = Math.min(Math.max(this.mapZoom + delta, 4), 17);
+    if (this.googleMap) {
+      this.googleMap.setZoom(this.mapZoom);
+    }
   }
 
   private async obtenerPosicionActual(): Promise<GeolocationPosition | null> {
@@ -615,6 +556,7 @@ export class PublicarComponent {
     this.existingImagePreviews = (mascota.imagenes ?? []).map((imagen) =>
       imagen.startsWith('data:') ? imagen : `data:image/jpeg;base64,${imagen}`
     );
+    this.actualizarMapaDesdeEstado();
   }
 
   private toInputDate(value?: string | Date): string {
@@ -683,50 +625,21 @@ export class PublicarComponent {
     return hoy;
   }
 
-  private latLngToPixel(latitud: number, longitud: number): { x: number; y: number } {
-    const center = this.project(this.mapCenterLat, this.mapCenterLng);
-    const point = this.project(latitud, longitud);
-
-    return {
-      x: point.x - center.x + this.mapWidth / 2,
-      y: point.y - center.y + this.mapHeight / 2,
-    };
-  }
-
-  private pixelToLatLng(x: number, y: number): { latitud: number; longitud: number } {
-    const center = this.project(this.mapCenterLat, this.mapCenterLng);
-    const worldX = center.x - this.mapWidth / 2 + x;
-    const worldY = center.y - this.mapHeight / 2 + y;
-
-    return this.unproject(worldX, worldY);
-  }
-
-  private project(latitud: number, longitud: number): { x: number; y: number } {
-    const scale = 256 * Math.pow(2, this.mapZoom);
-    const sinLat = Math.sin((latitud * Math.PI) / 180);
-
-    return {
-      x: ((longitud + 180) / 360) * scale,
-      y: (0.5 - Math.log((1 + sinLat) / (1 - sinLat)) / (4 * Math.PI)) * scale,
-    };
-  }
-
-  private unproject(x: number, y: number): { latitud: number; longitud: number } {
-    const scale = 256 * Math.pow(2, this.mapZoom);
-    const longitud = (x / scale) * 360 - 180;
-    const mercatorY = 0.5 - y / scale;
-    const latitud = 90 - (360 * Math.atan(Math.exp(-mercatorY * 2 * Math.PI))) / Math.PI;
-
-    return {
-      latitud,
-      longitud,
-    };
-  }
-
   private async obtenerDireccionDesdeCoordenadas(latitud: number, longitud: number): Promise<string> {
     this.resolviendoDireccionGps = true;
 
     try {
+      if (this.googleGeocoder) {
+        const result = await this.googleGeocoder.geocode({
+          location: { lat: latitud, lng: longitud },
+        });
+
+        const firstResult = result.results?.[0]?.formatted_address;
+        if (firstResult) {
+          return firstResult;
+        }
+      }
+
       const response = await fetch(
         `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitud}&lon=${longitud}&accept-language=es`,
       );
@@ -757,5 +670,108 @@ export class PublicarComponent {
 
   private formatearCoordenadas(latitud: number, longitud: number): string {
     return `Ubicación detectada (${latitud}, ${longitud})`;
+  }
+
+  private async inicializarGoogleMap(): Promise<void> {
+    if (!this.googleMapContainer?.nativeElement) {
+      return;
+    }
+
+    if (!this.googleMapsApiKey) {
+      this.googleMapsError = 'Agrega tu API key de Google Maps en los archivos environment para usar el mapa interactivo.';
+      return;
+    }
+
+    try {
+      await this.cargarGoogleMapsScript();
+
+      this.googleMapsDisponible = true;
+      this.googleGeocoder = new google.maps.Geocoder();
+      this.googleMap = new google.maps.Map(this.googleMapContainer.nativeElement, {
+        center: { lat: this.mapCenterLat, lng: this.mapCenterLng },
+        zoom: this.mapZoom,
+        mapTypeControl: false,
+        streetViewControl: false,
+        fullscreenControl: false,
+        clickableIcons: false,
+        gestureHandling: 'greedy',
+      });
+
+      this.googleMap.addListener('click', async (event: any) => {
+        const latLng = event.latLng;
+        if (!latLng) {
+          return;
+        }
+
+        this.latitud = Number(latLng.lat().toFixed(6));
+        this.longitud = Number(latLng.lng().toFixed(6));
+        this.ubicacionGpsLista = true;
+        this.modoUbicacion = 'mapa';
+        this.colocarMarcadorEnMapa(this.latitud, this.longitud);
+        this.direccionGps = await this.obtenerDireccionDesdeCoordenadas(this.latitud, this.longitud);
+      });
+
+      this.actualizarMapaDesdeEstado();
+    } catch {
+      this.googleMapsError = 'No se pudo cargar Google Maps. Revisa la API key o las restricciones del dominio.';
+    }
+  }
+
+  private async cargarGoogleMapsScript(): Promise<void> {
+    if ((window as any).google?.maps) {
+      return;
+    }
+
+    const existingPromise = (window as any).__googleMapsLoader as Promise<void> | undefined;
+    if (existingPromise) {
+      await existingPromise;
+      return;
+    }
+
+    (window as any).__googleMapsLoader = new Promise<void>((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${this.googleMapsApiKey}&libraries=places`;
+      script.async = true;
+      script.defer = true;
+      script.onload = () => resolve();
+      script.onerror = () => reject(new Error('No se pudo cargar Google Maps'));
+      document.head.appendChild(script);
+    });
+
+    await (window as any).__googleMapsLoader;
+  }
+
+  private actualizarMapaDesdeEstado(): void {
+    if (!this.googleMap) {
+      return;
+    }
+
+    this.googleMap.setCenter({ lat: this.mapCenterLat, lng: this.mapCenterLng });
+    this.googleMap.setZoom(this.mapZoom);
+
+    if (this.latitud === null || this.longitud === null) {
+      return;
+    }
+
+    this.colocarMarcadorEnMapa(this.latitud, this.longitud);
+    this.googleMap.setCenter({ lat: this.latitud, lng: this.longitud });
+    this.googleMap.setZoom(Math.max(this.mapZoom, 15));
+  }
+
+  private colocarMarcadorEnMapa(latitud: number, longitud: number): void {
+    if (!this.googleMap) {
+      return;
+    }
+
+    if (!this.googleMarker) {
+      this.googleMarker = new google.maps.Marker({
+        position: { lat: latitud, lng: longitud },
+        map: this.googleMap,
+      });
+      return;
+    }
+
+    this.googleMarker.setPosition({ lat: latitud, lng: longitud });
+    this.googleMarker.setMap(this.googleMap);
   }
 }

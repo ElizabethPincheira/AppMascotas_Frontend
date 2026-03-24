@@ -164,28 +164,15 @@
           </div>
         </div>
 
-        <div class="map-picker" (click)="seleccionarPuntoMapa($event)">
-          <div class="map-picker__tiles" aria-hidden="true">
-            <img
-              *ngFor="let tile of mapTiles"
-              class="map-picker__tile"
-              [src]="tile.src"
-              [style.left.px]="tile.left"
-              [style.top.px]="tile.top"
-              alt="">
+        <div class="map-picker-shell">
+          <div class="map-picker" #googleMapContainer></div>
+
+          <div class="map-picker__hint" *ngIf="!ubicacionGpsLista && googleMapsDisponible">
+            Haz clic en el mapa para dejar el punto
           </div>
 
-          <button
-            *ngIf="ubicacionGpsLista"
-            type="button"
-            class="map-picker__marker"
-            [style.left]="markerLeft"
-            [style.top]="markerTop"
-            aria-label="Punto marcado">
-          </button>
-
-          <div class="map-picker__hint" *ngIf="!ubicacionGpsLista">
-            Haz clic en el mapa para dejar el punto
+          <div class="map-picker__fallback" *ngIf="googleMapsError">
+            {{ googleMapsError }}
           </div>
         </div>
 
