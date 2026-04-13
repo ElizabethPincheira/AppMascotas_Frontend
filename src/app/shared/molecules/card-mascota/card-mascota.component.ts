@@ -114,6 +114,10 @@ export class CardMascotaComponent {
   }
 
   getSecondaryLocation(): string | null {
+    if (this.getCaseLocation()) {
+      return null;
+    }
+
     const ownerLocation = this.getOwnerLocation();
     return ownerLocation && ownerLocation !== this.getPrimaryLocation() ? ownerLocation : null;
   }
@@ -143,13 +147,26 @@ export class CardMascotaComponent {
   }
 
   getPrimaryLocation(): string {
+    const caseLocation = this.getCaseLocation();
+
     return (
+      caseLocation ??
       this.mascota.ubicacionPerdida ??
       this.mascota.comunaPerdida ??
       this.mascota.ubicacion ??
       this.getOwnerLocation() ??
       'Ubicación no informada'
     );
+  }
+
+  private getCaseLocation(): string | null {
+    const parts = [
+      this.mascota.comunaPerdida,
+      this.mascota.provinciaPerdida,
+      this.mascota.regionPerdida,
+    ].filter((value, index, list): value is string => !!value && list.indexOf(value) === index);
+
+    return parts.length ? parts.join(', ') : null;
   }
 
   getAgeText(): string | null {
