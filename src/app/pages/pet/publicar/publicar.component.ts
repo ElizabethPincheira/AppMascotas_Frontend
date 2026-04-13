@@ -44,6 +44,11 @@ export class PublicarComponent implements AfterViewInit {
   latitud: number | null = null;
   longitud: number | null = null;
   direccionGps = '';
+  ubicacionPerdida = '';
+  callesCercanas = '';
+  comunaPerdida = '';
+  provinciaPerdida = '';
+  regionPerdida = '';
   caracteristicasAdicionales = '';
   contacto = '';
   modoContacto: 'mail' | 'telefono' = 'mail';
@@ -262,6 +267,11 @@ export class PublicarComponent implements AfterViewInit {
       this.latitud = null;
       this.longitud = null;
       this.direccionGps = '';
+      this.ubicacionPerdida = '';
+      this.callesCercanas = '';
+      this.comunaPerdida = '';
+      this.provinciaPerdida = '';
+      this.regionPerdida = '';
       this.ubicacionGpsLista = false;
     }
   }
@@ -503,6 +513,11 @@ export class PublicarComponent implements AfterViewInit {
         perdidoDesde: this.requierePerdidoDesde ? (this.perdidoDesde || undefined) : undefined,
         latitud: this.latitud ?? undefined,
         longitud: this.longitud ?? undefined,
+        ubicacionPerdida: this.ubicacionPerdida || this.direccionGps || undefined,
+        callesCercanas: this.callesCercanas || undefined,
+        comunaPerdida: this.comunaPerdida || undefined,
+        provinciaPerdida: this.provinciaPerdida || undefined,
+        regionPerdida: this.regionPerdida || undefined,
         caracteristicasAdicionales: this.caracteristicasAdicionales.trim() || undefined,
         contacto: this.contactoSeleccionado || undefined
       };
@@ -580,9 +595,14 @@ export class PublicarComponent implements AfterViewInit {
     this.perdidoDesde = this.toInputDate((mascota as any).perdidoDesde);
     this.latitud = typeof mascota.latitud === 'number' ? mascota.latitud : null;
     this.longitud = typeof mascota.longitud === 'number' ? mascota.longitud : null;
+    this.ubicacionPerdida = mascota.ubicacionPerdida ?? '';
+    this.callesCercanas = mascota.callesCercanas ?? '';
+    this.comunaPerdida = mascota.comunaPerdida ?? '';
+    this.provinciaPerdida = mascota.provinciaPerdida ?? '';
+    this.regionPerdida = mascota.regionPerdida ?? '';
     this.modoUbicacion = 'mapa';
     this.ubicacionGpsLista = this.latitud !== null && this.longitud !== null;
-    this.direccionGps = this.ubicacionGpsLista ? 'Punto guardado en el mapa' : '';
+    this.direccionGps = this.ubicacionPerdida || (this.ubicacionGpsLista ? 'Punto guardado en el mapa' : '');
     this.caracteristicasAdicionales = mascota.caracteristicasAdicionales ?? '';
     const contactoMascota = mascota.contacto?.trim() ?? '';
     this.modoContacto = contactoMascota && contactoMascota === this.userEmail ? 'mail' : 'telefono';
@@ -672,9 +692,11 @@ export class PublicarComponent implements AfterViewInit {
           location: { lat: latitud, lng: longitud },
         });
 
-        const firstResult = result.results?.[0]?.formatted_address;
-        if (firstResult) {
-          return firstResult;
+        const firstResult = result.results?.[0];
+        const firstAddress = firstResult?.formatted_address;
+        if (firstAddress) {
+          this.actualizarUbicacionAdministrativaDesdeGoogle(firstResult);
+          return firstAddress;
         }
       }
 
@@ -688,9 +710,9 @@ export class PublicarComponent implements AfterViewInit {
 
       const data = await response.json();
       const address = data?.address ?? {};
+      this.actualizarUbicacionAdministrativaDesdeNominatim(address);
       const segmentos = [
-        address.road,
-        address.house_number,
+        [address.road, address.house_number].filter(Boolean).join(' '),
         address.suburb,
         address.city || address.town || address.village,
         address.state,
@@ -708,6 +730,42 @@ export class PublicarComponent implements AfterViewInit {
 
   private formatearCoordenadas(latitud: number, longitud: number): string {
     return `Ubicación detectada (${latitud}, ${longitud})`;
+  }
+
+  private actualizarUbicacionAdministrativaDesdeGoogle(result: any): void {
+    const components = Array.isArray(result?.address_components) ? result.address_components : [];
+    const findComponent = (...types: string[]): string => {
+      const component = components.find((item: any) =>
+        Array.isArray(item?.types) && types.some((type) => item.types.includes(type))
+      );
+
+      return component?.long_name ?? '';
+    };
+
+    const calle = [findComponent('route'), findComponent('street_number')].filter(Boolean).join(' ');
+    const sector = findComponent('neighborhood', 'sublocality', 'sublocality_level_1');
+
+    this.comunaPerdida = findComponent('locality', 'administrative_area_level_3', 'sublocality', 'sublocality_level_1');
+    this.provinciaPerdida = findComponent('administrative_area_level_2');
+    this.regionPerdida = findComponent('administrative_area_level_1');
+    this.callesCercanas = [calle, sector].filter(Boolean).join(', ');
+    this.ubicacionPerdida = result?.formatted_address ?? '';
+  }
+
+  private actualizarUbicacionAdministrativaDesdeNominatim(address: any): void {
+    const calle = [address?.road, address?.house_number].filter(Boolean).join(' ');
+    const sector = address?.neighbourhood || address?.suburb || address?.quarter || '';
+
+    this.comunaPerdida =
+      address?.city ||
+      address?.town ||
+      address?.village ||
+      address?.municipality ||
+      address?.county ||
+      '';
+    this.provinciaPerdida = address?.county || address?.state_district || '';
+    this.regionPerdida = address?.state || address?.region || '';
+    this.callesCercanas = [calle, sector].filter(Boolean).join(', ');
   }
 
   private async inicializarGoogleMap(): Promise<void> {

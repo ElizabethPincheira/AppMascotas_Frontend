@@ -11,6 +11,7 @@ export interface Mascota {
   chip?: string | null;
   ubicacion?: string;
   ubicacionPerdida?: string;
+  callesCercanas?: string;
   regionPerdida?: string;
   provinciaPerdida?: string;
   comunaPerdida?: string;

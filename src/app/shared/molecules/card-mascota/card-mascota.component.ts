@@ -138,14 +138,66 @@ export class CardMascotaComponent {
   }
 
   getPrimaryLocation(): string {
-    const caseLocation = this.getCaseLocation();
+    const comuna = this.mascota.comunaPerdida?.trim();
+    const nearbyReference = this.getNearbyReference();
+    const locationWithReference =
+      comuna &&
+      nearbyReference &&
+      this.normalizarTextoUbicacion(comuna) !== this.normalizarTextoUbicacion(nearbyReference)
+        ? `${comuna} · Cerca de ${nearbyReference}`
+        : null;
 
     return (
+      locationWithReference ??
+      comuna ??
+      nearbyReference ??
+      this.getCaseLocation() ??
       this.mascota.ubicacionPerdida ??
-      caseLocation ??
       this.mascota.ubicacion ??
       'Ubicación no informada'
     );
+  }
+
+  private getNearbyReference(): string | null {
+    const savedNearbyReference = this.mascota.callesCercanas?.trim();
+    if (savedNearbyReference) {
+      return savedNearbyReference;
+    }
+
+    const address = this.mascota.ubicacionPerdida?.trim();
+
+    if (!address || address.startsWith('Ubicación detectada (')) {
+      return null;
+    }
+
+    const ignoredParts = [
+      this.mascota.comunaPerdida,
+      this.mascota.provinciaPerdida,
+      this.mascota.regionPerdida,
+      'Chile',
+    ]
+      .filter(Boolean)
+      .map((value) => this.normalizarTextoUbicacion(value as string));
+
+    const segments = address
+      .split(',')
+      .map((segment) => segment.trim())
+      .filter(Boolean)
+      .filter((segment) => !ignoredParts.includes(this.normalizarTextoUbicacion(segment)));
+
+    if (!segments.length) {
+      return null;
+    }
+
+    return segments.slice(0, 2).join(', ');
+  }
+
+  private normalizarTextoUbicacion(value: string): string {
+    return value
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .trim()
+      .toLowerCase();
   }
 
   private getCaseLocation(): string | null {
@@ -245,6 +297,15 @@ export class CardMascotaComponent {
     }
 
     return `A ${this.mascota.distanciaKm.toFixed(1)} km de ti`;
+  }
+
+  getMapUrl(): string | null {
+    if (typeof this.mascota.latitud === 'number' && typeof this.mascota.longitud === 'number') {
+      return `https://www.google.com/maps/search/?api=1&query=${this.mascota.latitud},${this.mascota.longitud}`;
+    }
+
+    const location = this.getShareLocation()?.trim();
+    return location ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(location)}` : null;
   }
 
   isLostCase(): boolean {

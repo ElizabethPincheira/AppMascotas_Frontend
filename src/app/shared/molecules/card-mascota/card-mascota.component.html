@@ -79,10 +79,18 @@
   </div>
 
   <div class="card-body mascota-card__body">
-    <div class="mascota-card__distance-highlight" *ngIf="getDistanceText() as distance">
+    <a
+      class="mascota-card__distance-highlight"
+      *ngIf="getDistanceText() as distance"
+      [href]="getMapUrl()"
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="Abrir ubicación en el mapa"
+      title="Ver ubicación en el mapa"
+      (click)="$event.stopPropagation()">
       <span class="mascota-card__distance-label">Cerca de ti</span>
       <strong class="mascota-card__distance-value">{{ distance }}</strong>
-    </div>
+    </a>
 
     <div class="mascota-card__quickfacts">
       <span class="quickfact-pill" *ngIf="mascota.especie">{{ mascota.especie }}</span>

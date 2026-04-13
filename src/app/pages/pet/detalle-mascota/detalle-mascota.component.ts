@@ -223,19 +223,67 @@ export class DetalleMascotaComponent {
     });
   }
 
+  getPrimaryLocation(): string {
+    const comuna = this.mascota?.comunaPerdida?.trim();
+    const nearbyReference = this.getNearbyReference();
+    const locationWithReference =
+      comuna &&
+      nearbyReference &&
+      this.normalizarTextoUbicacion(comuna) !== this.normalizarTextoUbicacion(nearbyReference)
+        ? `${comuna} · Cerca de ${nearbyReference}`
+        : null;
+
+    return (
+      locationWithReference ??
+      comuna ??
+      nearbyReference ??
+      this.getCaseLocation() ??
+      this.mascota?.ubicacionPerdida ??
+      this.mascota?.ubicacion ??
+      'Ubicación no informada'
+    );
+  }
+
   getUbicacionCompleta(): string[] {
     if (!this.mascota) {
       return [];
     }
 
     return [
+      this.mascota.callesCercanas,
       this.mascota.ubicacionPerdida,
       this.mascota.comunaPerdida,
       this.mascota.provinciaPerdida,
       this.mascota.regionPerdida,
       this.mascota.ubicacion,
-      this.ownerLocation,
     ].filter((value, index, list): value is string => !!value && list.indexOf(value) === index);
+  }
+
+  getCaseLocation(): string | null {
+    if (!this.mascota) {
+      return null;
+    }
+
+    const parts = [
+      this.mascota.comunaPerdida,
+      this.mascota.provinciaPerdida,
+      this.mascota.regionPerdida,
+    ].filter((value, index, list): value is string => !!value && list.indexOf(value) === index);
+
+    return parts.length ? parts.join(', ') : null;
+  }
+
+  getMapUrl(): string | null {
+    if (!this.mascota) {
+      return null;
+    }
+
+    if (typeof this.mascota.latitud === 'number' && typeof this.mascota.longitud === 'number') {
+      return `https://www.google.com/maps/search/?api=1&query=${this.mascota.latitud},${this.mascota.longitud}`;
+    }
+
+    const location = (this.mascota.ubicacionPerdida || this.getPrimaryLocation()).trim();
+    return location ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(location)}` : null;
   }
 
   esCasoResuelto(): boolean {
@@ -298,6 +346,28 @@ export class DetalleMascotaComponent {
     ].filter(Boolean);
 
     return pieces.join(' ').trim() || 'Conoce la información completa de la mascota publicada en Círculo Animal.';
+  }
+
+  getEmotionalMessage(): string {
+    switch (this.mascota?.estado) {
+      case 'Robado':
+      case 'Extraviado':
+        return 'Cada dato puede acercarla de vuelta a casa.';
+      case 'Encontrado':
+        return 'Su familia podría estar buscándola justo ahora.';
+      case 'Recuperado':
+        return 'Gracias a la comunidad, hoy ya está nuevamente con su familia.';
+      case 'Busca hogar':
+        return 'Quizás aquí comience su próxima gran historia.';
+      case 'Adoptado':
+        return 'Ya encontró un hogar, pero su historia sigue inspirando.';
+      case 'Situacion de calle':
+        return 'Necesita visibilidad, cuidado y una nueva oportunidad.';
+      case 'Emparejado':
+        return 'El apoyo de la comunidad hizo posible este final feliz.';
+      default:
+        return 'Tu ayuda puede marcar una diferencia real en este caso.';
+    }
   }
 
   async marcarCasoComoResuelto(): Promise<void> {
@@ -383,7 +453,49 @@ export class DetalleMascotaComponent {
   }
 
   private getShareLocation(): string {
-    return this.mascota?.comunaPerdida ?? this.ownerLocation ?? this.mascota?.regionPerdida ?? 'Chile';
+    return this.getPrimaryLocation();
+  }
+
+  private getNearbyReference(): string | null {
+    const savedNearbyReference = this.mascota?.callesCercanas?.trim();
+    if (savedNearbyReference) {
+      return savedNearbyReference;
+    }
+
+    const address = this.mascota?.ubicacionPerdida?.trim();
+
+    if (!address || address.startsWith('Ubicación detectada (')) {
+      return null;
+    }
+
+    const ignoredParts = [
+      this.mascota?.comunaPerdida,
+      this.mascota?.provinciaPerdida,
+      this.mascota?.regionPerdida,
+      'Chile',
+    ]
+      .filter(Boolean)
+      .map((value) => this.normalizarTextoUbicacion(value as string));
+
+    const segments = address
+      .split(',')
+      .map((segment) => segment.trim())
+      .filter(Boolean)
+      .filter((segment) => !ignoredParts.includes(this.normalizarTextoUbicacion(segment)));
+
+    if (!segments.length) {
+      return null;
+    }
+
+    return segments.slice(0, 2).join(', ');
+  }
+
+  private normalizarTextoUbicacion(value: string): string {
+    return value
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .trim()
+      .toLowerCase();
   }
 
   private getShareWhatsappText(): string {

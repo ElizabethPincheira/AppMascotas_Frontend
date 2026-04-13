@@ -26,21 +26,70 @@
         </div>
 
         <div class="pet-hero__content">
-          <div class="pet-hero__badges">
-            <span class="pet-badge" [ngClass]="getEstadoClase(mascota.estado)">{{ mascota.estado }}</span>
-            <span class="pet-badge pet-badge--resolved" *ngIf="esCasoResuelto()">Caso resuelto</span>
+          <div class="pet-hero__topline">
+            <div class="pet-hero__badges">
+              <span class="pet-badge" [ngClass]="getEstadoClase(mascota.estado)">{{ mascota.estado }}</span>
+              <span class="pet-badge pet-badge--resolved" *ngIf="esCasoResuelto()">Caso resuelto</span>
+            </div>
+
+            <div class="pet-hero__microcopy">
+              {{ esCasoResuelto() ? 'Historia con final feliz' : 'Difusión activa' }}
+            </div>
           </div>
 
-          <h1>{{ mascota.nombre }}</h1>
-          <p class="pet-hero__subtitle">
-            {{ mascota.raza || 'Mascota' }}
-            <span *ngIf="mascota.especie && mascota.raza !== mascota.especie"> · {{ mascota.especie }}</span>
-            <span *ngIf="getAgeText() as age"> · {{ age }}</span>
-          </p>
+          <div class="pet-hero__headline">
+            <span class="pet-hero__eyebrow">Ficha pública</span>
+            <h1>{{ mascota.nombre }}</h1>
+            <p class="pet-hero__subtitle">
+              {{ mascota.raza || mascota.especie || 'Mascota' }}
+              <span *ngIf="mascota.especie && mascota.raza !== mascota.especie"> · {{ mascota.especie }}</span>
+              <span *ngIf="getAgeText() as age"> · {{ age }}</span>
+            </p>
+            <p class="pet-hero__emotion">{{ getEmotionalMessage() }}</p>
+          </div>
 
-          <p class="pet-hero__description">
-            {{ mascota.descripcion || mascota.caracteristicasAdicionales || 'Esta publicación reúne la información más importante para ayudar a identificar y acompañar este caso.' }}
-          </p>
+          <div class="pet-hero__fact-ribbon">
+            <span class="pet-fact" *ngIf="mascota.especie">{{ mascota.especie }}</span>
+            <span class="pet-fact" *ngIf="mascota.sexo">{{ mascota.sexo }}</span>
+            <span class="pet-fact" *ngIf="mascota.tamano">{{ mascota.tamano }}</span>
+            <span class="pet-fact" *ngIf="mascota.color">{{ mascota.color }}</span>
+            <span class="pet-fact" *ngIf="getAgeText() as age">{{ age }}</span>
+          </div>
+
+          <div class="pet-hero__spotlights">
+            <article class="hero-spotlight hero-spotlight--location">
+              <span class="hero-spotlight__label">Última ubicación</span>
+              <strong>{{ getPrimaryLocation() }}</strong>
+              <p>{{ getCaseLocation() || 'Ubicación principal del caso registrada en la publicación.' }}</p>
+              <a
+                *ngIf="getMapUrl() as mapUrl"
+                class="hero-spotlight__link"
+                [href]="mapUrl"
+                target="_blank"
+                rel="noopener noreferrer">
+                Abrir en el mapa
+              </a>
+            </article>
+
+            <article class="hero-spotlight">
+              <span class="hero-spotlight__label">Publicado</span>
+              <strong>{{ getPublishedText() || 'Sin fecha visible' }}</strong>
+              <p>Información pública disponible para compartir y difundir este caso.</p>
+            </article>
+
+            <article class="hero-spotlight">
+              <span class="hero-spotlight__label">Contacto</span>
+              <strong>{{ whatsappUrl ? 'WhatsApp disponible' : contactoEmail ? 'Correo protegido' : 'Sin contacto visible' }}</strong>
+              <p>{{ ownerName || 'Comunidad Círculo Animal' }}</p>
+            </article>
+          </div>
+
+          <div class="pet-hero__story">
+            <span class="pet-hero__story-label">Resumen del caso</span>
+            <p>
+              {{ mascota.descripcion || mascota.caracteristicasAdicionales || 'Esta publicación reúne la información más importante para ayudar a identificar y acompañar este caso.' }}
+            </p>
+          </div>
 
           <div class="pet-hero__actions">
             <a
@@ -74,7 +123,7 @@
               <button
                 type="button"
                 class="hero-link hero-link--ghost"
-                (click)="toggleShareMenu()">
+              (click)="toggleShareMenu()">
                 Compartir
               </button>
 
@@ -113,13 +162,13 @@
         <article class="summary-card">
           <span class="summary-card__label">Publicado</span>
           <strong>{{ getPublishedText() || 'Sin fecha' }}</strong>
-          <p>Fecha visible de esta publicación dentro de la plataforma.</p>
+          <p>La fecha en que esta historia quedó visible dentro de la plataforma.</p>
         </article>
 
         <article class="summary-card">
           <span class="summary-card__label">Ubicación</span>
-          <strong>{{ getUbicacionCompleta()[0] || 'No informada' }}</strong>
-          <p>Último lugar reportado o referencia principal del caso.</p>
+          <strong>{{ getPrimaryLocation() || 'No informada' }}</strong>
+          <p>Comuna y referencias cercanas informadas al reportar el caso.</p>
         </article>
 
         <article class="summary-card">
@@ -140,8 +189,8 @@
           <section class="panel">
             <div class="section-heading">
               <div>
-                <span class="section-heading__eyebrow">Descripción</span>
-                <h2>Qué necesitas saber</h2>
+                <span class="section-heading__eyebrow">Historia</span>
+                <h2>Qué debes observar</h2>
               </div>
             </div>
 
@@ -156,8 +205,17 @@
             <div class="section-heading">
               <div>
                 <span class="section-heading__eyebrow">Ubicación</span>
-                <h2>Referencias del caso</h2>
+                <h2>Dónde fue vista</h2>
               </div>
+
+              <a
+                *ngIf="getMapUrl() as mapUrl"
+                class="panel-map-link"
+                [href]="mapUrl"
+                target="_blank"
+                rel="noopener noreferrer">
+                Ver mapa
+              </a>
             </div>
 
             <div class="location-list" *ngIf="getUbicacionCompleta().length; else noLocation">
@@ -173,7 +231,7 @@
         <aside class="pet-sidebar">
           <section class="panel panel--compact">
             <span class="panel__label">Ficha rápida</span>
-            <h2>Datos del caso</h2>
+            <h2>Datos clave</h2>
 
             <div class="detail-list">
               <div class="detail-item" *ngIf="mascota.especie">
@@ -205,7 +263,7 @@
 
           <section class="panel panel--compact">
             <span class="panel__label">Contacto</span>
-            <h2>Cómo ayudar</h2>
+            <h2>Cómo puedes ayudar</h2>
 
             <p class="panel__text">
               Si reconoces a esta mascota o tienes información útil, usa el canal de contacto disponible para avisar lo antes posible.
