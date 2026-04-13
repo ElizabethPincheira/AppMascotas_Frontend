@@ -40,6 +40,12 @@ export class NavbarComponent {
     this.authService.user$.subscribe(user => {
       this.user = user;
     });
+
+    if (this.authService.isLogged()) {
+      void this.authService.refreshCurrentUser().catch((error) => {
+        console.warn('No se pudo refrescar el usuario en navbar:', error);
+      });
+    }
   }
 
   toggleProfileMenu(): void {

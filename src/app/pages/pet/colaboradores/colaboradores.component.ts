@@ -50,12 +50,7 @@ export class ColaboradoresComponent implements OnInit, OnDestroy {
   }
 
   readonly collaborationAreas = [
-    {
-      id: 'reparto',
-      title: 'Venta y reparto de alimento',
-      text: 'Tiendas o personas que quieran repartir alimento a domicilio. Quienes participen en esta categoría podrán aparecer luego en la pestaña Tienda.',
-      tag: 'Conexión con Tienda'
-    },
+    
     {
       id: 'veterinario',
       title: 'Servicios veterinarios',

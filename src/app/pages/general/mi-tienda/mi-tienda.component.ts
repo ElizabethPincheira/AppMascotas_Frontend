@@ -153,6 +153,32 @@ export class MiTiendaComponent implements OnInit {
     return this.user?.estadoSolicitudTienda || 'ninguna';
   }
 
+  get tiendaPerfilBasicoCompleto(): boolean {
+    return !!(
+      this.user?.nombreTienda?.trim() &&
+      this.user?.descripcionTienda?.trim() &&
+      this.user?.direccionTienda?.trim() &&
+      this.user?.telefonoTienda?.trim() &&
+      this.user?.regionTienda?.trim() &&
+      this.user?.provinciaTienda?.trim() &&
+      this.user?.comunaTienda?.trim() &&
+      Array.isArray(this.user?.categoriasTienda) &&
+      this.user.categoriasTienda.length > 0
+    );
+  }
+
+  get tieneProductosPublicables(): boolean {
+    return this.productos.some((producto) => producto.activo !== false);
+  }
+
+  get tiendaVisiblePublicamente(): boolean {
+    return (
+      this.estadoTienda === 'aprobada' &&
+      this.tiendaPerfilBasicoCompleto &&
+      this.tieneProductosPublicables
+    );
+  }
+
   get coberturaValida(): boolean {
     return !!(
       this.repartoForm.regionTienda &&

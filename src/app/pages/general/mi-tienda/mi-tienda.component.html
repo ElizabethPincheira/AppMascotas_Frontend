@@ -225,8 +225,11 @@
           <p *ngIf="estadoTienda === 'pendiente'" class="status-message status-message--pending">
             Tu solicitud está siendo revisada. Te notificaremos cuando sea aprobada.
           </p>
-          <p *ngIf="estadoTienda === 'aprobada'" class="status-message status-message--approved">
-            ¡Tu tienda ha sido aprobada! Ahora apareces en el directorio de tiendas.
+          <p *ngIf="estadoTienda === 'aprobada' && tiendaVisiblePublicamente" class="status-message status-message--approved">
+            ¡Tu tienda está activa y visible en el directorio de tiendas!
+          </p>
+          <p *ngIf="estadoTienda === 'aprobada' && !tiendaVisiblePublicamente" class="status-message status-message--pending">
+            Tu acceso a Mi tienda está habilitado. Para aparecer en el directorio público debes completar los datos básicos y tener al menos un producto activo.
           </p>
           <p *ngIf="estadoTienda === 'rechazada'" class="status-message status-message--rejected">
             Tu solicitud fue rechazada. Por favor, contacta con soporte para más información.
