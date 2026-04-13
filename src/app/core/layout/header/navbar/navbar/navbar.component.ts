@@ -27,7 +27,7 @@ export class NavbarComponent {
     { label: 'En calle', path: '/situacion-de-calle' },
     { label: 'Tiendas', path: '/tiendas' },
     { label: 'Ser parte', path: '/colaboradores' },
-    { label: 'Fauna', path: '/fauna' },
+    //{ label: 'Fauna', path: '/fauna' },
     //{ label: 'Donar', path: '/donar' },
   ];
 
