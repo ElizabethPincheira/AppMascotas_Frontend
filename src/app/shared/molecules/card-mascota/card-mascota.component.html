@@ -41,7 +41,6 @@
         </div>
 
         <div class="mascota-card__meta">
-          <span class="mascota-card__meta-pill" *ngIf="getPrimaryLocation() as primaryLocation">{{ primaryLocation }}</span>
           <span class="mascota-card__meta-pill">
             {{ imageList.length }} foto<span *ngIf="imageList.length > 1">s</span>
           </span>
@@ -97,11 +96,6 @@
       <div class="info-item">
         <span class="info-item__label">Última ubicación</span>
         <span class="info-item__value">{{ getPrimaryLocation() }}</span>
-      </div>
-
-      <div class="info-item" *ngIf="getSecondaryLocation() as ownerLocation">
-        <span class="info-item__label">Comuna</span>
-        <span class="info-item__value">{{ ownerLocation }}</span>
       </div>
 
       <div class="info-item" *ngIf="getWhatsappUrl() as whatsappUrl">

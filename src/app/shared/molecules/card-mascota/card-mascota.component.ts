@@ -113,15 +113,6 @@ export class CardMascotaComponent {
     return this.mascota.usuarioId.comuna ?? this.mascota.usuarioId.ciudad ?? null;
   }
 
-  getSecondaryLocation(): string | null {
-    if (this.getCaseLocation()) {
-      return null;
-    }
-
-    const ownerLocation = this.getOwnerLocation();
-    return ownerLocation && ownerLocation !== this.getPrimaryLocation() ? ownerLocation : null;
-  }
-
   getOwnerEmail(): string | null {
     if (typeof this.mascota.usuarioId !== 'object' || !this.mascota.usuarioId?.email) {
       return null;
@@ -150,11 +141,9 @@ export class CardMascotaComponent {
     const caseLocation = this.getCaseLocation();
 
     return (
-      caseLocation ??
       this.mascota.ubicacionPerdida ??
-      this.mascota.comunaPerdida ??
+      caseLocation ??
       this.mascota.ubicacion ??
-      this.getOwnerLocation() ??
       'Ubicación no informada'
     );
   }
@@ -215,7 +204,7 @@ export class CardMascotaComponent {
   }
 
   getShareLocation(): string {
-    return this.mascota.comunaPerdida ?? this.getOwnerLocation() ?? this.mascota.regionPerdida ?? 'Chile';
+    return this.mascota.ubicacionPerdida ?? this.getCaseLocation() ?? this.mascota.ubicacion ?? 'Chile';
   }
 
   getEmotionalMessage(): string {
