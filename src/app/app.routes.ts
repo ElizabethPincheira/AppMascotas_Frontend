@@ -168,6 +168,12 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./pages/general/admin/admin-tiendas.component')
             .then(m => m.AdminTiendasComponent)
+      },
+      {
+        path: 'terminos',
+        loadComponent: () =>
+          import('./pages/general/terminos/terminos.component')
+            .then(m => m.TerminosComponent)
       }
     ]
   },

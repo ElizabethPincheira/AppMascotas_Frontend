@@ -18,7 +18,9 @@ export class RegisterPageComponent {
 
   email: string = '';
   password: string = '';
+  confirmPassword: string = '';
   nombre: string = '';
+  aceptaTerminos = false;
   regiones: string[] = [];
   provincias: string[] = [];
   comunas: string[] = [];
@@ -114,10 +116,17 @@ export class RegisterPageComponent {
       this.nombre.trim() &&
       this.email.trim() &&
       this.password.trim() &&
+      this.confirmPassword.trim() &&
+      this.password === this.confirmPassword &&
       this.regionSeleccionada &&
       this.provinciaSeleccionada &&
-      this.comunaSeleccionada
+      this.comunaSeleccionada &&
+      this.aceptaTerminos
     );
+  }
+
+  get contraseniasCoinciden(): boolean {
+    return this.password === this.confirmPassword;
   }
 
   private async cargarRegiones() {

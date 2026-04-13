@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, HostListener, inject } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import Swal from 'sweetalert2';
 import { AuthService } from '../../../core/services/auth.service';
@@ -292,6 +292,16 @@ export class DetalleMascotaComponent {
 
   toggleShareMenu(): void {
     this.shareMenuOpen = !this.shareMenuOpen;
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    const shareMenuElement = document.querySelector('.share-menu');
+    const isClickInsideMenu = shareMenuElement?.contains(event.target as Node);
+
+    if (!isClickInsideMenu && this.shareMenuOpen) {
+      this.shareMenuOpen = false;
+    }
   }
 
   async copyCaseLink(): Promise<void> {

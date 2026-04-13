@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, inject } from '@angular/core';
+import { Component, HostListener, Input, inject } from '@angular/core';
 import { Router } from '@angular/router';
+import Swal from 'sweetalert2';
 import { AuthService } from '../../../core/services/auth.service';
 import { Mascota } from '../../models/mascota.model';
 
@@ -26,6 +27,8 @@ export class CardMascotaComponent {
     return this._mascota;
   }
 
+  shareMenuOpen = false;
+
   get imageList(): string[] {
     return this.mascota?.imagenes?.length ? this.mascota.imagenes : [''];
   }
@@ -44,6 +47,10 @@ export class CardMascotaComponent {
 
   get shareWhatsappUrl(): string {
     return `https://wa.me/?text=${encodeURIComponent(this.getShareWhatsappText())}`;
+  }
+
+  get facebookShareUrl(): string {
+    return `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(this.getCaseUrl())}`;
   }
 
   nextImage(): void {
@@ -285,7 +292,42 @@ export class CardMascotaComponent {
     return ['Recuperado', 'Adoptado', 'Emparejado'].includes(this.mascota.estado);
   }
 
+  toggleShareMenu(): void {
+    this.shareMenuOpen = !this.shareMenuOpen;
+  }
 
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    const shareMenuElement = document.querySelector('.share-menu');
+    const isClickInsideMenu = shareMenuElement?.contains(event.target as Node);
+
+    if (!isClickInsideMenu && this.shareMenuOpen) {
+      this.shareMenuOpen = false;
+    }
+  }
+
+  async copyCaseLink(): Promise<void> {
+    try {
+      await navigator.clipboard.writeText(this.getCaseUrl());
+      this.shareMenuOpen = false;
+
+      await Swal.fire({
+        toast: true,
+        position: 'top-end',
+        icon: 'success',
+        title: '¡Link copiado!',
+        showConfirmButton: false,
+        timer: 1800,
+        timerProgressBar: true,
+      });
+    } catch {
+      await Swal.fire({
+        icon: 'error',
+        title: 'No se pudo copiar el link',
+        text: 'Intenta nuevamente en unos segundos.',
+      });
+    }
+  }
 
   getDistanceText(): string | null {
     if (!this.isLostCase() || typeof this.mascota.distanciaKm !== 'number' || !Number.isFinite(this.mascota.distanciaKm)) {
