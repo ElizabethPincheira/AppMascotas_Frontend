@@ -65,10 +65,8 @@ export class PublicarComponent implements AfterViewInit {
   readonly estados = [
     'Extraviado',
     'Robado',
-    'Encontrado',
     'Busca hogar',
-    'Situacion de calle',
-    'Recuperado'
+    'Situacion de calle'
   ];
 
   readonly especies = [
@@ -173,6 +171,10 @@ export class PublicarComponent implements AfterViewInit {
       : 'Elige el estado que mejor representa la situacion actual de la mascota.';
   }
 
+  get requierePerdidoDesde(): boolean {
+    return ['Extraviado', 'Robado'].includes(this.estado);
+  }
+
   get labelPerdidoDesde(): string {
     return this.esSituacionDeCalle ? 'Vista desde' : 'Perdido desde';
   }
@@ -239,6 +241,12 @@ export class PublicarComponent implements AfterViewInit {
     return this.esSituacionDeCalle
       ? 'Puedes dejar un correo o teléfono si quieres que te contacten, pero no es obligatorio.'
       : 'Deja un medio de contacto para que puedan avisarte rápidamente.';
+  }
+
+  onEstadoChange(): void {
+    if (!this.requierePerdidoDesde) {
+      this.perdidoDesde = '';
+    }
   }
 
   seleccionarModoUbicacion(modo: 'mapa' | 'gps'): void {
@@ -492,7 +500,7 @@ export class PublicarComponent implements AfterViewInit {
         chip: this.chip.trim() || undefined,
         estado: this.estado,
         fechaNacimiento: this.fechaNacimiento || undefined,
-        perdidoDesde: this.perdidoDesde || undefined,
+        perdidoDesde: this.requierePerdidoDesde ? (this.perdidoDesde || undefined) : undefined,
         latitud: this.latitud ?? undefined,
         longitud: this.longitud ?? undefined,
         caracteristicasAdicionales: this.caracteristicasAdicionales.trim() || undefined,
@@ -618,6 +626,10 @@ export class PublicarComponent implements AfterViewInit {
   }
 
   private isPerdidoDesdeValida(): boolean {
+    if (!this.requierePerdidoDesde) {
+      return true;
+    }
+
     if (!this.perdidoDesde) {
       return true;
     }

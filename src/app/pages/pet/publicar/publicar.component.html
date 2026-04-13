@@ -87,7 +87,7 @@
 
         <label class="form-field">
           <span>Estado</span>
-          <select [(ngModel)]="estado" name="estado" required>
+          <select [(ngModel)]="estado" name="estado" required (ngModelChange)="onEstadoChange()">
             <option *ngFor="let item of estadosDisponibles" [value]="item">{{ item }}</option>
           </select>
           <small>{{ helperEstado }}</small>
@@ -98,7 +98,7 @@
           <input type="date" [(ngModel)]="fechaNacimiento" name="fechaNacimiento" [max]="maxFechaHoy" [required]="!esSituacionDeCalle">
         </label>
 
-        <label class="form-field">
+        <label class="form-field" *ngIf="requierePerdidoDesde">
           <span>{{ labelPerdidoDesde }}</span>
           <input type="date" [(ngModel)]="perdidoDesde" name="perdidoDesde" [max]="maxFechaHoy">
         </label>
