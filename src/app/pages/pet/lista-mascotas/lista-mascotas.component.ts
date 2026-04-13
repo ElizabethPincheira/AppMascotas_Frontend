@@ -34,7 +34,7 @@ export class ListaMascotasComponent implements AfterViewInit {
   googleMapsError = '';
   mapCenter = { lat: -33.4489, lng: -70.6693 };
   mapZoom = 11;
-  readonly estadosPerdidos = ['Robado', 'Extraviado', 'Encontrado'];
+  readonly estadosPerdidos = ['Robado', 'Extraviado', 'Encontrado', 'Recuperado'];
   readonly estadosAdopcion = ['Busca hogar'];
   readonly estadosCalle = ['Situacion de calle'];
   readonly especiesFiltro: Array<'Todas' | 'Perro' | 'Gato' | 'Otro'> = ['Todas', 'Perro', 'Gato', 'Otro'];

@@ -20,7 +20,7 @@ export class PetsPageComponent {
 
   mascotas: Mascota[] = [];
   ubicacionUsuarioDisponible = false;
-  readonly estadosPerdidos = ['Robado', 'Extraviado', 'Encontrado'];
+  readonly estadosPerdidos = ['Robado', 'Extraviado', 'Encontrado', 'Recuperado'];
   readonly estadosAdopcion = ['Busca hogar'];
   readonly estadosCalle = ['Situacion de calle'];
 

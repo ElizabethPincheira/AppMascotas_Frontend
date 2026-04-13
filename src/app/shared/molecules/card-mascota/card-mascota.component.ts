@@ -209,7 +209,7 @@ export class CardMascotaComponent {
       case 'Encontrado':
         return 'Estoy esperando que alguien me reconozca.';
       case 'Recuperado':
-        return 'Este caso ya fue resuelto gracias a la comunidad.';
+        return 'Gracias a ti, hoy estoy de vuelta con mi familia.';
       case 'Busca hogar':
         return 'Estoy buscando una familia que me quiera.';
       case 'Emparejado':
