@@ -7,6 +7,7 @@ import { MascotaService } from '../../../core/services/mascota.service';
 import { SeoService } from '../../../core/services/seo.service';
 import { UbicacionesService } from '../../../core/services/ubicaciones.service';
 import { CardMascotaComponent } from '../../../shared/molecules/card-mascota/card-mascota.component';
+import { SkeletonCardComponent } from '../../../shared/atoms/skeleton-card/skeleton-card.component';
 import { Mascota } from '../../../shared/models/mascota.model';
 
 declare const google: any;
@@ -14,7 +15,7 @@ declare const google: any;
 @Component({
   selector: 'app-lista-mascotas',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, CardMascotaComponent],
+  imports: [CommonModule, FormsModule, RouterLink, CardMascotaComponent, SkeletonCardComponent],
   templateUrl: './lista-mascotas.component.html',
   styleUrls: ['./lista-mascotas.component.css']
 })
@@ -22,6 +23,7 @@ export class ListaMascotasComponent implements AfterViewInit {
   @ViewChild('petMapContainer') petMapContainer?: ElementRef<HTMLDivElement>;
 
   mascotas: Mascota[] = [];
+  cargando = true;
   regiones: string[] = [];
   modo: 'perdidos' | 'adopcion' | 'calle' = 'perdidos';
   vistaActiva: 'lista' | 'mapa' = 'lista';
@@ -51,36 +53,40 @@ export class ListaMascotasComponent implements AfterViewInit {
   ) {}
 
   async ngOnInit() {
-    this.modo = this.route.snapshot.data['modo'] ?? 'perdidos';
-    this.filtrosMobileAbiertos = !this.isMobileViewport();
+    try {
+      this.modo = this.route.snapshot.data['modo'] ?? 'perdidos';
+      this.filtrosMobileAbiertos = !this.isMobileViewport();
 
-    const [posicion] = await Promise.all([
-      this.obtenerUbicacionUsuario(),
-      this.cargarRegiones(),
-    ]);
+      const [posicion] = await Promise.all([
+        this.obtenerUbicacionUsuario(),
+        this.cargarRegiones(),
+      ]);
 
-    this.mascotas = [
-      ...await this.mascotaService.getMascotas(
-        posicion
-          ? {
-              latitud: posicion.latitude,
-              longitud: posicion.longitude,
-            }
-          : undefined,
-      ),
-    ];
+      this.mascotas = [
+        ...await this.mascotaService.getMascotas(
+          posicion
+            ? {
+                latitud: posicion.latitude,
+                longitud: posicion.longitude,
+              }
+            : undefined,
+        ),
+      ];
 
-    this.seoService.setPage(this.seoTitle, this.seoDescription);
+      this.seoService.setPage(this.seoTitle, this.seoDescription);
 
-    if (posicion) {
-      this.mapCenter = {
-        lat: posicion.latitude,
-        lng: posicion.longitude,
-      };
-      this.mapZoom = 13;
+      if (posicion) {
+        this.mapCenter = {
+          lat: posicion.latitude,
+          lng: posicion.longitude,
+        };
+        this.mapZoom = 13;
+      }
+
+      this.actualizarMarcadoresMapa();
+    } finally {
+      this.cargando = false;
     }
-
-    this.actualizarMarcadoresMapa();
   }
 
   async ngAfterViewInit(): Promise<void> {

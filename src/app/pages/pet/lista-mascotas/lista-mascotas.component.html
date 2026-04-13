@@ -105,12 +105,18 @@
       </div>
     </section>
 
-    <div class="lista-mascotas-grid" *ngIf="vistaActiva === 'lista' && mascotasFiltradas.length > 0; else emptyState">
-      <app-card-mascota
-        *ngFor="let mascota of mascotasFiltradas; trackBy: trackById"
-        [mascota]="mascota">
-      </app-card-mascota>
+    <div class="lista-mascotas-grid" *ngIf="cargando; else contenidoCargado">
+      <app-skeleton-card *ngFor="let i of [0,1,2,3,4,5,6,7]"></app-skeleton-card>
     </div>
+
+    <ng-template #contenidoCargado>
+      <div class="lista-mascotas-grid" *ngIf="vistaActiva === 'lista' && mascotasFiltradas.length > 0; else emptyState">
+        <app-card-mascota
+          *ngFor="let mascota of mascotasFiltradas; trackBy: trackById"
+          [mascota]="mascota">
+        </app-card-mascota>
+      </div>
+    </ng-template>
 
     <ng-template #emptyState>
       <div class="empty-state" *ngIf="vistaActiva === 'lista'">

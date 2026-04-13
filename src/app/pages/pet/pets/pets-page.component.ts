@@ -5,11 +5,12 @@ import { Mascota } from '../../../shared/models/mascota.model';
 import { MascotaService } from '../../../core/services/mascota.service';
 import { SeoService } from '../../../core/services/seo.service';
 import { CardMascotaComponent } from '../../../shared/molecules/card-mascota/card-mascota.component';
+import { SkeletonCardComponent } from '../../../shared/atoms/skeleton-card/skeleton-card.component';
 
 @Component({
   selector: 'app-pets-page',
   standalone: true,
-  imports: [CommonModule, RouterLink, CardMascotaComponent],
+  imports: [CommonModule, RouterLink, CardMascotaComponent, SkeletonCardComponent],
   templateUrl: './pets-page.component.html',
   styleUrls: ['./pets-page.component.css']
 })
@@ -19,6 +20,7 @@ export class PetsPageComponent {
   }
 
   mascotas: Mascota[] = [];
+  cargando = true;
   ubicacionUsuarioDisponible = false;
   readonly estadosPerdidos = ['Robado', 'Extraviado', 'Encontrado', 'Recuperado'];
   readonly estadosAdopcion = ['Busca hogar'];
@@ -30,22 +32,26 @@ export class PetsPageComponent {
   ) { }
 
   async ngOnInit() {
-    this.seoService.setPage(
-      'Círculo Animal — Mascotas perdidas y adopción en Chile',
-      'Encuentra mascotas perdidas, casos de adopción y animales en situación de calle en Chile a través de la red de ayuda de Círculo Animal.',
-    );
+    try {
+      this.seoService.setPage(
+        'Círculo Animal — Mascotas perdidas y adopción en Chile',
+        'Encuentra mascotas perdidas, casos de adopción y animales en situación de calle en Chile a través de la red de ayuda de Círculo Animal.',
+      );
 
-    const posicion = await this.obtenerUbicacionUsuario();
-    this.mascotas = [
-      ...await this.mascotaService.getMascotas(
-        posicion
-          ? {
-              latitud: posicion.latitude,
-              longitud: posicion.longitude,
-            }
-          : undefined,
-      ),
-    ];
+      const posicion = await this.obtenerUbicacionUsuario();
+      this.mascotas = [
+        ...await this.mascotaService.getMascotas(
+          posicion
+            ? {
+                latitud: posicion.latitude,
+                longitud: posicion.longitude,
+              }
+            : undefined,
+        ),
+      ];
+    } finally {
+      this.cargando = false;
+    }
   }
 
   get mascotasPerdidasRecientes(): Mascota[] {

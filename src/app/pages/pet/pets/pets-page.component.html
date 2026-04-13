@@ -2,7 +2,19 @@
   <div class="pets-shell">
     
 
-    <div class="section-block" *ngIf="mascotasPerdidasRecientes.length > 0">
+    <div class="section-block" *ngIf="cargando">
+      <div class="section-heading">
+        <div>
+          <h2>Mascotas Perdidas Recientes</h2>
+          <p>Casos visibles en la comunidad para ayudar a reencontrarlas.</p>
+        </div>
+      </div>
+      <div class="cards-grid">
+        <app-skeleton-card *ngFor="let i of [0,1,2,3]"></app-skeleton-card>
+      </div>
+    </div>
+
+    <div class="section-block" *ngIf="!cargando && mascotasPerdidasRecientes.length > 0">
       <div class="section-heading">
         <div>
           <h2>Mascotas Perdidas Recientes</h2>
@@ -19,7 +31,7 @@
       </div>
     </div>
 
-    <div class="section-block" *ngIf="mascotasEnAdopcion.length > 0">
+    <div class="section-block" *ngIf="!cargando && mascotasEnAdopcion.length > 0">
       <div class="section-heading">
         <div>
           <h2>En Adopción</h2>
