@@ -28,7 +28,7 @@ export class NavbarComponent {
     { label: 'Tiendas', path: '/tiendas' },
     { label: 'Ser parte', path: '/colaboradores' },
     { label: 'Fauna', path: '/fauna' },
-    { label: 'Donar', path: '/donar' },
+    //{ label: 'Donar', path: '/donar' },
   ];
 
   constructor(private authService: AuthService,
