@@ -1,0 +1,213 @@
+<section class="colaboradores-page">
+  <div class="colaboradores-shell">
+    <section class="postulacion-hero">
+      <button class="postulacion-hero__back" type="button" (click)="volverAColaboradores()">
+        ← Volver a colaboradores
+      </button>
+      <div class="postulacion-hero__content">
+        <span class="section-heading__eyebrow">Postúlate</span>
+        <h1>Completa tu postulación</h1>
+        <p>En esta pantalla puedes registrarte como colaborador y dejarnos tus datos para contactarte.</p>
+      </div>
+    </section>
+
+    <section class="postulacion-section" id="formulario-postulacion">
+      <div class="login-required" *ngIf="!estaLogueado">
+        <h3>Necesitas iniciar sesión para postular</h3>
+        <p>Al ingresar o crear tu cuenta, podrás completar el formulario en esta misma pantalla.</p>
+        <div class="login-required__actions">
+          <button class="btn btn--primary" type="button" (click)="irALogin()">Iniciar sesión</button>
+          <button class="btn btn--link" type="button" (click)="irARegistro()">Crear cuenta</button>
+        </div>
+      </div>
+
+      <ng-container *ngIf="estaLogueado">
+        <div class="loading-state" *ngIf="cargandoPostulacion">
+          <p>Cargando tu información...</p>
+        </div>
+
+        <div class="estado-panel" *ngIf="!cargandoPostulacion && postulacion" [ngClass]="estadoPostulacion?.class">
+          <div class="estado-panel__header">
+            <svg class="estado-panel__icon" *ngIf="estadoPostulacion?.icon === 'clock'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+            <svg class="estado-panel__icon" *ngIf="estadoPostulacion?.icon === 'mail'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+              <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
+            </svg>
+            <svg class="estado-panel__icon" *ngIf="estadoPostulacion?.icon === 'check'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            <svg class="estado-panel__icon" *ngIf="estadoPostulacion?.icon === 'x'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+            <div>
+              <h3>Tu postulación está: <strong>{{ estadoPostulacion?.label }}</strong></h3>
+              <p class="estado-fecha">Enviaste tu postulación el {{ fechaFormateada }}</p>
+            </div>
+          </div>
+
+          <div class="estado-panel__content">
+            <div class="info-block">
+              <label>Tipos de colaboración</label>
+              <div class="chips-container">
+                <span class="chip" *ngFor="let tipo of postulacion.tipos">{{ obtenerLabelTipo(tipo) }}</span>
+              </div>
+            </div>
+
+            <div class="info-block">
+              <label>Tu zona</label>
+              <p>{{ postulacion.region }} / {{ postulacion.provincia }} / {{ postulacion.comuna }}</p>
+            </div>
+          </div>
+
+          <div class="estado-panel__footer" *ngIf="postulacion.estado === 'rechazado'">
+            <p>Si tienes dudas sobre tu postulación, escríbenos a <a href="mailto:hola&#64;CirculoAnimal.cl">hola&#64;CirculoAnimal.cl</a></p>
+          </div>
+        </div>
+
+        <div class="confirmacion-panel" *ngIf="!cargandoPostulacion && yaPostulo && !postulacion">
+          <svg class="confirmacion-panel__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+          <h3>¡Gracias por sumarte a Círculo Animal!</h3>
+          <p>
+            Revisaremos tu postulación y nos contactaremos contigo en los próximos días hábiles al correo<br>
+            <strong>{{ email }}</strong>
+          </p>
+          <button class="btn btn--primary" type="button" (click)="volverAlInicio()">
+            Volver al inicio
+          </button>
+        </div>
+
+        <form class="postulacion-form" *ngIf="!cargandoPostulacion && !postulacion" (ngSubmit)="enviarPostulacion()">
+          <div class="form-group">
+            <label for="nombre">Nombre completo *</label>
+            <input
+              type="text"
+              id="nombre"
+              name="nombre"
+              [(ngModel)]="nombre"
+              placeholder="Tu nombre completo"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="email">Email *</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              [(ngModel)]="email"
+              placeholder="tu@email.com"
+              [readonly]="estaLogueado"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="telefono">Teléfono de contacto *</label>
+            <input
+              type="tel"
+              id="telefono"
+              name="telefono"
+              [(ngModel)]="telefono"
+              placeholder="+56 9 1234 5678"
+              required
+            />
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="region">Región *</label>
+              <select
+                id="region"
+                name="region"
+                [(ngModel)]="region"
+                (change)="onRegionChange()"
+                required
+              >
+                <option value="">Selecciona una región</option>
+                <option *ngFor="let r of regiones" [value]="r">{{ r }}</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="provincia">Provincia *</label>
+              <select
+                id="provincia"
+                name="provincia"
+                [(ngModel)]="provincia"
+                (change)="onProvinciaChange()"
+                [disabled]="!region || cargandoProvincias"
+                required
+              >
+                <option value="">{{ cargandoProvincias ? 'Cargando...' : 'Selecciona una provincia' }}</option>
+                <option *ngFor="let p of provincias" [value]="p">{{ p }}</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="comuna">Comuna *</label>
+              <select
+                id="comuna"
+                name="comuna"
+                [(ngModel)]="comuna"
+                [disabled]="!provincia || cargandoComunas"
+                required
+              >
+                <option value="">{{ cargandoComunas ? 'Cargando...' : 'Selecciona una comuna' }}</option>
+                <option *ngFor="let c of comunas" [value]="c">{{ c }}</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Tipo de colaboración * (Selecciona al menos uno)</label>
+            <div class="checkboxes-group">
+              <div class="checkbox-item" *ngFor="let tipo of tiposColaboracion">
+                <input
+                  type="checkbox"
+                  [id]="'tipo-' + tipo.id"
+                  [name]="'tipo-' + tipo.id"
+                  [checked]="tiposSeleccionados.includes(tipo.id)"
+                  (change)="toggleTipo(tipo.id)"
+                />
+                <label [for]="'tipo-' + tipo.id">{{ tipo.label }}</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="descripcion">¿Cómo puedes colaborar? Cuéntanos más (opcional)</label>
+            <textarea
+              id="descripcion"
+              name="descripcion"
+              [(ngModel)]="descripcion"
+              placeholder="Comparte detalles sobre tu experiencia o disponibilidad..."
+              maxlength="500"
+            ></textarea>
+          </div>
+
+          <div class="error-message" *ngIf="errorEnvio">
+            <p>{{ errorEnvio }}</p>
+            <button type="button" class="btn btn--link" (click)="errorEnvio = ''">
+              Descartar
+            </button>
+          </div>
+
+          <button
+            class="btn btn--primary btn--full"
+            type="submit"
+            [disabled]="!isFormularioCompleto() || enviando"
+          >
+            {{ enviando ? 'Enviando...' : 'Enviar postulación' }}
+          </button>
+        </form>
+      </ng-container>
+    </section>
+  </div>
+</section>

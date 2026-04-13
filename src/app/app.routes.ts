@@ -69,6 +69,12 @@ export const routes: Routes = [
             .then(m => m.CheckoutComponent)
       },
       {
+        path: 'colaboradores/postulacion',
+        loadComponent: () =>
+          import('./pages/pet/colaboradores/colaboradores-postulacion.component')
+            .then(m => m.ColaboradoresPostulacionComponent)
+      },
+      {
         path: 'colaboradores',
         loadComponent: () =>
           import('./pages/pet/colaboradores/colaboradores.component')
@@ -168,6 +174,13 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./pages/general/admin/admin-tiendas.component')
             .then(m => m.AdminTiendasComponent)
+      },
+      {
+        path: 'admin/colaboradores',
+        canActivate: [authGuard, adminGuard],
+        loadComponent: () =>
+          import('./pages/general/admin/admin-colaboradores.component')
+            .then(m => m.AdminColaboradoresComponent)
       },
       {
         path: 'terminos',

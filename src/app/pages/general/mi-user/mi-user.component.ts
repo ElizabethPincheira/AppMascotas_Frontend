@@ -3,6 +3,8 @@ import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import Swal from 'sweetalert2';
+import axios from 'axios';
+import { environment } from '../../../../environments/environment';
 import { AuthService } from '../../../core/services/auth.service';
 import { UbicacionesService } from '../../../core/services/ubicaciones.service';
 import { UsersService } from '../../../core/services/users.service';
@@ -36,6 +38,17 @@ export class MiUserComponent {
   cargandoProvincias = false;
   cargandoComunas = false;
   guardandoPerfil = false;
+
+  // Collaboration application
+  postulacion: any = null;
+  cargandoPostulacion = true;
+
+  readonly estadoConfig = {
+    pendiente: { label: 'Pendiente', class: 'estado-pendiente' },
+    contactado: { label: 'Contactado', class: 'estado-contactado' },
+    activo: { label: 'Activo', class: 'estado-activo' },
+    rechazado: { label: 'Rechazado', class: 'estado-rechazado' }
+  };
 
   profileForm = {
     nombre: this.user?.nombre || '',
@@ -90,6 +103,36 @@ export class MiUserComponent {
       this.profileForm.provincia = '';
       this.profileForm.comuna = '';
     }
+
+    // Load user's collaboration application if exists
+    await this.cargarPostulacion();
+  }
+
+  private async cargarPostulacion(): Promise<void> {
+    try {
+      const response = await axios.get(`${environment.apiUrl}colaboradores/mi-postulacion`);
+      if (response.data) {
+        this.postulacion = response.data;
+      }
+    } catch (error: any) {
+      // 404 means user hasn't applied yet, which is normal
+      if (error.response?.status !== 404) {
+        console.error('Error loading collaboration application:', error);
+      }
+    } finally {
+      this.cargandoPostulacion = false;
+    }
+  }
+
+  get estadoPostulacion(): any {
+    if (!this.postulacion) return null;
+    return this.estadoConfig[this.postulacion.estado as keyof typeof this.estadoConfig];
+  }
+
+  get fechaFormateada(): string {
+    if (!this.postulacion?.fechaPostulacion) return '';
+    const date = new Date(this.postulacion.fechaPostulacion);
+    return date.toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' });
   }
 
   get displayName(): string {

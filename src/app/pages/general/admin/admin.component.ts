@@ -47,6 +47,11 @@ export class AdminComponent {
       path: '/mis-mascotas',
     },
     {
+      title: 'Gestionar colaboradores',
+      description: 'Revisa y gestiona las postulaciones de colaboradores recibidas.',
+      path: '/admin/colaboradores',
+    },
+    {
       title: 'Ver cuenta',
       description: 'Abre tu panel personal para actualizar tus datos o cambiar de seccion rapidamente.',
       path: '/mi-cuenta',

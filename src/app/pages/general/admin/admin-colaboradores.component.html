@@ -1,0 +1,285 @@
+<main class="admin-colaboradores-container">
+  <!-- HEADER -->
+  <header class="header">
+    <h1>{{ tituloHeader }}</h1>
+    <p class="contador" *ngIf="!cargando">
+      Total: <strong>{{ totalPostulaciones }}</strong>
+    </p>
+  </header>
+
+  <!-- FILTROS POR ESTADO -->
+  <section class="filtros-section">
+    <div class="filtro-grupo">
+      <label class="filtro-label">Estado:</label>
+      <div class="filtro-chips">
+        <button
+          class="chip"
+          [class.chip--activo]="filtroEstado === 'todos'"
+          (click)="filtrarPorEstado('todos')"
+          [disabled]="cargando"
+        >
+          Todos
+        </button>
+        <button
+          *ngFor="let estado of estados"
+          class="chip"
+          [class.chip--activo]="filtroEstado === estado"
+          [class]="'chip--' + estado"
+          (click)="filtrarPorEstado(estado)"
+          [disabled]="cargando"
+        >
+          {{ getEstadoLabel(estado) }}
+        </button>
+      </div>
+    </div>
+
+    <!-- FILTROS POR TIPO -->
+    <div class="filtro-grupo">
+      <label class="filtro-label">Tipo de colaboración:</label>
+      <div class="filtro-chips">
+        <button
+          class="chip"
+          [class.chip--activo]="filtroTipo === 'todos'"
+          (click)="filtrarPorTipo('todos')"
+          [disabled]="cargando"
+        >
+          Todos
+        </button>
+        <button
+          *ngFor="let tipo of tipos"
+          class="chip"
+          [class.chip--activo]="filtroTipo === tipo"
+          [class]="'chip--' + tipo"
+          (click)="filtrarPorTipo(tipo)"
+          [disabled]="cargando"
+        >
+          {{ getTipoLabel(tipo) }}
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ESTADO DE CARGA -->
+  <div *ngIf="cargando" class="loading-state">
+    <div class="spinner"></div>
+    <p>Cargando postulaciones...</p>
+  </div>
+
+  <!-- ESTADO VACÍO -->
+  <div *ngIf="estaVacio" class="empty-state">
+    <p>{{ mensajeVacio }}</p>
+  </div>
+
+  <!-- LISTA DE COLABORADORES -->
+  <div *ngIf="!cargando && colaboradores.length > 0" class="colaboradores-container">
+    <!-- VISTA DESKTOP: TABLA -->
+    <table class="colaboradores-tabla">
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Contacto</th>
+          <th>Zona</th>
+          <th>Tipos</th>
+          <th>Estado</th>
+          <th>Fecha</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let colab of colaboradores" class="fila-colaborador">
+          <!-- Nombre + Email -->
+          <td class="celda-nombre">
+            <div>
+              <strong>{{ colab.nombre }}</strong>
+              <p class="email-small">{{ colab.email }}</p>
+            </div>
+          </td>
+
+          <!-- Teléfono -->
+          <td class="celda-contacto">
+            {{ colab.telefono }}
+          </td>
+
+          <!-- Zona -->
+          <td class="celda-zona">
+            {{ colab.region }} / {{ colab.comuna }}
+          </td>
+
+          <!-- Tipos como chips -->
+          <td class="celda-tipos">
+            <div class="tipos-chips">
+              <span
+                *ngFor="let tipo of colab.tipos"
+                class="chip-tipo"
+                [class]="'chip-tipo--' + tipo"
+              >
+                {{ getTipoLabel(tipo) }}
+              </span>
+            </div>
+          </td>
+
+          <!-- Estado -->
+          <td class="celda-estado">
+            <div
+              class="estado-badge"
+              [class]="estadoConfig[colab.estado]?.class"
+            >
+              <span class="estado-icon">{{ getEstadoIcon(colab.estado) }}</span>
+              <span class="estado-label">{{ getEstadoLabel(colab.estado) }}</span>
+            </div>
+          </td>
+
+          <!-- Fecha -->
+          <td class="celda-fecha">
+            {{ formatFecha(colab.fechaPostulacion) }}
+          </td>
+
+          <!-- Acciones -->
+          <td class="celda-acciones">
+            <div class="acciones-grupo">
+              <!-- Botón: Ver detalles -->
+              <button
+                class="btn-accion btn-detalles"
+                title="Ver detalles"
+                (click)="mostrarDetalles(colab)"
+                [disabled]="actualizando[colab._id]"
+              >
+                👁️
+              </button>
+
+              <!-- Botón: Cambiar a Contactado -->
+              <button
+                *ngIf="colab.estado === 'pendiente'"
+                class="btn-accion btn-contactado"
+                title="Marcar como contactado"
+                (click)="cambiarEstado(colab._id, 'contactado')"
+                [disabled]="actualizando[colab._id]"
+              >
+                📧
+              </button>
+
+              <!-- Botón: Activar -->
+              <button
+                *ngIf="colab.estado !== 'activo' && colab.estado !== 'rechazado'"
+                class="btn-accion btn-activo"
+                title="Activar colaborador"
+                (click)="cambiarEstado(colab._id, 'activo')"
+                [disabled]="actualizando[colab._id]"
+              >
+                ✅
+              </button>
+
+              <!-- Botón: Rechazar -->
+              <button
+                *ngIf="colab.estado !== 'rechazado'"
+                class="btn-accion btn-rechazar"
+                title="Rechazar postulación"
+                (click)="cambiarEstado(colab._id, 'rechazado')"
+                [disabled]="actualizando[colab._id]"
+              >
+                ❌
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- VISTA MOBILE: CARDS -->
+    <div class="colaboradores-cards">
+      <div
+        *ngFor="let colab of colaboradores"
+        class="colaborador-card"
+        [class]="estadoConfig[colab.estado]?.class"
+      >
+        <!-- Header -->
+        <div class="card-header">
+          <div>
+            <h3>{{ colab.nombre }}</h3>
+            <p class="card-email">{{ colab.email }}</p>
+          </div>
+          <div
+            class="estado-badge-card"
+            [class]="estadoConfig[colab.estado]?.class"
+          >
+            {{ getEstadoIcon(colab.estado) }} {{ getEstadoLabel(colab.estado) }}
+          </div>
+        </div>
+
+        <!-- Body -->
+        <div class="card-body">
+          <div class="card-row">
+            <label>Teléfono:</label>
+            <span>{{ colab.telefono }}</span>
+          </div>
+
+          <div class="card-row">
+            <label>Zona:</label>
+            <span>{{ colab.region }} / {{ colab.provincia }} / {{ colab.comuna }}</span>
+          </div>
+
+          <div class="card-row">
+            <label>Tipos:</label>
+            <div class="tipos-chips">
+              <span
+                *ngFor="let tipo of colab.tipos"
+                class="chip-tipo"
+                [class]="'chip-tipo--' + tipo"
+              >
+                {{ getTipoLabel(tipo) }}
+              </span>
+            </div>
+          </div>
+
+          <div class="card-row" *ngIf="colab.descripcion">
+            <label>Descripción:</label>
+            <p class="descripcion-card">{{ colab.descripcion }}</p>
+          </div>
+
+          <div class="card-row">
+            <label>Fecha:</label>
+            <span>{{ formatFecha(colab.fechaPostulacion) }}</span>
+          </div>
+        </div>
+
+        <!-- Footer: Acciones -->
+        <div class="card-footer">
+          <button
+            class="btn-card"
+            (click)="mostrarDetalles(colab)"
+            [disabled]="actualizando[colab._id]"
+          >
+            Ver detalles
+          </button>
+
+          <button
+            *ngIf="colab.estado === 'pendiente'"
+            class="btn-card btn-card--contactado"
+            (click)="cambiarEstado(colab._id, 'contactado')"
+            [disabled]="actualizando[colab._id]"
+          >
+            Contactar
+          </button>
+
+          <button
+            *ngIf="colab.estado !== 'activo' && colab.estado !== 'rechazado'"
+            class="btn-card btn-card--activo"
+            (click)="cambiarEstado(colab._id, 'activo')"
+            [disabled]="actualizando[colab._id]"
+          >
+            Activar
+          </button>
+
+          <button
+            *ngIf="colab.estado !== 'rechazado'"
+            class="btn-card btn-card--rechazar"
+            (click)="cambiarEstado(colab._id, 'rechazado')"
+            [disabled]="actualizando[colab._id]"
+          >
+            Rechazar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
