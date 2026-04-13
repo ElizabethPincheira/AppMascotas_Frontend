@@ -96,42 +96,5 @@
         </div>
       </article>
     </section>
-
-    <section class="mi-user-colaboracion" *ngIf="!cargandoPostulacion && postulacion">
-      <article class="colaboracion-card">
-        <div class="section-heading">
-          <div>
-            <span class="section-heading__eyebrow">Trabajo colaborativo</span>
-            <h2>Tu colaboración</h2>
-          </div>
-        </div>
-
-        <div class="colaboracion-estado" [ngClass]="estadoPostulacion?.class">
-          <div class="estado-badge">
-            <span>{{ estadoPostulacion?.label }}</span>
-          </div>
-          <p class="estado-fecha">Postulaste el {{ fechaFormateada }}</p>
-          <a class="ver-detalles-link" routerLink="/colaboradores">Ver detalles completos →</a>
-        </div>
-      </article>
-    </section>
-
-    <section class="mi-user-actions">
-      <article class="action-banner">
-        <div>
-          <span class="action-banner__eyebrow">Atajos</span>
-          <h2>Haz una acción en segundos</h2>
-          <p>Usa estos botones para moverte rapido dentro de tu panel.</p>
-        </div>
-
-        <div class="action-banner__buttons">
-          <a class="action-banner__button action-banner__button--solid" routerLink="/publicar">Nueva publicación</a>
-          <a class="action-banner__button action-banner__button--ghost" routerLink="/mis-mascotas">Ver mis mascotas</a>
-          <button type="button" class="action-banner__button action-banner__button--danger" (click)="logout()">
-            Cerrar sesión
-          </button>
-        </div>
-      </article>
-    </section>
   </div>
 </section>

@@ -68,26 +68,12 @@ export class MiUserComponent {
       tone: 'lime'
     },
     {
-      title: 'Publicar mascota',
-      description: 'Crea una nueva publicacion para una mascota perdida, encontrada o en adopcion.',
-      path: '/publicar',
-      badge: 'Accion rapida',
-      tone: 'earth'
-    },
-    {
       title: 'Registrate como tienda',
       description: 'Abre tu tienda en nuestra plataforma y comparte tus productos con la comunidad.',
       path: '/registrar-tienda',
       badge: 'Nuevo negocio',
       tone: 'earth'
     },
-    {
-      title: 'Tiendas solidarias',
-      description: 'Explora tiendas, productos y opciones de compra relacionadas con la comunidad.',
-      path: '/tiendas',
-      badge: 'Explorar',
-      tone: 'sky'
-    }
   ];
 
   async ngOnInit(): Promise<void> {
