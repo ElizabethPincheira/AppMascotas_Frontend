@@ -1,5 +1,27 @@
 <section class="register-page py-4 py-lg-5">
   <div class="container-fluid px-3 px-lg-4">
+    <div class="row g-4 g-xl-5 align-items-stretch justify-content-center" *ngIf="registroExitoso; else registerFormState">
+      <div class="col-12 col-lg-10 col-xl-8">
+        <div class="card border-0 shadow-lg register-card">
+          <div class="card-body p-4 p-xl-5 text-center">
+            <span class="badge rounded-pill text-bg-success-subtle progress-badge is-active mb-3">Verificación pendiente</span>
+            <h1 class="h2 fw-bold mb-3">Revisa tu correo. Te enviamos un link para verificar tu cuenta.</h1>
+            <p class="text-secondary mb-4">
+              Enviamos las instrucciones a <strong>{{ emailRegistrado }}</strong>. Cuando confirmes tu correo, ya podrás usar tu cuenta con normalidad.
+            </p>
+
+            <div class="d-flex flex-column flex-sm-row justify-content-center gap-3">
+              <a routerLink="/login" class="btn btn-success btn-lg px-4 register-button">Ir al login</a>
+              <button type="button" class="btn btn-outline-secondary btn-lg px-4" (click)="registroExitoso = false">
+                Volver al formulario
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <ng-template #registerFormState>
     <div class="row g-4 g-xl-5 align-items-stretch justify-content-center">
       <div class="col-12 col-lg-5">
         <div class="card border-0 shadow-lg register-hero h-100">
@@ -203,5 +225,6 @@
         </div>
       </div>
     </div>
+    </ng-template>
   </div>
 </section>

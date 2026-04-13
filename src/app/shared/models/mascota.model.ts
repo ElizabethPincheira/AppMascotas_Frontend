@@ -4,6 +4,9 @@ export interface Mascota {
   nombre: string;
   tipo?: string;
   especie?: string;
+  sexo?: 'Macho' | 'Hembra' | 'Desconocido';
+  color?: string;
+  tamano?: 'Pequeño' | 'Mediano' | 'Grande' | 'Gigante';
   raza: string;
   chip?: string | null;
   ubicacion?: string;

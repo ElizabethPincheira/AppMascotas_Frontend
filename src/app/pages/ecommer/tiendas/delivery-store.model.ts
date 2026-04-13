@@ -23,9 +23,11 @@ export interface DeliveryStore {
 
 export interface StoreProduct {
   id: number;
+  productoId: string;
   name: string;
   category: string;
   price: string;
+  priceValue: number;
   image: string;
   description: string;
   tags: string[];

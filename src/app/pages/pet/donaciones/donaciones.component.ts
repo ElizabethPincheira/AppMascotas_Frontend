@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { SeoService } from '../../../core/services/seo.service';
 
 @Component({
   selector: 'app-donaciones',
@@ -10,6 +11,8 @@ import { RouterLink } from '@angular/router';
   styleUrls: ['./donaciones.component.css']
 })
 export class DonacionesComponent {
+  constructor(private seoService: SeoService) {}
+
   readonly donationUses = [
     {
       title: 'Alimento y agua',
@@ -32,4 +35,11 @@ export class DonacionesComponent {
   ];
 
   readonly suggestedAmounts = ['5.000', '10.000', '20.000', '50.000'];
+
+  ngOnInit(): void {
+    this.seoService.setPage(
+      'Donar — Circulo Animal',
+      'Apoya rescates, alimentación, atención veterinaria y hogares temporales con tu donación a Círculo Animal.',
+    );
+  }
 }

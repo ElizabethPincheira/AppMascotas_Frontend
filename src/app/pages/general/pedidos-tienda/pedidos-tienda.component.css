@@ -1,0 +1,274 @@
+.pedidos-tienda-page {
+  display: grid;
+  gap: 2rem;
+  padding: 2rem 1rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.pedidos-tienda-shell {
+  display: grid;
+  gap: 2rem;
+}
+
+.pedidos-tienda-hero,
+.pedidos-panel {
+  background: white;
+  border-radius: 1rem;
+  padding: 2rem;
+  border: 1px solid #eee;
+}
+
+.pedidos-tienda-hero {
+  background: linear-gradient(135deg, #f5f5f5 0%, #fafafa 100%);
+}
+
+.pedidos-tienda-hero__eyebrow,
+.section-heading__eyebrow,
+.pedido-card__eyebrow {
+  display: inline-flex;
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.pedidos-tienda-hero__eyebrow,
+.section-heading__eyebrow {
+  color: #666;
+}
+
+.pedidos-tienda-hero h1,
+.section-heading h2 {
+  margin: 0.75rem 0 0;
+  color: #1a1a1a;
+}
+
+.pedidos-tienda-hero h1 {
+  font-size: 2rem;
+}
+
+.pedidos-tienda-hero p,
+.pedido-card__header p,
+.empty-message p {
+  color: #666;
+  line-height: 1.6;
+}
+
+.back-button {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  margin-bottom: 1rem;
+  background: transparent;
+  border: 2px solid #ddd;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #666;
+  cursor: pointer;
+}
+
+.section-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.loading-message,
+.empty-message {
+  padding: 1rem;
+  border-radius: 0.75rem;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+}
+
+.empty-message {
+  display: grid;
+  gap: 1rem;
+}
+
+.pedidos-lista {
+  display: grid;
+  gap: 1rem;
+}
+
+.pedido-card {
+  display: grid;
+  gap: 1.2rem;
+  padding: 1.35rem;
+  border-radius: 1rem;
+  border: 1px solid #e5e7eb;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.05);
+}
+
+.pedido-card__header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: start;
+}
+
+.pedido-card__eyebrow {
+  margin-bottom: 0.4rem;
+  color: #64748b;
+}
+
+.pedido-card__header h3 {
+  margin: 0;
+  color: #111827;
+  font-size: 1.1rem;
+}
+
+.pedido-card__header p {
+  margin: 0.45rem 0 0;
+}
+
+.pedido-status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 36px;
+  padding: 0.45rem 0.85rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
+.pedido-status--pendiente {
+  background: rgba(245, 158, 11, 0.16);
+  color: #b45309;
+}
+
+.pedido-status--confirmado {
+  background: rgba(59, 130, 246, 0.14);
+  color: #1d4ed8;
+}
+
+.pedido-status--en-camino {
+  background: rgba(14, 165, 233, 0.14);
+  color: #0369a1;
+}
+
+.pedido-status--entregado {
+  background: rgba(34, 197, 94, 0.14);
+  color: #15803d;
+}
+
+.pedido-status--cancelado {
+  background: rgba(239, 68, 68, 0.14);
+  color: #b91c1c;
+}
+
+.pedido-card__body {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(260px, 0.8fr);
+  gap: 1rem;
+}
+
+.pedido-card__items h4 {
+  margin: 0 0 0.75rem;
+  color: #1f2937;
+}
+
+.pedido-card__items ul {
+  display: grid;
+  gap: 0.7rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pedido-card__items li,
+.pedido-summary__row {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+}
+
+.pedido-card__items li {
+  padding: 0.8rem 0.95rem;
+  border-radius: 0.85rem;
+  background: white;
+  border: 1px solid #e5e7eb;
+}
+
+.pedido-card__summary {
+  display: grid;
+  gap: 1rem;
+  padding: 1rem;
+  border-radius: 1rem;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+}
+
+.pedido-summary__row span {
+  color: #475569;
+  font-weight: 600;
+}
+
+.pedido-summary__row strong {
+  color: #111827;
+}
+
+.pedido-summary__row--stacked {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.pedido-summary__actions {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.75rem;
+}
+
+.pedido-summary__actions select {
+  min-height: 46px;
+  padding: 0.8rem 1rem;
+  border: 1px solid #d7dce4;
+  border-radius: 0.85rem;
+  background: linear-gradient(180deg, #ffffff 0%, #f7f9fc 100%);
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1.5rem;
+  background: #0066ff;
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.btn-primary:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+  .pedidos-tienda-page {
+    padding: 1rem;
+  }
+
+  .pedidos-tienda-hero,
+  .pedidos-panel {
+    padding: 1.5rem;
+  }
+
+  .pedido-card__header {
+    flex-direction: column;
+  }
+
+  .pedido-card__body,
+  .pedido-summary__actions {
+    grid-template-columns: 1fr;
+  }
+}

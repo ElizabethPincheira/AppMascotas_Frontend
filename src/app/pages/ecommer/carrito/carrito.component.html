@@ -1,0 +1,100 @@
+<section class="cart-page">
+  <div class="cart-shell">
+    <section class="cart-hero">
+      <div>
+        <span class="cart-hero__eyebrow">Carrito</span>
+        <h1>Revisa tus productos antes de continuar.</h1>
+        <p>Solo puedes comprar productos de una tienda a la vez. Ajusta cantidades o vacía el carrito si quieres empezar de nuevo.</p>
+      </div>
+
+      <div class="cart-summary-card">
+        <span class="cart-summary-card__label">Total actual</span>
+        <strong>{{ formatPrice(carritoService.total) }}</strong>
+        <p>{{ carritoService.cantidadTotal }} producto(s) en tu carrito.</p>
+      </div>
+    </section>
+
+    <section class="cart-panel" *ngIf="items$ | async as items">
+      <div class="cart-panel__header">
+        <div>
+          <span class="cart-panel__eyebrow">Detalle</span>
+          <h2>{{ items.length }} ítem(s)</h2>
+          <p class="cart-panel__store" *ngIf="items.length > 0">
+            Pedido para <strong>{{ nombreTienda }}</strong>
+          </p>
+        </div>
+
+        <button
+          *ngIf="items.length > 0"
+          type="button"
+          class="cart-panel__clear"
+          (click)="carritoService.vaciarCarrito()">
+          Vaciar carrito
+        </button>
+      </div>
+
+      <div class="cart-grid" *ngIf="items.length > 0; else emptyState">
+        <div class="cart-list">
+          <article class="cart-item" *ngFor="let item of items; trackBy: trackByProductoId">
+            <img class="cart-item__image" [src]="item.imagen" [alt]="item.nombre" />
+
+            <div class="cart-item__body">
+              <div>
+                <h3>{{ item.nombre }}</h3>
+                <p>{{ formatPrice(item.precio) }} c/u</p>
+              </div>
+
+              <div class="cart-item__actions">
+                <div class="cart-quantity" aria-label="Selector de cantidad">
+                  <button type="button" (click)="disminuirCantidad(item)">−</button>
+                  <span>{{ item.cantidad }}</span>
+                  <button type="button" (click)="aumentarCantidad(item)">+</button>
+                </div>
+
+                <strong>{{ formatPrice(item.precio * item.cantidad) }}</strong>
+
+                <button
+                  type="button"
+                  class="cart-item__remove"
+                  (click)="carritoService.quitarItem(item.productoId)">
+                  Eliminar
+                </button>
+              </div>
+            </div>
+          </article>
+        </div>
+
+        <aside class="cart-totals">
+          <span class="cart-panel__eyebrow">Resumen</span>
+          <h3>{{ nombreTienda }}</h3>
+
+          <div class="cart-totals__row">
+            <span>Subtotal</span>
+            <strong>{{ formatPrice(carritoService.total) }}</strong>
+          </div>
+
+          <div class="cart-totals__row">
+            <span>Envío</span>
+            <strong>{{ costoEnvioLabel }}</strong>
+          </div>
+
+          <div class="cart-totals__row cart-totals__row--total">
+            <span>Total</span>
+            <strong>{{ formatPrice(carritoService.total) }}</strong>
+          </div>
+
+          <a class="cart-link cart-link--primary" routerLink="/checkout">Ir al checkout</a>
+          <a class="cart-link cart-link--secondary" routerLink="/tiendas">Seguir comprando</a>
+        </aside>
+      </div>
+    </section>
+
+    <ng-template #emptyState>
+      <section class="cart-panel cart-panel--empty">
+        <h2>Tu carrito está vacío</h2>
+        <p>Explora las tiendas y agrega productos para empezar tu compra.</p>
+        <a class="cart-link cart-link--primary" routerLink="/tiendas">Seguir comprando</a>
+      </section>
+    </ng-template>
+  </div>
+</section>

@@ -5,10 +5,13 @@ import { DeliveryStore, StoreProduct, StoreScheduleEntry } from '../../pages/eco
 
 export interface Store {
   _id: string;
+  nombre?: string;
+  email?: string;
   nombreTienda: string;
   descripcionTienda: string;
   direccionTienda: string;
   telefonoTienda: string;
+  imagenTienda?: string;
   categoriasTienda: string[];
   comunasRepartoTienda?: string[];
   horarioTienda?: Array<{
@@ -20,6 +23,9 @@ export interface Store {
   regionTienda?: string;
   provinciaTienda?: string;
   comunaTienda?: string;
+  estadoSolicitudTienda?: string;
+  fechaSolicitudTienda?: string;
+  motivoRechazoTienda?: string;
   region?: string;
   provincia?: string;
   comuna?: string;
@@ -58,6 +64,26 @@ export class TiendasService {
     }
   }
 
+  async getAdminStoreById(storeId: string): Promise<Store | null> {
+    const token = localStorage.getItem('token');
+
+    if (!token) {
+      return null;
+    }
+
+    try {
+      const response = await axios.get(this.apiUrl + `user/admin/stores/${storeId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      return response.data.store || null;
+    } catch (error) {
+      console.error('Error al obtener la tienda para admin:', error);
+      return null;
+    }
+  }
+
   async getPublicProductsByStore(storeId: string): Promise<BackendProducto[]> {
     try {
       const response = await axios.get(this.apiUrl + `productos/public/${storeId}`);
@@ -69,6 +95,8 @@ export class TiendasService {
   }
 
   toDeliveryStore(store: Store, products: BackendProducto[] = []): DeliveryStore {
+    const storeImage = store.imagenTienda?.trim() || this.fallbackImage;
+
     return {
       id: store._id,
       slug: store.nombreTienda.toLowerCase().replace(/\s+/g, '-'),
@@ -88,23 +116,27 @@ export class TiendasService {
       categories: store.categoriasTienda || [],
       highlight: store.descripcionTienda || 'Conoce esta tienda registrada en la comunidad.',
       description: store.descripcionTienda || 'Esta tienda forma parte de la red de Circulo Animal.',
-      heroImage: this.fallbackImage,
-      gallery: [this.fallbackImage],
-      products: products.map((product) => this.toStoreProduct(product)),
+      heroImage: storeImage,
+      gallery: [storeImage],
+      products: products.map((product) => this.toStoreProduct(product, store.categoriasTienda)),
       weeklySchedule: this.normalizeSchedule(store.horarioTienda),
     };
   }
 
-  private toStoreProduct(product: BackendProducto): StoreProduct {
+  private toStoreProduct(product: BackendProducto, storeCategories: string[] = []): StoreProduct {
     return {
       id: Number(product._id.replace(/\D/g, '').slice(-8) || '0'),
+      productoId: product._id,
       name: product.nombre,
-      category: 'Producto',
+      // Mientras el backend no exponga una categoria propia por producto,
+      // usamos la primera categoria declarada por la tienda para evitar un valor hardcodeado.
+      category: storeCategories[0] || 'Producto',
       price: new Intl.NumberFormat('es-CL', {
         style: 'currency',
         currency: 'CLP',
         maximumFractionDigits: 0,
       }).format(product.precio),
+      priceValue: product.precio,
       image: product.imagen || this.fallbackImage,
       description: product.descripcion,
       tags: [

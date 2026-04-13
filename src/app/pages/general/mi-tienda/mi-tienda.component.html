@@ -18,7 +18,7 @@
       <article class="info-panel">
         <div class="section-heading">
           <div>
-            <span class="section-heading__eyebrow">Edicion</span>
+            <span class="section-heading__eyebrow">Edición</span>
             <h2>Edita los detalles de tu tienda</h2>
           </div>
         </div>
@@ -30,25 +30,68 @@
           </label>
 
           <label class="form-field">
-            <span>Telefono</span>
+            <span>Teléfono</span>
             <input type="text" [(ngModel)]="detallesForm.telefonoTienda" placeholder="+56 9 1234 5678" />
           </label>
 
           <label class="form-field form-field--full">
-            <span>Descripcion</span>
+            <span>Descripción</span>
             <textarea [(ngModel)]="detallesForm.descripcionTienda" rows="4" placeholder="Describe tu tienda, propuesta y tipo de productos"></textarea>
           </label>
 
           <label class="form-field form-field--full">
-            <span>Direccion</span>
-            <input type="text" [(ngModel)]="detallesForm.direccionTienda" placeholder="Direccion o punto de referencia" />
+            <span>Dirección</span>
+            <input type="text" [(ngModel)]="detallesForm.direccionTienda" placeholder="Dirección o punto de referencia" />
           </label>
 
           <div class="form-field form-field--full">
-            <span>Categorias</span>
+            <span>Imagen de la tienda</span>
+
+            <div class="store-image-editor">
+              <div class="store-image-preview" *ngIf="imagenTiendaActual; else noStoreImage">
+                <img [src]="imagenTiendaActual" alt="Vista previa de la tienda" />
+              </div>
+
+              <ng-template #noStoreImage>
+                <div class="store-image-placeholder">
+                  Aún no has subido una imagen para tu tienda.
+                </div>
+              </ng-template>
+
+              <label class="file-upload file-upload--store" for="store-image-input">
+                <input
+                  id="store-image-input"
+                  type="file"
+                  accept="image/*"
+                  (change)="onImagenTiendaSeleccionada($event)"
+                  [disabled]="procesandoImagenTienda"
+                  class="file-input"
+                />
+                <span class="file-upload__hint">
+                  {{ imagenTiendaPreview ? 'Imagen nueva lista para guardar' : 'Cambiar imagen de tienda' }}
+                </span>
+              </label>
+
+              <button
+                *ngIf="imagenTiendaPreview"
+                type="button"
+                class="btn-secondary store-image-editor__clear"
+                (click)="limpiarImagenTiendaSeleccionada()"
+                [disabled]="procesandoImagenTienda || guardandoDetalles">
+                Quitar cambio
+              </button>
+
+              <div *ngIf="procesandoImagenTienda" class="compressing-message">
+                Procesando imagen de la tienda...
+              </div>
+            </div>
+          </div>
+
+          <div class="form-field form-field--full">
+            <span>Categorías</span>
             <div class="category-selector">
               <select [(ngModel)]="detallesForm.categoriaSeleccionada">
-                <option value="">Selecciona una categoria</option>
+                <option value="">Selecciona una categoría</option>
                 <option *ngFor="let categoria of categoriasDisponibles" [value]="categoria" [disabled]="detallesForm.categoriasSeleccionadas.includes(categoria)">
                   {{ categoria }}
                 </option>
@@ -67,7 +110,7 @@
             </div>
 
             <ng-template #noStoreCategories>
-              <p class="category-editor__helper">Selecciona las categorias que mejor representan tu tienda.</p>
+              <p class="category-editor__helper">Selecciona las categorías que mejor representan tu tienda.</p>
             </ng-template>
           </div>
         </div>
@@ -75,12 +118,12 @@
         <div class="schedule-panel">
           <div class="schedule-panel__header">
             <span class="section-heading__eyebrow">Horario</span>
-            <h3>Define tus dias y horas de atencion</h3>
+            <h3>Define tus días y horas de atención</h3>
           </div>
 
           <div class="schedule-table">
             <div class="schedule-table__head">
-              <span>Dia</span>
+              <span>Día</span>
               <span>Estado</span>
               <span>Apertura</span>
               <span>Cierre</span>
@@ -140,6 +183,16 @@
           </div>
 
           <div class="info-field">
+            <span class="info-field__label">Imagen de la tienda</span>
+            <div class="store-image-preview store-image-preview--compact" *ngIf="user?.imagenTienda; else noStoreImageInfo">
+              <img [src]="user?.imagenTienda" alt="Imagen actual de la tienda" />
+            </div>
+            <ng-template #noStoreImageInfo>
+              <p class="info-field__value">Sin imagen registrada.</p>
+            </ng-template>
+          </div>
+
+          <div class="info-field">
             <span class="info-field__label">Categorías</span>
             <div class="categories-list">
               <span *ngFor="let categoria of categoriasTienda" class="category-badge">
@@ -194,14 +247,14 @@
 
         <div class="delivery-editor">
           <p class="delivery-editor__helper">
-            Selecciona las comunas donde tu tienda realiza despacho. Esta cobertura se usa para ordenar y filtrar las tiendas por cercania.
+            Selecciona las comunas donde tu tienda realiza despacho. Esta cobertura se usa para ordenar y filtrar las tiendas por cercanía.
           </p>
 
           <div class="delivery-editor__selectors">
             <label class="form-field">
-              <span>Region de la tienda</span>
+              <span>Región de la tienda</span>
               <select [(ngModel)]="repartoForm.regionTienda" (ngModelChange)="onRegionRepartoChange()">
-                <option value="">Selecciona una region</option>
+                <option value="">Selecciona una región</option>
                 <option *ngFor="let region of regionesDisponibles" [value]="region">{{ region }}</option>
               </select>
             </label>

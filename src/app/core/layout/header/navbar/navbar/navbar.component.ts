@@ -1,7 +1,9 @@
 import { Component, ElementRef, HostListener, inject } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { map } from 'rxjs';
 import { AuthService } from '../../../../services/auth.service';
 import { CommonModule } from '@angular/common';
+import { CarritoService } from '../../../../services/carrito.service';
 
 @Component({
   selector: 'app-navbar',
@@ -11,9 +13,13 @@ import { CommonModule } from '@angular/common';
 })
 export class NavbarComponent {
   private readonly elementRef = inject(ElementRef<HTMLElement>);
+  private readonly carritoService = inject(CarritoService);
   user: any;
   profileMenuOpen = false;
   mobileMenuOpen = false;
+  readonly cantidadCarrito$ = this.carritoService.items$.pipe(
+    map((items) => items.reduce((sum, item) => sum + item.cantidad, 0)),
+  );
   readonly navItems = [
     { label: 'Inicio', path: '/', exact: true },
     { label: 'Perdidos', path: '/perdidos' },
@@ -50,6 +56,12 @@ export class NavbarComponent {
 
   closeMobileMenu(): void {
     this.mobileMenuOpen = false;
+  }
+
+  irAlCarrito(): void {
+    this.closeProfileMenu();
+    this.closeMobileMenu();
+    this.router.navigate(['/carrito']);
   }
 
   @HostListener('document:click', ['$event'])

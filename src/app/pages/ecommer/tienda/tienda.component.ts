@@ -1,6 +1,10 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, RouterModule } from '@angular/router';
+import Swal from 'sweetalert2';
+import { AuthService } from '../../../core/services/auth.service';
+import { CarritoService } from '../../../core/services/carrito.service';
+import { SeoService } from '../../../core/services/seo.service';
 import { TiendasService } from '../../../core/services/tiendas.service';
 import { DeliveryStore, StoreProduct } from '../tiendas/delivery-store.model';
 
@@ -14,12 +18,20 @@ import { DeliveryStore, StoreProduct } from '../tiendas/delivery-store.model';
 export class StoreDetailComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly tiendasService = inject(TiendasService);
+  private readonly carritoService = inject(CarritoService);
+  private readonly authService = inject(AuthService);
+  private readonly seoService = inject(SeoService);
 
   featuredStores: DeliveryStore[] = [];
   store: DeliveryStore | null = null;
   cargando = false;
 
   async ngOnInit(): Promise<void> {
+    this.seoService.setPage(
+      'Tienda solidaria — Círculo Animal',
+      'Explora el detalle de esta tienda solidaria y descubre productos para apoyar a la comunidad animal.',
+    );
+
     await this.cargarTienda();
   }
 
@@ -34,11 +46,15 @@ export class StoreDetailComponent implements OnInit {
     this.cargando = true;
 
     try {
-      const [storeData, relatedStores, products] = await Promise.all([
+      let [storeData, relatedStores, products] = await Promise.all([
         this.tiendasService.getApprovedStoreById(storeId),
         this.tiendasService.getApprovedStores(),
         this.tiendasService.getPublicProductsByStore(storeId),
       ]);
+
+      if (!storeData && this.esAdmin()) {
+        storeData = await this.tiendasService.getAdminStoreById(storeId);
+      }
 
       this.featuredStores = relatedStores
         .filter((relatedStore) => relatedStore._id !== storeId)
@@ -48,6 +64,14 @@ export class StoreDetailComponent implements OnInit {
       this.store = storeData
         ? this.tiendasService.toDeliveryStore(storeData, products)
         : null;
+
+      if (this.store) {
+        this.seoService.setPage(
+          `${this.store.name} — Círculo Animal`,
+          this.store.description || `Conoce ${this.store.name}, tienda solidaria disponible en Círculo Animal.`,
+          this.store.heroImage,
+        );
+      }
     } catch (error) {
       console.error('Error al cargar detalle de tienda:', error);
       this.store = null;
@@ -58,5 +82,42 @@ export class StoreDetailComponent implements OnInit {
 
   trackByProductId(_: number, product: StoreProduct): number {
     return product.id;
+  }
+
+  private esAdmin(): boolean {
+    const user = this.authService.getUser();
+    const roles = Array.isArray(user?.roles) ? user.roles : [];
+
+    return roles.some((role: string) => ['admin', 'administrador'].includes(String(role).toLowerCase()));
+  }
+
+  async agregarAlCarrito(product: StoreProduct): Promise<void> {
+    if (!this.store) {
+      return;
+    }
+
+    const agregado = this.carritoService.agregarItem(
+      {
+        productoId: product.productoId,
+        tiendaId: String(this.store.id),
+        nombre: product.name,
+        precio: product.priceValue,
+        imagen: product.image,
+        cantidad: 1,
+      },
+      this.store.name,
+    );
+
+    if (!agregado) {
+      return;
+    }
+
+    await Swal.fire({
+      icon: 'success',
+      title: 'Producto agregado',
+      text: `${product.name} fue agregado al carrito.`,
+      timer: 1500,
+      showConfirmButton: false,
+    });
   }
 }

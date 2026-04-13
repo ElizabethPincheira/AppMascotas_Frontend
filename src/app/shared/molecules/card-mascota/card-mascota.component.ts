@@ -1,5 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input } from '@angular/core';
+import { Component, Input, inject } from '@angular/core';
+import { Router } from '@angular/router';
+import { AuthService } from '../../../core/services/auth.service';
 import { Mascota } from '../../models/mascota.model';
 
 @Component({
@@ -9,6 +11,8 @@ import { Mascota } from '../../models/mascota.model';
   styleUrls: ['./card-mascota.component.css']
 })
 export class CardMascotaComponent {
+  private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
   private _mascota!: Mascota;
   currentImageIndex = 0;
   private touchStartX: number | null = null;
@@ -32,6 +36,14 @@ export class CardMascotaComponent {
 
   get hasMultipleImages(): boolean {
     return this.imageList.length > 1;
+  }
+
+  get canOpenDetail(): boolean {
+    return !!(this.mascota?._id ?? this.mascota?.id);
+  }
+
+  get shareWhatsappUrl(): string {
+    return `https://wa.me/?text=${encodeURIComponent(this.getShareWhatsappText())}`;
   }
 
   nextImage(): void {
@@ -114,6 +126,22 @@ export class CardMascotaComponent {
     return this.mascota.usuarioId.email;
   }
 
+  getEmailContact(): string | null {
+    const contact = this.getPreferredContact();
+    return contact && this.isEmail(contact) ? contact : null;
+  }
+
+  getWhatsappUrl(): string | null {
+    const contact = this.mascota.contacto?.trim();
+
+    if (!contact || this.isEmail(contact)) {
+      return null;
+    }
+
+    const sanitizedPhone = contact.replace(/\D+/g, '');
+    return sanitizedPhone ? `https://wa.me/${sanitizedPhone}` : null;
+  }
+
   getPrimaryLocation(): string {
     return (
       this.mascota.ubicacionPerdida ??
@@ -169,6 +197,10 @@ export class CardMascotaComponent {
     });
   }
 
+  getShareLocation(): string {
+    return this.mascota.comunaPerdida ?? this.getOwnerLocation() ?? this.mascota.regionPerdida ?? 'Chile';
+  }
+
   getEmotionalMessage(): string {
     switch (this.mascota.estado) {
       case 'Robado':
@@ -176,8 +208,12 @@ export class CardMascotaComponent {
         return 'Me perdí, ayúdame a volver con mi familia.';
       case 'Encontrado':
         return 'Estoy esperando que alguien me reconozca.';
+      case 'Recuperado':
+        return 'Este caso ya fue resuelto gracias a la comunidad.';
       case 'Busca hogar':
         return 'Estoy buscando una familia que me quiera.';
+      case 'Emparejado':
+        return 'Ya encontró compañía, gracias por el apoyo.';
       case 'Situacion de calle':
         return 'Necesito una oportunidad para salir de la calle y encontrar un hogar.';
       case 'Adoptado':
@@ -187,21 +223,11 @@ export class CardMascotaComponent {
     }
   }
 
-  getFooterMessage(): string {
-    if (this.getOwnerEmail()) {
-      return 'Contacto disponible para actuar rápido';
-    }
-
-    if (this.mascota.estado === 'Busca hogar') {
-      return 'Difunde esta publicación para encontrar un hogar';
-    }
-
-    if (this.mascota.estado === 'Situacion de calle') {
-      return 'Comparte esta publicación para ayudarle a encontrar hogar';
-    }
-
-    return 'Comparte esta publicación y ayuda a encontrarlo';
+  esCasoResuelto(): boolean {
+    return ['Recuperado', 'Adoptado', 'Emparejado'].includes(this.mascota.estado);
   }
+
+
 
   getDistanceText(): string | null {
     if (!this.isLostCase() || typeof this.mascota.distanciaKm !== 'number' || !Number.isFinite(this.mascota.distanciaKm)) {
@@ -272,5 +298,64 @@ export class CardMascotaComponent {
     `;
 
     return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
+  }
+
+  contactOwner(): void {
+    const email = this.getEmailContact();
+
+    if (!email) {
+      return;
+    }
+
+    if (this.authService.isLogged()) {
+      window.location.href = `mailto:${email}`;
+      return;
+    }
+
+    this.router.navigate(['/login'], {
+      queryParams: {
+        message: 'Inicia sesión para ver el contacto',
+        redirect: this.router.url,
+      },
+    });
+  }
+
+  openDetail(): void {
+    const id = this.mascota?._id ?? this.mascota?.id;
+
+    if (!id) {
+      return;
+    }
+
+    this.router.navigate(['/mascotas', id]);
+  }
+
+  onCardKeydown(event: KeyboardEvent): void {
+    if (event.key !== 'Enter' && event.key !== ' ') {
+      return;
+    }
+
+    event.preventDefault();
+    this.openDetail();
+  }
+
+  private getPreferredContact(): string | null {
+    const contacto = this.mascota.contacto?.trim();
+    return contacto || this.getOwnerEmail();
+  }
+
+  private getCaseUrl(): string {
+    const id = this.mascota?._id ?? this.mascota?.id;
+    const origin = typeof window !== 'undefined' ? window.location.origin : '';
+
+    return id ? `${origin}/mascotas/${id}` : origin;
+  }
+
+  private getShareWhatsappText(): string {
+    return `🐾 Ayúdame a encontrar a ${this.mascota.nombre}. ${this.mascota.estado} en ${this.getShareLocation()}.\nMás info: ${this.getCaseUrl()}`;
+  }
+
+  private isEmail(contact: string): boolean {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contact);
   }
 }

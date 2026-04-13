@@ -17,6 +17,7 @@ export class MisMascotasComponent {
   private readonly authService = inject(AuthService);
   private readonly mascotaService = inject(MascotaService);
   private readonly router = inject(Router);
+  private readonly estadosResueltos: Array<Mascota['estado']> = ['Recuperado', 'Adoptado', 'Emparejado'];
 
   mascotas: Mascota[] = [];
   cargando = true;
@@ -91,5 +92,94 @@ export class MisMascotasComponent {
     }
 
     this.router.navigate(['/publicar', id]);
+  }
+
+  esCasoResuelto(mascota: Mascota): boolean {
+    return this.estadosResueltos.includes(mascota.estado);
+  }
+
+  puedeMarcarComoResuelto(mascota: Mascota): boolean {
+    if (this.esCasoResuelto(mascota)) {
+      return false;
+    }
+
+    const ownerId = this.obtenerUsuarioId(this.user);
+    const mascotaOwnerId = this.obtenerUsuarioId(mascota.usuarioId);
+
+    return !!ownerId && !!mascotaOwnerId && ownerId === mascotaOwnerId;
+  }
+
+  async marcarCasoComoResuelto(mascota: Mascota): Promise<void> {
+    const id = mascota._id ?? mascota.id;
+
+    if (!id || !this.puedeMarcarComoResuelto(mascota)) {
+      return;
+    }
+
+    const confirmacion = await Swal.fire({
+      icon: 'question',
+      title: '¿Confirmás que tu mascota fue encontrada o el caso está resuelto?',
+      input: 'select',
+      inputOptions: {
+        Recuperado: 'Recuperado',
+        Adoptado: 'Adoptado',
+        Emparejado: 'Emparejado',
+      },
+      inputPlaceholder: 'Selecciona el nuevo estado',
+      inputValue: 'Recuperado',
+      showCancelButton: true,
+      confirmButtonText: 'Confirmar',
+      cancelButtonText: 'Cancelar',
+      inputValidator: (value) => {
+        if (!value) {
+          return 'Debes elegir un estado para continuar.';
+        }
+
+        return null;
+      },
+    });
+
+    if (!confirmacion.isConfirmed || !confirmacion.value) {
+      return;
+    }
+
+    await this.mascotaService.updateMascota(String(id), {
+      estado: confirmacion.value,
+    });
+
+    this.mascotas = this.mascotas.map((item) => {
+      const itemId = item._id ?? item.id;
+
+      if (String(itemId) !== String(id)) {
+        return item;
+      }
+
+      return {
+        ...item,
+        estado: confirmacion.value,
+      };
+    });
+
+    await Swal.fire({
+      icon: 'success',
+      title: 'Caso actualizado',
+      text: 'La publicación fue marcada como resuelta.',
+    });
+  }
+
+  private obtenerUsuarioId(usuario: Mascota['usuarioId'] | { _id?: string; id?: string } | null | undefined): string | null {
+    if (!usuario) {
+      return null;
+    }
+
+    if (typeof usuario === 'string') {
+      return usuario;
+    }
+
+    if ('id' in usuario && usuario.id) {
+      return usuario.id;
+    }
+
+    return usuario._id ?? null;
   }
 }

@@ -17,6 +17,15 @@
   position: relative;
 }
 
+.mascota-card--interactive {
+  cursor: pointer;
+}
+
+.mascota-card--interactive:focus-visible {
+  outline: 3px solid rgba(93, 135, 70, 0.28);
+  outline-offset: 4px;
+}
+
 .mascota-card:hover {
   transform: translateY(-10px);
   box-shadow: 0 30px 56px rgba(40, 51, 37, 0.16);
@@ -74,9 +83,27 @@
   z-index: 2;
 }
 
+.mascota-card__badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
 .mascota-card__badge {
   padding: 0.55rem 0.82rem;
   border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 800;
+  box-shadow: 0 12px 18px rgba(0, 0, 0, 0.12);
+}
+
+.mascota-card__resolved-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.55rem 0.82rem;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #2d8b57 0%, #1d6d43 100%);
+  color: #fff;
   font-size: 0.8rem;
   font-weight: 800;
   box-shadow: 0 12px 18px rgba(0, 0, 0, 0.12);
@@ -331,6 +358,81 @@
 
 .info-item__value--small {
   font-size: 0.84rem;
+}
+
+.contact-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 44px;
+  padding: 0.8rem 1rem;
+  border: 0;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #3b6544, #5d8746);
+  color: #fff9ef;
+  font-size: 0.9rem;
+  font-weight: 800;
+  line-height: 1.2;
+  text-decoration: none;
+  box-shadow: 0 12px 20px rgba(49, 87, 64, 0.18);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+}
+
+.contact-action:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 16px 26px rgba(49, 87, 64, 0.22);
+  filter: brightness(1.02);
+}
+
+.contact-action:focus-visible {
+  outline: 3px solid rgba(93, 135, 70, 0.25);
+  outline-offset: 2px;
+}
+
+.contact-action--link {
+  background: linear-gradient(135deg, #2c8b57, #34a86a);
+}
+
+.share-icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  min-height: 44px;
+  padding: 0;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #1d6d43, #2c8b57);
+  color: #fff9ef;
+  font-size: 1rem;
+  font-weight: 800;
+  line-height: 1.2;
+  text-decoration: none;
+  box-shadow: 0 12px 20px rgba(29, 109, 67, 0.18);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+}
+
+.share-icon-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 16px 26px rgba(29, 109, 67, 0.22);
+  filter: brightness(1.02);
+}
+
+.share-icon-button:focus-visible {
+  outline: 3px solid rgba(44, 139, 87, 0.24);
+  outline-offset: 2px;
+}
+
+.share-icon-button span[aria-hidden="true"] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.7rem;
+  height: 1.7rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.14);
+  font-size: 1rem;
+  line-height: 1;
 }
 
 .mascota-card__footer {

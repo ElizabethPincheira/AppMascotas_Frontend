@@ -1,4 +1,10 @@
-<article class="card mascota-card border-0 shadow-sm">
+<article
+  class="card mascota-card border-0 shadow-sm"
+  [class.mascota-card--interactive]="canOpenDetail"
+  [attr.role]="canOpenDetail ? 'link' : null"
+  [attr.tabindex]="canOpenDetail ? 0 : null"
+  (click)="openDetail()"
+  (keydown)="onCardKeydown($event)">
   <div
     class="mascota-card__media"
     (touchstart)="onTouchStart($event)"
@@ -10,9 +16,12 @@
         [alt]="mascota.nombre">
 
       <div class="mascota-card__topbar">
-        <span class="badge mascota-card__badge" [ngClass]="getEstadoClase(mascota.estado)">
-          {{ mascota.estado }}
-        </span>
+        <div class="mascota-card__badges">
+          <span class="badge mascota-card__badge" [ngClass]="getEstadoClase(mascota.estado)">
+            {{ mascota.estado }}
+          </span>
+          <span class="mascota-card__resolved-badge" *ngIf="esCasoResuelto()">Caso resuelto</span>
+        </div>
         <span class="mascota-card__chip" *ngIf="mascota.especie">{{ mascota.especie }}</span>
       </div>
 
@@ -43,7 +52,7 @@
         *ngIf="hasMultipleImages"
         class="mascota-card__control mascota-card__control--prev"
         type="button"
-        (click)="prevImage()"
+        (click)="$event.stopPropagation(); prevImage()"
         aria-label="Imagen anterior">
         <span aria-hidden="true">‹</span>
       </button>
@@ -52,7 +61,7 @@
         *ngIf="hasMultipleImages"
         class="mascota-card__control mascota-card__control--next"
         type="button"
-        (click)="nextImage()"
+        (click)="$event.stopPropagation(); nextImage()"
         aria-label="Siguiente imagen">
         <span aria-hidden="true">›</span>
       </button>
@@ -64,7 +73,7 @@
           *ngFor="let imagen of imageList; let index = index"
           [class.is-active]="index === currentImageIndex"
           [attr.aria-label]="'Ver imagen ' + (index + 1)"
-          (click)="goToImage(index)">
+          (click)="$event.stopPropagation(); goToImage(index)">
         </button>
       </div>
     </div>
@@ -78,6 +87,8 @@
 
     <div class="mascota-card__quickfacts">
       <span class="quickfact-pill" *ngIf="mascota.especie">{{ mascota.especie }}</span>
+      <span class="quickfact-pill" *ngIf="mascota.sexo">{{ mascota.sexo }}</span>
+      <span class="quickfact-pill" *ngIf="mascota.tamano">{{ mascota.tamano }}</span>
       <span class="quickfact-pill" *ngIf="getAgeText() as age">{{ age }}</span>
       <span class="quickfact-pill" *ngIf="getPublishedText() as published">{{ published }}</span>
     </div>
@@ -93,16 +104,53 @@
         <span class="info-item__value">{{ ownerLocation }}</span>
       </div>
 
-      <div class="info-item" *ngIf="getOwnerEmail() as ownerEmail">
+      <div class="info-item" *ngIf="getWhatsappUrl() as whatsappUrl">
         <span class="info-item__label">Contacto</span>
-        <span class="info-item__value info-item__value--small">{{ ownerEmail }}</span>
+        <a
+          class="contact-action contact-action--link"
+          [href]="whatsappUrl"
+          target="_blank"
+          rel="noopener noreferrer"
+          (click)="$event.stopPropagation()">
+          Contactar por WhatsApp
+        </a>
+      </div>
+
+      <div class="info-item">
+        <span class="info-item__label">Compartir</span>
+        <a
+          class="share-icon-button"
+          [href]="shareWhatsappUrl"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Compartir caso por WhatsApp"
+          title="Compartir por WhatsApp"
+          (click)="$event.stopPropagation()">
+          <span aria-hidden="true">↗</span>
+        </a>
+      </div>
+
+      <div class="info-item" *ngIf="getEmailContact()">
+        <span class="info-item__label">Contacto</span>
+        <button
+          class="contact-action"
+          type="button"
+          (click)="$event.stopPropagation(); contactOwner()">
+          Contactar al dueño
+        </button>
+      </div>
+
+      <div class="info-item" *ngIf="mascota.color">
+        <span class="info-item__label">Color</span>
+        <span class="info-item__value">{{ mascota.color }}</span>
+      </div>
+
+      <div class="info-item" *ngIf="mascota.chip">
+        <span class="info-item__label">Chip</span>
+        <span class="info-item__value info-item__value--small">{{ mascota.chip }}</span>
       </div>
     </div>
 
-    <div class="mascota-card__footer">
-      <span class="mascota-card__footer-note">
-        {{ getFooterMessage() }}
-      </span>
-    </div>
+   
   </div>
 </article>

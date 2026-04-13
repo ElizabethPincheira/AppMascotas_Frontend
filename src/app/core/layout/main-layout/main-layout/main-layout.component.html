@@ -1,6 +1,25 @@
 <app-header></app-header>
 
 <main>
+  <section
+    class="verification-banner"
+    *ngIf="(verificationBanner$ | async) && user?.email_verified === false">
+    <div class="verification-banner__content">
+      <div>
+        <strong>Tu cuenta no está verificada.</strong>
+        <p>Confirma tu correo para activar todas las funciones de Circulo Animal.</p>
+      </div>
+
+      <button
+        type="button"
+        class="verification-banner__button"
+        (click)="reenviarVerificacion()"
+        [disabled]="reenviandoVerificacion">
+        {{ reenviandoVerificacion ? 'Reenviando...' : 'Reenviar email de verificación' }}
+      </button>
+    </div>
+  </section>
+
   <router-outlet></router-outlet>
 </main>
 

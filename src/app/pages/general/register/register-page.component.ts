@@ -24,6 +24,8 @@ export class RegisterPageComponent {
   comunas: string[] = [];
 
   respuesta: any;
+  registroExitoso = false;
+  emailRegistrado = '';
 
   regionSeleccionada: string = '';
   provinciaSeleccionada: string = '';
@@ -59,8 +61,8 @@ export class RegisterPageComponent {
       );
 
       console.log(this.respuesta, 'respuesta del servidor');
-      Swal.close();
-      await this.router.navigate(['/login']);
+      this.emailRegistrado = this.email.trim();
+      this.registroExitoso = true;
     } finally {
       this.enviandoFormulario = false;
     }

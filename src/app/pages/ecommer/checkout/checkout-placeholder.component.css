@@ -1,0 +1,75 @@
+.checkout-placeholder {
+  min-height: 70vh;
+  display: grid;
+  place-items: center;
+  padding: 32px 18px 56px;
+  background:
+    radial-gradient(circle at top left, rgba(129, 167, 69, 0.1), transparent 20%),
+    linear-gradient(180deg, rgba(248, 246, 239, 0.92) 0%, rgba(244, 241, 233, 0.96) 100%);
+}
+
+.checkout-placeholder__card {
+  max-width: 720px;
+  padding: 28px;
+  border-radius: 26px;
+  border: 1px solid var(--line-soft);
+  background: var(--bg-panel);
+  box-shadow: var(--shadow-soft);
+  text-align: center;
+}
+
+.checkout-placeholder__eyebrow {
+  display: inline-flex;
+  padding: 0.44rem 0.78rem;
+  border-radius: 999px;
+  background: #eef3e8;
+  color: var(--brand-moss);
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.checkout-placeholder__card h1 {
+  margin: 0.95rem 0 0;
+  color: var(--text-strong);
+  font-family: var(--font-display);
+  font-size: clamp(2.2rem, 4vw, 3.4rem);
+}
+
+.checkout-placeholder__card p {
+  margin: 1rem auto 0;
+  max-width: 56ch;
+  color: var(--text-main);
+  line-height: 1.7;
+}
+
+.checkout-placeholder__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 1.5rem;
+}
+
+.checkout-placeholder__actions a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 46px;
+  padding: 0.85rem 1.15rem;
+  border-radius: 14px;
+  text-decoration: none;
+  font-weight: 800;
+}
+
+.checkout-placeholder__actions a:first-child {
+  background: linear-gradient(180deg, #6ea541 0%, #467231 100%);
+  color: #fff;
+}
+
+.checkout-placeholder__actions a:last-child {
+  border: 1px solid rgba(33, 57, 45, 0.12);
+  background: #fff;
+  color: var(--text-strong);
+}

@@ -34,7 +34,7 @@
           <span class="user-option-card__badge">{{ option.badge }}</span>
           <h3>{{ option.title }}</h3>
           <p>{{ option.description }}</p>
-          <a *ngIf="option.path" class="user-option-card__link" [routerLink]="option.path">Ir a esta opcion</a>
+          <a *ngIf="option.path" class="user-option-card__link" [routerLink]="option.path">Ir a esta opción</a>
         </article>
       </div>
     </section>
@@ -60,14 +60,14 @@
           </label>
 
           <label class="form-field">
-            <span>Telefono</span>
+            <span>Teléfono</span>
             <input type="text" [(ngModel)]="profileForm.telefono" placeholder="+56 9 1234 5678" />
           </label>
 
           <label class="form-field">
-            <span>Region</span>
+            <span>Región</span>
             <select [(ngModel)]="profileForm.region" (ngModelChange)="onRegionChange()">
-              <option value="">Selecciona una region</option>
+              <option value="">Selecciona una región</option>
               <option *ngFor="let region of regiones" [value]="region">{{ region }}</option>
             </select>
           </label>
@@ -101,15 +101,15 @@
       <article class="action-banner">
         <div>
           <span class="action-banner__eyebrow">Atajos</span>
-          <h2>Haz una accion en segundos</h2>
+          <h2>Haz una acción en segundos</h2>
           <p>Usa estos botones para moverte rapido dentro de tu panel.</p>
         </div>
 
         <div class="action-banner__buttons">
-          <a class="action-banner__button action-banner__button--solid" routerLink="/publicar">Nueva publicacion</a>
+          <a class="action-banner__button action-banner__button--solid" routerLink="/publicar">Nueva publicación</a>
           <a class="action-banner__button action-banner__button--ghost" routerLink="/mis-mascotas">Ver mis mascotas</a>
           <button type="button" class="action-banner__button action-banner__button--danger" (click)="logout()">
-            Cerrar sesion
+            Cerrar sesión
           </button>
         </div>
       </article>

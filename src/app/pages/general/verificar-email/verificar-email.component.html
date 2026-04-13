@@ -1,0 +1,43 @@
+<section class="verify-page py-4 py-lg-5">
+  <div class="container-fluid px-3 px-lg-4">
+    <div class="row justify-content-center">
+      <div class="col-12 col-lg-8 col-xl-6">
+        <div class="card border-0 shadow-lg verify-card">
+          <div class="card-body p-4 p-xl-5 text-center">
+            <span
+              class="badge rounded-pill mb-3 verify-badge"
+              [class.verify-badge--success]="estado === 'exito'"
+              [class.verify-badge--error]="estado === 'error'">
+              {{
+                estado === 'cargando'
+                  ? 'Verificando'
+                  : estado === 'exito'
+                    ? 'Cuenta verificada'
+                    : 'Verificación fallida'
+              }}
+            </span>
+
+            <h1 class="h2 fw-bold mb-3">
+              {{
+                estado === 'cargando'
+                  ? 'Estamos verificando tu cuenta'
+                  : estado === 'exito'
+                    ? 'Tu correo ya fue confirmado'
+                    : 'No pudimos verificar tu cuenta'
+              }}
+            </h1>
+
+            <p class="text-secondary mb-4">{{ mensaje }}</p>
+
+            <div class="d-flex flex-column flex-sm-row justify-content-center gap-3">
+              <a routerLink="/login" class="btn btn-success btn-lg px-4">Ir al login</a>
+              <a routerLink="/recuperar-password" class="btn btn-outline-secondary btn-lg px-4" *ngIf="estado === 'error'">
+                Necesito ayuda
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

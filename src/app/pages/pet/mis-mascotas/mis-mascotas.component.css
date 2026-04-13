@@ -129,13 +129,29 @@
   padding: 20px;
 }
 
+.pet-admin-card__badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.7rem;
+}
+
 .pet-admin-card__status {
   display: inline-flex;
-  margin-bottom: 0.7rem;
   padding: 0.4rem 0.7rem;
   border-radius: 999px;
   background: rgba(95, 143, 69, 0.12);
   color: var(--brand-moss);
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.pet-admin-card__resolved {
+  display: inline-flex;
+  padding: 0.4rem 0.7rem;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #2f8a57 0%, #246847 100%);
+  color: #fff;
   font-size: 0.78rem;
   font-weight: 800;
 }
@@ -185,6 +201,11 @@
 .pet-admin-card__action--edit {
   background: rgba(95, 143, 69, 0.12);
   color: var(--brand-forest);
+}
+
+.pet-admin-card__action--resolve {
+  background: linear-gradient(180deg, #3c7b4f 0%, #28583c 100%);
+  color: #fff;
 }
 
 .pet-admin-card__action--delete {

@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
 import { AuthService } from '../../../core/services/auth.service';
+import { ImagenesService } from '../../../core/services/imagenes.service';
 import { ProductosService, Producto, CreateProductoDto } from '../../../core/services/productos.service';
 import { UsersService } from '../../../core/services/users.service';
 import { UbicacionesService } from '../../../core/services/ubicaciones.service';
@@ -26,6 +27,7 @@ interface StoreScheduleRow {
 export class MiTiendaComponent implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly imagenesService = inject(ImagenesService);
   private readonly productosService = inject(ProductosService);
   private readonly usersService = inject(UsersService);
   private readonly ubicacionesService = inject(UbicacionesService);
@@ -38,6 +40,9 @@ export class MiTiendaComponent implements OnInit {
   editandoProductoId: string | null = null;
   imagenPreview: string | null = null;
   comprimiendoImagen = false;
+  imagenTiendaPreview: string | null = null;
+  imagenTiendaBase64: string | null = null;
+  procesandoImagenTienda = false;
   guardandoCobertura = false;
   regionesDisponibles: string[] = [];
   provinciasDisponibles: string[] = [];
@@ -132,6 +137,10 @@ export class MiTiendaComponent implements OnInit {
     return this.user?.telefonoTienda || 'Sin teléfono';
   }
 
+  get imagenTiendaActual(): string | null {
+    return this.imagenTiendaPreview || this.user?.imagenTienda || null;
+  }
+
   get categoriasTienda(): string[] {
     return Array.isArray(this.user?.categoriasTienda) ? this.user.categoriasTienda : [];
   }
@@ -210,6 +219,59 @@ export class MiTiendaComponent implements OnInit {
       stock: 0,
     };
     this.imagenPreview = null;
+  }
+
+  async onImagenTiendaSeleccionada(event: Event): Promise<void> {
+    const target = event.target as HTMLInputElement;
+    const file = target.files?.[0];
+
+    if (!file) {
+      return;
+    }
+
+    if (!file.type.startsWith('image/')) {
+      await Swal.fire({
+        icon: 'error',
+        title: 'Tipo de archivo inválido',
+        text: 'Por favor, selecciona una imagen válida para tu tienda.',
+        confirmButtonText: 'Entendido'
+      });
+      return;
+    }
+
+    this.procesandoImagenTienda = true;
+
+    try {
+      const [preparedImage] = await this.imagenesService.prepareImagesForUpload([file]);
+
+      if (!preparedImage) {
+        throw new Error('No se pudo preparar la imagen.');
+      }
+
+      this.imagenTiendaPreview = preparedImage.preview;
+      this.imagenTiendaBase64 = preparedImage.base64;
+    } catch (error) {
+      console.error('Error al procesar imagen de tienda:', error);
+
+      await Swal.fire({
+        icon: 'error',
+        title: 'Error al procesar imagen',
+        text: 'Ocurrió un problema al preparar la imagen de tu tienda.',
+        confirmButtonText: 'Entendido'
+      });
+    } finally {
+      this.procesandoImagenTienda = false;
+    }
+  }
+
+  limpiarImagenTiendaSeleccionada(): void {
+    this.imagenTiendaPreview = null;
+    this.imagenTiendaBase64 = null;
+
+    const fileInput = document.getElementById('store-image-input') as HTMLInputElement | null;
+    if (fileInput) {
+      fileInput.value = '';
+    }
   }
 
   async onImagenSeleccionada(event: any): Promise<void> {
@@ -481,6 +543,7 @@ export class MiTiendaComponent implements OnInit {
         categoriasTienda: this.detallesForm.categoriasSeleccionadas,
         comunasRepartoTienda: this.repartoForm.comunasRepartoTienda,
         horarioTienda,
+        imagenTienda: this.imagenTiendaBase64 ?? this.user?.imagenTienda ?? '',
       });
 
       this.user = response.user;
@@ -490,6 +553,13 @@ export class MiTiendaComponent implements OnInit {
         ? [...response.user.categoriasTienda]
         : [];
       this.horarioForm = this.buildScheduleForm(response.user?.horarioTienda);
+      this.imagenTiendaPreview = null;
+      this.imagenTiendaBase64 = null;
+
+      const fileInput = document.getElementById('store-image-input') as HTMLInputElement | null;
+      if (fileInput) {
+        fileInput.value = '';
+      }
 
       await Swal.fire({
         icon: 'success',

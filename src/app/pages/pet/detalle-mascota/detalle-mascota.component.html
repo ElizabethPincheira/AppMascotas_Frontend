@@ -1,0 +1,260 @@
+<ng-container *ngIf="!cargando && mascota as mascota; else detailState">
+  <section class="pet-detail-page">
+    <div class="pet-detail-shell">
+      <nav class="breadcrumb">
+        <a routerLink="/">Inicio</a>
+        <span>/</span>
+        <a routerLink="/perdidos">Mascotas</a>
+        <span>/</span>
+        <span>{{ mascota.nombre }}</span>
+      </nav>
+
+      <section class="pet-hero">
+        <div class="pet-hero__gallery">
+          <img class="pet-hero__image" [src]="imagenPrincipal" [alt]="mascota.nombre">
+
+          <div class="pet-hero__thumbs" *ngIf="imageList.length > 1">
+            <button
+              type="button"
+              class="pet-hero__thumb"
+              *ngFor="let imagen of imageList; let index = index"
+              [class.is-active]="index === imagenActiva"
+              (click)="seleccionarImagen(index)">
+              <img [src]="getImageSrc(imagen)" [alt]="mascota.nombre + ' foto ' + (index + 1)">
+            </button>
+          </div>
+        </div>
+
+        <div class="pet-hero__content">
+          <div class="pet-hero__badges">
+            <span class="pet-badge" [ngClass]="getEstadoClase(mascota.estado)">{{ mascota.estado }}</span>
+            <span class="pet-badge pet-badge--resolved" *ngIf="esCasoResuelto()">Caso resuelto</span>
+          </div>
+
+          <h1>{{ mascota.nombre }}</h1>
+          <p class="pet-hero__subtitle">
+            {{ mascota.raza || 'Mascota' }}
+            <span *ngIf="mascota.especie && mascota.raza !== mascota.especie"> · {{ mascota.especie }}</span>
+            <span *ngIf="getAgeText() as age"> · {{ age }}</span>
+          </p>
+
+          <p class="pet-hero__description">
+            {{ mascota.descripcion || mascota.caracteristicasAdicionales || 'Esta publicación reúne la información más importante para ayudar a identificar y acompañar este caso.' }}
+          </p>
+
+          <div class="pet-hero__actions">
+            <a
+              *ngIf="whatsappUrl as url"
+              class="hero-link hero-link--solid"
+              [href]="url"
+              target="_blank"
+              rel="noopener noreferrer">
+              Contactar por WhatsApp
+            </a>
+
+            <button
+              *ngIf="contactoEmail"
+              type="button"
+              class="hero-link hero-link--solid"
+              (click)="contactOwner()">
+              Contactar al dueño
+            </button>
+
+            <button
+              *ngIf="puedeEditarCaso"
+              type="button"
+              class="hero-link hero-link--resolve"
+              (click)="marcarCasoComoResuelto()">
+              Marcar como encontrado / Caso resuelto
+            </button>
+
+            <a class="hero-link hero-link--ghost" routerLink="/perdidos">Volver al listado</a>
+
+            <div class="share-menu">
+              <button
+                type="button"
+                class="hero-link hero-link--ghost"
+                (click)="toggleShareMenu()">
+                Compartir
+              </button>
+
+              <div class="share-menu__panel" *ngIf="shareMenuOpen">
+                <a
+                  class="share-menu__item"
+                  [href]="shareWhatsappUrl"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  (click)="shareMenuOpen = false">
+                  WhatsApp
+                </a>
+
+                <a
+                  class="share-menu__item"
+                  [href]="facebookShareUrl"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  (click)="shareMenuOpen = false">
+                  Facebook
+                </a>
+
+                <button
+                  type="button"
+                  class="share-menu__item share-menu__item--button"
+                  (click)="copyCaseLink()">
+                  Copiar link
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="pet-summary">
+        <article class="summary-card">
+          <span class="summary-card__label">Publicado</span>
+          <strong>{{ getPublishedText() || 'Sin fecha' }}</strong>
+          <p>Fecha visible de esta publicación dentro de la plataforma.</p>
+        </article>
+
+        <article class="summary-card">
+          <span class="summary-card__label">Ubicación</span>
+          <strong>{{ getUbicacionCompleta()[0] || 'No informada' }}</strong>
+          <p>Último lugar reportado o referencia principal del caso.</p>
+        </article>
+
+        <article class="summary-card">
+          <span class="summary-card__label">Contacto</span>
+          <strong>{{ whatsappUrl ? 'WhatsApp disponible' : contactoEmail ? 'Correo protegido' : 'Sin contacto visible' }}</strong>
+          <p>La información sensible se revela solo en acciones permitidas.</p>
+        </article>
+
+        <article class="summary-card">
+          <span class="summary-card__label">Responsable</span>
+          <strong>{{ ownerName || 'Comunidad Círculo Animal' }}</strong>
+          <p>{{ ownerLocation || 'Ubicación del responsable no informada' }}</p>
+        </article>
+      </section>
+
+      <section class="pet-layout">
+        <div class="pet-main">
+          <section class="panel">
+            <div class="section-heading">
+              <div>
+                <span class="section-heading__eyebrow">Descripción</span>
+                <h2>Qué necesitas saber</h2>
+              </div>
+            </div>
+
+            <p class="panel__text" *ngIf="mascota.descripcion">{{ mascota.descripcion }}</p>
+            <p class="panel__text" *ngIf="mascota.caracteristicasAdicionales">{{ mascota.caracteristicasAdicionales }}</p>
+            <p class="panel__text" *ngIf="!mascota.descripcion && !mascota.caracteristicasAdicionales">
+              Aún no hay una descripción extendida, pero puedes usar los datos del panel lateral para reconocer mejor a esta mascota.
+            </p>
+          </section>
+
+          <section class="panel">
+            <div class="section-heading">
+              <div>
+                <span class="section-heading__eyebrow">Ubicación</span>
+                <h2>Referencias del caso</h2>
+              </div>
+            </div>
+
+            <div class="location-list" *ngIf="getUbicacionCompleta().length; else noLocation">
+              <span *ngFor="let ubicacion of getUbicacionCompleta()">{{ ubicacion }}</span>
+            </div>
+
+            <ng-template #noLocation>
+              <p class="panel__text">No hay referencias de ubicación cargadas para esta publicación.</p>
+            </ng-template>
+          </section>
+        </div>
+
+        <aside class="pet-sidebar">
+          <section class="panel panel--compact">
+            <span class="panel__label">Ficha rápida</span>
+            <h2>Datos del caso</h2>
+
+            <div class="detail-list">
+              <div class="detail-item" *ngIf="mascota.especie">
+                <span>Especie</span>
+                <strong>{{ mascota.especie }}</strong>
+              </div>
+              <div class="detail-item" *ngIf="mascota.raza">
+                <span>Raza</span>
+                <strong>{{ mascota.raza }}</strong>
+              </div>
+              <div class="detail-item" *ngIf="mascota.sexo">
+                <span>Sexo</span>
+                <strong>{{ mascota.sexo }}</strong>
+              </div>
+              <div class="detail-item" *ngIf="mascota.tamano">
+                <span>Tamaño</span>
+                <strong>{{ mascota.tamano }}</strong>
+              </div>
+              <div class="detail-item" *ngIf="mascota.color">
+                <span>Color</span>
+                <strong>{{ mascota.color }}</strong>
+              </div>
+              <div class="detail-item" *ngIf="mascota.chip">
+                <span>Chip</span>
+                <strong>{{ mascota.chip }}</strong>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel panel--compact">
+            <span class="panel__label">Contacto</span>
+            <h2>Cómo ayudar</h2>
+
+            <p class="panel__text">
+              Si reconoces a esta mascota o tienes información útil, usa el canal de contacto disponible para avisar lo antes posible.
+            </p>
+
+            <div class="sidebar-actions">
+              <a
+                *ngIf="whatsappUrl as url"
+                class="sidebar-action sidebar-action--solid"
+                [href]="url"
+                target="_blank"
+                rel="noopener noreferrer">
+                Abrir WhatsApp
+              </a>
+
+              <button
+                *ngIf="contactoEmail"
+                type="button"
+                class="sidebar-action sidebar-action--ghost"
+                (click)="contactOwner()">
+                Ver contacto protegido
+              </button>
+            </div>
+          </section>
+        </aside>
+      </section>
+    </div>
+  </section>
+</ng-container>
+
+<ng-template #detailState>
+  <section class="pet-detail-page">
+    <div class="pet-detail-shell">
+      <section class="empty-state" *ngIf="cargando; else petNotFound">
+        <h1>Cargando mascota...</h1>
+        <p>Estamos buscando la información de la publicación seleccionada.</p>
+      </section>
+    </div>
+  </section>
+</ng-template>
+
+<ng-template #petNotFound>
+  <section class="pet-detail-page">
+    <div class="pet-detail-shell">
+      <section class="empty-state">
+        <h1>Mascota no encontrada</h1>
+        <p>La publicación que buscas no existe, fue eliminada o aún no está disponible.</p>
+        <a routerLink="/perdidos" class="hero-link hero-link--solid">Volver al listado</a>
+      </section>
+    </div>
+  </section>
+</ng-template>

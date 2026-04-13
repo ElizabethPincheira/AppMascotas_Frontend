@@ -56,6 +56,19 @@ export const routes: Routes = [
             .then(m => m.StoreDetailComponent)
       },
       {
+        path: 'carrito',
+        loadComponent: () =>
+          import('./pages/ecommer/carrito/carrito.component')
+            .then(m => m.CarritoComponent)
+      },
+      {
+        path: 'checkout',
+        canActivate: [authGuard],
+        loadComponent: () =>
+          import('./pages/ecommer/checkout/checkout.component')
+            .then(m => m.CheckoutComponent)
+      },
+      {
         path: 'colaboradores',
         loadComponent: () =>
           import('./pages/pet/colaboradores/colaboradores.component')
@@ -72,6 +85,12 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./pages/pet/donaciones/donaciones.component')
             .then(m => m.DonacionesComponent)
+      },
+      {
+        path: 'mascotas/:id',
+        loadComponent: () =>
+          import('./pages/pet/detalle-mascota/detalle-mascota.component')
+            .then(m => m.DetalleMascotaComponent)
       },
       {
         path: 'publicar',
@@ -123,6 +142,13 @@ export const routes: Routes = [
             .then(m => m.MiTiendaComponent)
       },
       {
+        path: 'pedidos-tienda',
+        canActivate: [authGuard],
+        loadComponent: () =>
+          import('./pages/general/pedidos-tienda/pedidos-tienda.component')
+            .then(m => m.PedidosTiendaComponent)
+      },
+      {
         path: 'admin',
         canActivate: [authGuard, adminGuard],
         loadComponent: () =>
@@ -135,6 +161,13 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./pages/general/admin/admin-users.component')
             .then(m => m.AdminUsersComponent)
+      },
+      {
+        path: 'admin/tiendas',
+        canActivate: [authGuard, adminGuard],
+        loadComponent: () =>
+          import('./pages/general/admin/admin-tiendas.component')
+            .then(m => m.AdminTiendasComponent)
       }
     ]
   },
@@ -165,7 +198,45 @@ export const routes: Routes = [
     ],
   },
   {
+    path: 'recuperar-password',
+    component: AuthLayoutComponent,
+    children: [
+      {
+        path: '',
+        loadComponent: () =>
+          import('./pages/general/recuperar-password/recuperar-password.component')
+            .then(m => m.RecuperarPasswordComponent)
+      },
+    ],
+  },
+  {
+    path: 'nueva-password',
+    component: AuthLayoutComponent,
+    children: [
+      {
+        path: '',
+        loadComponent: () =>
+          import('./pages/general/nueva-password/nueva-password.component')
+            .then(m => m.NuevaPasswordComponent)
+      },
+    ],
+  },
+  {
+    path: 'verificar-email',
+    component: AuthLayoutComponent,
+    children: [
+      {
+        path: '',
+        loadComponent: () =>
+          import('./pages/general/verificar-email/verificar-email.component')
+            .then(m => m.VerificarEmailComponent)
+      },
+    ],
+  },
+  {
     path: '**',
-    redirectTo: '',
+    loadComponent: () =>
+      import('./pages/general/not-found/not-found.component')
+        .then(m => m.NotFoundComponent),
   },
 ];

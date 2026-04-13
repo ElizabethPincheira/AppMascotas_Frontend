@@ -13,12 +13,99 @@
           <span class="stat-card__label">Resultados</span>
           <strong class="stat-card__value">{{ mascotasFiltradas.length }}</strong>
         </div>
-
-        
       </div>
     </div>
 
-    <div class="lista-mascotas-grid" *ngIf="mascotasFiltradas.length > 0; else emptyState">
+    <div class="filters-toolbar">
+      <div class="filters-toolbar__summary">
+        <strong>{{ resultadosTexto }}</strong>
+        <span *ngIf="hayFiltrosActivos">con filtros aplicados</span>
+      </div>
+
+      <div class="view-toggle" *ngIf="puedeMostrarMapa">
+        <button
+          type="button"
+          class="view-toggle__button"
+          [class.is-active]="vistaActiva === 'lista'"
+          (click)="cambiarVista('lista')">
+          Lista
+        </button>
+
+        <button
+          type="button"
+          class="view-toggle__button"
+          [class.is-active]="vistaActiva === 'mapa'"
+          (click)="cambiarVista('mapa')">
+          Mapa
+        </button>
+      </div>
+
+      <button
+        type="button"
+        class="filters-toolbar__toggle"
+        (click)="toggleFiltros()"
+        [attr.aria-expanded]="filtrosMobileAbiertos">
+        Filtrar
+      </button>
+    </div>
+
+    <section class="filters-panel" [class.is-collapsed]="!filtrosMobileAbiertos">
+      <div class="filters-panel__row">
+        <label class="form-field">
+          <span>Especie</span>
+          <select [(ngModel)]="filtroEspecie" name="filtroEspecie" (ngModelChange)="onFiltrosChanged()">
+            <option *ngFor="let especie of especiesFiltro" [value]="especie">{{ especie }}</option>
+          </select>
+        </label>
+
+        <label class="form-field">
+          <span>Región</span>
+          <select [(ngModel)]="filtroRegion" name="filtroRegion" (ngModelChange)="onFiltrosChanged()">
+            <option value="">Todas las regiones</option>
+            <option *ngFor="let region of regiones" [value]="region">{{ region }}</option>
+          </select>
+        </label>
+
+        <label class="form-field">
+          <span>Buscar</span>
+          <input
+            type="text"
+            [(ngModel)]="filtroTexto"
+            (ngModelChange)="onFiltrosChanged()"
+            name="filtroTexto"
+            placeholder="Nombre, raza o descripción">
+        </label>
+      </div>
+    </section>
+
+    <section
+      *ngIf="puedeMostrarMapa && vistaActiva === 'mapa'"
+      class="map-view"
+      [class.map-view--mobile-fullscreen]="esMapaFullscreenMobile">
+      <div class="map-view__shell">
+        <button
+          *ngIf="esMapaFullscreenMobile"
+          type="button"
+          class="map-view__floating-button"
+          (click)="cambiarVista('lista')">
+          Ver como lista
+        </button>
+
+        <div class="map-view__canvas" #petMapContainer></div>
+
+        <div class="map-view__empty" *ngIf="googleMapsError">
+          <h2>No se pudo cargar el mapa</h2>
+          <p>{{ googleMapsError }}</p>
+        </div>
+
+        <div class="map-view__empty" *ngIf="!googleMapsError && googleMapsDisponible && mascotasConCoordenadas.length === 0">
+          <h2>No hay marcadores para estos filtros</h2>
+          <p>Prueba cambiando la especie, la región o el texto de búsqueda para ver más casos en el mapa.</p>
+        </div>
+      </div>
+    </section>
+
+    <div class="lista-mascotas-grid" *ngIf="vistaActiva === 'lista' && mascotasFiltradas.length > 0; else emptyState">
       <app-card-mascota
         *ngFor="let mascota of mascotasFiltradas; trackBy: trackById"
         [mascota]="mascota">
@@ -26,9 +113,13 @@
     </div>
 
     <ng-template #emptyState>
-      <div class="empty-state">
-        <h2>No hay publicaciones para esta categoria</h2>
-        <p>Cuando existan mascotas en esta seccion, apareceran aqui usando el mismo sistema de cards del sitio.</p>
+      <div class="empty-state" *ngIf="vistaActiva === 'lista'">
+        <h2>{{ mascotasBaseFiltradas.length > 0 ? 'No hay resultados con esos filtros' : 'No hay publicaciones para esta categoria' }}</h2>
+        <p>
+          {{ mascotasBaseFiltradas.length > 0
+            ? 'Prueba cambiando la especie, la región o el texto de búsqueda para ampliar los resultados.'
+            : 'Cuando existan mascotas en esta seccion, apareceran aqui usando el mismo sistema de cards del sitio.' }}
+        </p>
         <a class="empty-state__link" routerLink="/">Ir a la portada</a>
       </div>
     </ng-template>

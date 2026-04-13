@@ -33,7 +33,11 @@ export class PublicarComponent implements AfterViewInit {
 
   nombre = '';
   especie = '';
+  sexo: 'Macho' | 'Hembra' | 'Desconocido' | '' = '';
+  color = '';
+  tamano: 'Pequeño' | 'Mediano' | 'Grande' | 'Gigante' | '' = '';
   raza = '';
+  chip = '';
   estado = 'Extraviado';
   fechaNacimiento = '';
   perdidoDesde = '';
@@ -73,6 +77,19 @@ export class PublicarComponent implements AfterViewInit {
     'Ave',
     'Conejo',
     'Otra'
+  ];
+
+  readonly sexos: Array<'Macho' | 'Hembra' | 'Desconocido'> = [
+    'Macho',
+    'Hembra',
+    'Desconocido',
+  ];
+
+  readonly tamanos: Array<'Pequeño' | 'Mediano' | 'Grande' | 'Gigante'> = [
+    'Pequeño',
+    'Mediano',
+    'Grande',
+    'Gigante',
   ];
 
   readonly mapWidth = 960;
@@ -117,6 +134,7 @@ export class PublicarComponent implements AfterViewInit {
     return !!(
       nombreValido &&
       this.especie.trim() &&
+      this.sexo.trim() &&
       razaValida &&
       this.estado.trim() &&
       contactoValido &&
@@ -467,7 +485,11 @@ export class PublicarComponent implements AfterViewInit {
       const payload = {
         nombre: this.nombre.trim() || undefined,
         especie: this.especie.trim().toLowerCase(),
+        sexo: this.sexo || undefined,
+        color: this.color.trim() || undefined,
+        tamano: this.tamano || undefined,
         raza: this.raza.trim() || undefined,
+        chip: this.chip.trim() || undefined,
         estado: this.estado,
         fechaNacimiento: this.fechaNacimiento || undefined,
         perdidoDesde: this.perdidoDesde || undefined,
@@ -540,7 +562,11 @@ export class PublicarComponent implements AfterViewInit {
   private async cargarFormularioDesdeMascota(mascota: Mascota): Promise<void> {
     this.nombre = mascota.nombre ?? '';
     this.especie = mascota.especie ? this.capitalize(mascota.especie) : '';
+    this.sexo = mascota.sexo ?? '';
+    this.color = mascota.color ?? '';
+    this.tamano = mascota.tamano ?? '';
     this.raza = mascota.raza ?? '';
+    this.chip = mascota.chip ?? '';
     this.estado = mascota.estado ?? 'Extraviado';
     this.fechaNacimiento = this.toInputDate(mascota.fechaNacimiento);
     this.perdidoDesde = this.toInputDate((mascota as any).perdidoDesde);

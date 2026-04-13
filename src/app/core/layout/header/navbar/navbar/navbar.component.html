@@ -48,12 +48,20 @@
       </div>
 
       <div class="site-navbar__actions" *ngIf="!user?.nombre; else loggedUserActions">
+        <button class="btn site-navbar__cart" type="button" (click)="irAlCarrito()">
+          <span class="site-navbar__cart-icon" aria-hidden="true">🛒</span>
+          <span class="site-navbar__cart-count" *ngIf="cantidadCarrito$ | async as cantidad">{{ cantidad }}</span>
+        </button>
         <a class="btn site-navbar__login" routerLink="/login">Ingresar</a>
         <a class="btn site-navbar__register" routerLink="/register">Registrarse</a>
       </div>
 
       <ng-template #loggedUserActions>
         <div class="site-navbar__actions site-navbar__actions--logged">
+          <button class="btn site-navbar__cart" type="button" (click)="irAlCarrito()">
+            <span class="site-navbar__cart-icon" aria-hidden="true">🛒</span>
+            <span class="site-navbar__cart-count" *ngIf="cantidadCarrito$ | async as cantidad">{{ cantidad }}</span>
+          </button>
           <div class="site-navbar__profile-menu" [class.is-open]="profileMenuOpen">
             <button
               class="btn site-navbar__profile-toggle"
@@ -72,6 +80,9 @@
               </li>
               <li *ngIf="esUnaTienda">
                 <a class="site-navbar__dropdown-item" routerLink="/mi-tienda" (click)="closeProfileMenu()">Mi tienda</a>
+              </li>
+              <li *ngIf="esUnaTienda">
+                <a class="site-navbar__dropdown-item" routerLink="/pedidos-tienda" (click)="closeProfileMenu()">Pedidos recibidos</a>
               </li>
               <li>
                 <a class="site-navbar__dropdown-item" routerLink="/mis-mascotas" (click)="closeProfileMenu()">Mis mascotas</a>
@@ -137,8 +148,19 @@
         <a class="site-navbar__drawer-link" routerLink="/mi-tienda" (click)="closeMobileMenu()">Mi tienda</a>
       </li>
 
+      <li *ngIf="esUnaTienda">
+        <a class="site-navbar__drawer-link" routerLink="/pedidos-tienda" (click)="closeMobileMenu()">Pedidos recibidos</a>
+      </li>
+
       <li *ngIf="esAdministrador">
         <a class="site-navbar__drawer-link" routerLink="/admin" (click)="closeMobileMenu()">Administrador</a>
+      </li>
+
+      <li>
+        <button type="button" class="site-navbar__drawer-link site-navbar__drawer-link--button" (click)="irAlCarrito()">
+          Carrito
+          <span class="site-navbar__drawer-cart-count" *ngIf="cantidadCarrito$ | async as cantidad">{{ cantidad }}</span>
+        </button>
       </li>
     </ul>
   </aside>

@@ -9,8 +9,8 @@ import { environment } from '../../../environments/environment';
 })
 export class AuthService {
     private apiUrl = `${environment.apiUrl}`;
-
-
+    private verificationBannerSubject = new BehaviorSubject<boolean>(false);
+    verificationBanner$ = this.verificationBannerSubject.asObservable();
 
     getToken(): string | null {
         return localStorage.getItem('token');
@@ -26,12 +26,17 @@ export class AuthService {
     setUser(user: any) {
         localStorage.setItem('user', JSON.stringify(user));
         this.userSubject.next(user);
+
+        if (user?.email_verified) {
+            this.clearVerificationBanner();
+        }
     }
 
     logout() {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
         this.userSubject.next(null); // 🔥 esto actualiza todo
+        this.clearVerificationBanner();
     }
 
     async refreshCurrentUser(): Promise<any> {
@@ -64,6 +69,18 @@ export class AuthService {
 
     isLogged(): boolean {
         return !!localStorage.getItem('token');
+    }
+
+    requestVerificationBanner(): void {
+        const user = this.getUser();
+
+        if (user?.email_verified === false) {
+            this.verificationBannerSubject.next(true);
+        }
+    }
+
+    clearVerificationBanner(): void {
+        this.verificationBannerSubject.next(false);
     }
 
 

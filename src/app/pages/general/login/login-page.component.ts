@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import Swal from 'sweetalert2';
 import { UsersService } from '../../../core/services/users.service';
 import { AuthService } from '../../../core/services/auth.service';
@@ -22,8 +22,32 @@ export class LoginPageComponent {
   nombre: string = '';
   respuesta: any;
   enviandoFormulario = false;
+  private redirectUrl = '/';
 
-  constructor(private usersService: UsersService, private router: Router, private authService: AuthService) { }
+  constructor(
+    private usersService: UsersService,
+    private router: Router,
+    private authService: AuthService,
+    private route: ActivatedRoute,
+  ) { }
+
+  ngOnInit(): void {
+    const message = this.route.snapshot.queryParamMap.get('message')?.trim();
+    this.redirectUrl = this.getSafeRedirectUrl(
+      this.route.snapshot.queryParamMap.get('redirect'),
+    );
+
+    if (!message) {
+      return;
+    }
+
+    void Swal.fire({
+      icon: 'info',
+      title: 'Inicia sesión',
+      text: message,
+      confirmButtonText: 'Continuar',
+    });
+  }
 
   get formularioCompleto(): boolean {
     return !!(this.email.trim() && this.password.trim());
@@ -82,7 +106,7 @@ export class LoginPageComponent {
         text: 'Has iniciado sesión correctamente'
       })
 
-      this.router.navigate(['/']);
+      this.router.navigateByUrl(this.redirectUrl);
 
 
     } catch (error) {
@@ -106,6 +130,14 @@ export class LoginPageComponent {
 
 
 
+  }
+
+  private getSafeRedirectUrl(redirect: string | null): string {
+    if (!redirect || !redirect.startsWith('/')) {
+      return '/';
+    }
+
+    return redirect;
   }
 }
 

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { Mascota } from '../../../shared/models/mascota.model';
 import { MascotaService } from '../../../core/services/mascota.service';
+import { SeoService } from '../../../core/services/seo.service';
 import { CardMascotaComponent } from '../../../shared/molecules/card-mascota/card-mascota.component';
 
 @Component({
@@ -19,13 +20,21 @@ export class PetsPageComponent {
 
   mascotas: Mascota[] = [];
   ubicacionUsuarioDisponible = false;
-  readonly estadosPerdidos = ['Robado', 'Extraviado', 'Encontrado', 'Recuperado'];
-  readonly estadosAdopcion = ['Busca hogar', 'Adoptado'];
+  readonly estadosPerdidos = ['Robado', 'Extraviado', 'Encontrado'];
+  readonly estadosAdopcion = ['Busca hogar'];
   readonly estadosCalle = ['Situacion de calle'];
 
-  constructor(private mascotaService: MascotaService) { }
+  constructor(
+    private mascotaService: MascotaService,
+    private seoService: SeoService,
+  ) { }
 
   async ngOnInit() {
+    this.seoService.setPage(
+      'Círculo Animal — Mascotas perdidas y adopción en Chile',
+      'Encuentra mascotas perdidas, casos de adopción y animales en situación de calle en Chile a través de la red de ayuda de Círculo Animal.',
+    );
+
     const posicion = await this.obtenerUbicacionUsuario();
     this.mascotas = [
       ...await this.mascotaService.getMascotas(

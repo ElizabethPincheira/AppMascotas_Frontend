@@ -16,6 +16,23 @@
       </div>
     </section>
 
+    <section class="admin-metrics">
+      <div class="admin-metrics__state" *ngIf="cargandoStats">Cargando estadísticas...</div>
+
+      <article
+        class="admin-metric-card"
+        *ngFor="let stat of stats"
+        [class.admin-metric-card--amber]="stat.accent === 'amber'"
+        [class.admin-metric-card--green]="stat.accent === 'green'"
+        [class.admin-metric-card--blue]="stat.accent === 'blue'"
+        [class.admin-metric-card--teal]="stat.accent === 'teal'"
+        [class.admin-metric-card--rose]="stat.accent === 'rose'"
+      >
+        <span>{{ stat.label }}</span>
+        <strong>{{ formatStat(stat.value) }}</strong>
+      </article>
+    </section>
+
     <section class="admin-shortcuts">
       <article class="admin-card" *ngFor="let shortcut of shortcuts">
         <span class="admin-card__eyebrow">Herramienta</span>

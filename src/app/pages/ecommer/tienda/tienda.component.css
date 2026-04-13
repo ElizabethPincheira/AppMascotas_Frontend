@@ -282,6 +282,18 @@
   margin-top: 1rem;
 }
 
+.product-card__button {
+  width: 100%;
+  min-height: 46px;
+  margin-top: 1rem;
+  border: 0;
+  border-radius: 14px;
+  background: linear-gradient(180deg, #6ea541 0%, #467231 100%);
+  color: #fff;
+  font-weight: 800;
+  box-shadow: 0 14px 24px rgba(78, 118, 41, 0.2);
+}
+
 .product-card__tags span,
 .category-list span {
   display: inline-flex;

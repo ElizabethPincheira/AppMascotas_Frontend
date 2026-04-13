@@ -1,0 +1,29 @@
+.verify-page {
+  min-height: 100vh;
+  display: grid;
+  align-items: center;
+}
+
+.verify-card {
+  border-radius: 34px;
+  background: var(--bg-panel);
+  border: 1px solid var(--line-soft);
+  box-shadow: var(--shadow-soft);
+}
+
+.verify-badge {
+  background: #eef2e9;
+  color: var(--text-soft);
+  font-weight: 800;
+  padding: 0.6rem 0.95rem;
+}
+
+.verify-badge--success {
+  background: rgba(34, 197, 94, 0.14);
+  color: #15803d;
+}
+
+.verify-badge--error {
+  background: rgba(239, 68, 68, 0.14);
+  color: #b91c1c;
+}

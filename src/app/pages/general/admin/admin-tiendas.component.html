@@ -1,0 +1,108 @@
+<section class="admin-stores-page">
+  <div class="admin-stores-shell">
+    <section class="admin-stores-hero">
+      <div>
+        <a class="admin-stores-hero__back" routerLink="/admin">← Volver al panel</a>
+        <span class="admin-stores-hero__eyebrow">Administrador</span>
+        <h1>Gestión de tiendas</h1>
+        <p>Revisa solicitudes de tiendas, actualiza su estado y consulta el detalle antes de publicarlas.</p>
+      </div>
+
+      <div class="admin-stores-stats">
+        <article>
+          <span>Total tiendas</span>
+          <strong>{{ totalTiendas }}</strong>
+        </article>
+        <article>
+          <span>Pendientes</span>
+          <strong>{{ pendientesCount }}</strong>
+        </article>
+      </div>
+    </section>
+
+    <section class="admin-stores-tabs">
+      <button
+        type="button"
+        class="admin-stores-tabs__item"
+        *ngFor="let tab of tabs"
+        [class.admin-stores-tabs__item--active]="pestanaActiva === tab.key"
+        (click)="seleccionarPestana(tab.key)"
+      >
+        {{ tab.label }}
+        <span>{{ tab.count }}</span>
+      </button>
+    </section>
+
+    <section class="admin-stores-list">
+      <div class="admin-stores-state" *ngIf="cargandoTiendas">Cargando tiendas...</div>
+
+      <div class="admin-stores-state" *ngIf="!cargandoTiendas && tiendasFiltradas.length === 0">
+        No hay tiendas en la pestaña {{ pestanaActiva }}.
+      </div>
+
+      <div class="admin-stores-grid" *ngIf="!cargandoTiendas && tiendasFiltradas.length > 0">
+        <article class="admin-store-card" *ngFor="let tienda of tiendasFiltradas; trackBy: trackByStoreId">
+          <div class="admin-store-card__header">
+            <div>
+              <h2>{{ tienda.nombreTienda }}</h2>
+              <p>{{ formatOwner(tienda) }}</p>
+              <small *ngIf="tienda.email">{{ tienda.email }}</small>
+            </div>
+
+            <span
+              class="admin-store-card__badge"
+              [class.admin-store-card__badge--pending]="tienda.estadoSolicitudTienda === 'pendiente'"
+              [class.admin-store-card__badge--approved]="tienda.estadoSolicitudTienda === 'aprobada'"
+              [class.admin-store-card__badge--rejected]="tienda.estadoSolicitudTienda === 'rechazada'"
+            >
+              {{ tienda.estadoSolicitudTienda || 'pendiente' }}
+            </span>
+          </div>
+
+          <div class="admin-store-card__meta">
+            <div>
+              <span>Región y comuna</span>
+              <strong>{{ formatLocation(tienda) }}</strong>
+            </div>
+            <div>
+              <span>Categorías</span>
+              <strong>{{ formatCategories(tienda) }}</strong>
+            </div>
+            <div>
+              <span>Fecha de solicitud</span>
+              <strong>{{ formatRequestDate(tienda) }}</strong>
+            </div>
+            <div *ngIf="tienda.estadoSolicitudTienda === 'rechazada' && tienda.motivoRechazoTienda">
+              <span>Motivo del rechazo</span>
+              <strong>{{ tienda.motivoRechazoTienda }}</strong>
+            </div>
+          </div>
+
+          <div class="admin-store-card__actions">
+            <button
+              type="button"
+              class="admin-store-card__action admin-store-card__action--approve"
+              (click)="aprobarTienda(tienda)"
+              [disabled]="procesandoTiendaId === tienda._id || tienda.estadoSolicitudTienda === 'aprobada'"
+            >
+              {{ procesandoTiendaId === tienda._id ? 'Procesando...' : 'Aprobar' }}
+            </button>
+
+            <button
+              type="button"
+              class="admin-store-card__action admin-store-card__action--reject"
+              (click)="rechazarTienda(tienda)"
+              [disabled]="procesandoTiendaId === tienda._id"
+            >
+              {{ procesandoTiendaId === tienda._id ? 'Procesando...' : 'Rechazar' }}
+            </button>
+
+            <a class="admin-store-card__action admin-store-card__action--detail" [routerLink]="['/tiendas', tienda._id]">
+              Ver detalle
+            </a>
+          </div>
+        </article>
+      </div>
+    </section>
+  </div>
+</section>

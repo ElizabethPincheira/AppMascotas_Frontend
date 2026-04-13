@@ -1,0 +1,244 @@
+<section class="checkout-page">
+  <div class="checkout-shell">
+    <section class="checkout-hero">
+      <div>
+        <span class="checkout-hero__eyebrow">Checkout</span>
+        <h1>Completa tu pedido en tres pasos simples.</h1>
+        <p>
+          La coordinación del pago y la entrega se realiza directamente con la tienda.
+          Nosotros solo enviamos tu solicitud con los datos necesarios.
+        </p>
+      </div>
+
+      <div class="checkout-hero__card">
+        <span class="checkout-hero__label">Tienda seleccionada</span>
+        <strong>{{ nombreTienda }}</strong>
+        <p>{{ cantidadTotal }} producto(s) por {{ formatPrice(total) }}</p>
+      </div>
+    </section>
+
+    <section class="checkout-empty" *ngIf="!items.length && !pedidoExitoso">
+      <h2>Tu carrito está vacío</h2>
+      <p>Agrega productos antes de continuar con el checkout.</p>
+      <a routerLink="/tiendas" class="checkout-button checkout-button--primary">Seguir comprando</a>
+    </section>
+
+    <ng-container *ngIf="items.length || pedidoExitoso">
+      <nav class="checkout-steps" *ngIf="!pedidoExitoso">
+        <div class="checkout-step" [class.is-active]="pasoActual === 1" [class.is-complete]="pasoActual > 1">
+          <span>1</span>
+          <strong>Datos de entrega</strong>
+        </div>
+        <div class="checkout-step" [class.is-active]="pasoActual === 2" [class.is-complete]="pasoActual > 2">
+          <span>2</span>
+          <strong>Resumen</strong>
+        </div>
+        <div class="checkout-step" [class.is-active]="pasoActual === 3">
+          <span>3</span>
+          <strong>Confirmación</strong>
+        </div>
+      </nav>
+
+      <section class="checkout-panel" *ngIf="!pedidoExitoso && pasoActual === 1">
+        <div class="section-heading">
+          <div>
+            <span class="section-heading__eyebrow">Paso 1</span>
+            <h2>Datos de entrega</h2>
+          </div>
+        </div>
+
+        <div class="checkout-form-grid">
+          <label class="checkout-field">
+            <span>Nombre completo</span>
+            <input type="text" [(ngModel)]="deliveryForm.nombreCompleto" placeholder="Nombre y apellido" />
+          </label>
+
+          <label class="checkout-field checkout-field--full">
+            <span>Dirección de entrega</span>
+            <input type="text" [(ngModel)]="deliveryForm.direccionEntrega" placeholder="Calle, número y referencia" />
+          </label>
+
+          <label class="checkout-field">
+            <span>Región</span>
+            <select [(ngModel)]="deliveryForm.region" (ngModelChange)="onRegionChange()">
+              <option value="">Selecciona una región</option>
+              <option *ngFor="let region of regiones" [value]="region">{{ region }}</option>
+            </select>
+          </label>
+
+          <label class="checkout-field">
+            <span>Provincia</span>
+            <select
+              [(ngModel)]="deliveryForm.provincia"
+              (ngModelChange)="onProvinciaChange()"
+              [disabled]="!deliveryForm.region || cargandoProvincias">
+              <option value="">Selecciona una provincia</option>
+              <option *ngFor="let provincia of provincias" [value]="provincia">{{ provincia }}</option>
+            </select>
+          </label>
+
+          <label class="checkout-field">
+            <span>Comuna</span>
+            <select [(ngModel)]="deliveryForm.comuna" [disabled]="!deliveryForm.provincia || cargandoComunas">
+              <option value="">Selecciona una comuna</option>
+              <option *ngFor="let comuna of comunas" [value]="comuna">{{ comuna }}</option>
+            </select>
+          </label>
+
+          <label class="checkout-field">
+            <span>Teléfono de contacto</span>
+            <input type="text" [(ngModel)]="deliveryForm.telefono" placeholder="+56 9 1234 5678" />
+          </label>
+
+          <label class="checkout-field checkout-field--full">
+            <span>Nota para la tienda</span>
+            <textarea
+              [(ngModel)]="deliveryForm.nota"
+              rows="4"
+              placeholder="Indicaciones de entrega, referencia de domicilio o comentario opcional"></textarea>
+          </label>
+        </div>
+
+        <div class="checkout-actions">
+          <a routerLink="/carrito" class="checkout-button checkout-button--ghost">Volver al carrito</a>
+          <button
+            type="button"
+            class="checkout-button checkout-button--primary"
+            [disabled]="!datosEntregaCompletos"
+            (click)="siguientePaso()">
+            Continuar al resumen
+          </button>
+        </div>
+      </section>
+
+      <section class="checkout-panel" *ngIf="!pedidoExitoso && pasoActual === 2">
+        <div class="section-heading">
+          <div>
+            <span class="section-heading__eyebrow">Paso 2</span>
+            <h2>Resumen del pedido</h2>
+          </div>
+        </div>
+
+        <div class="checkout-grid">
+          <div class="checkout-list">
+            <article class="checkout-item" *ngFor="let item of items; trackBy: trackByProductoId">
+              <img [src]="item.imagen" [alt]="item.nombre" />
+              <div>
+                <h3>{{ item.nombre }}</h3>
+                <p>{{ formatPrice(item.precio) }} c/u</p>
+                <span>Cantidad: {{ item.cantidad }}</span>
+              </div>
+              <strong>{{ formatPrice(item.precio * item.cantidad) }}</strong>
+            </article>
+          </div>
+
+          <aside class="checkout-summary">
+            <span class="section-heading__eyebrow">Pedido</span>
+            <h3>{{ nombreTienda }}</h3>
+
+            <div class="checkout-summary__row">
+              <span>Subtotal</span>
+              <strong>{{ formatPrice(total) }}</strong>
+            </div>
+
+            <div class="checkout-summary__row">
+              <span>Envío</span>
+              <strong>{{ costoEnvioLabel }}</strong>
+            </div>
+
+            <p class="checkout-summary__helper">
+              El costo de envío final será confirmado directamente por la tienda después de recibir tu pedido.
+            </p>
+
+            <label class="checkout-checkbox">
+              <input type="checkbox" [(ngModel)]="aceptacionCoordinacion" />
+              <span>
+                Acepto que el pago y la coordinación de entrega se realizan directamente con la tienda.
+              </span>
+            </label>
+          </aside>
+        </div>
+
+        <div class="checkout-actions">
+          <button type="button" class="checkout-button checkout-button--ghost" (click)="volverPaso()">
+            Volver
+          </button>
+          <button
+            type="button"
+            class="checkout-button checkout-button--primary"
+            [disabled]="!puedeAvanzarResumen"
+            (click)="siguientePaso()">
+            Ir a confirmación
+          </button>
+        </div>
+      </section>
+
+      <section class="checkout-panel" *ngIf="!pedidoExitoso && pasoActual === 3">
+        <div class="section-heading">
+          <div>
+            <span class="section-heading__eyebrow">Paso 3</span>
+            <h2>Confirmación final</h2>
+          </div>
+        </div>
+
+        <div class="checkout-confirmation">
+          <div class="checkout-confirmation__card">
+            <h3>Revisaremos este pedido con {{ nombreTienda }}</h3>
+            <p>
+              Al confirmar, enviaremos tus datos de entrega y el detalle de productos para que la tienda
+              se ponga en contacto contigo.
+            </p>
+
+            <dl class="checkout-confirmation__data">
+              <div>
+                <dt>Entrega</dt>
+                <dd>{{ deliveryForm.direccionEntrega }}, {{ deliveryForm.comuna }}, {{ deliveryForm.provincia }}, {{ deliveryForm.region }}</dd>
+              </div>
+              <div>
+                <dt>Contacto</dt>
+                <dd>{{ deliveryForm.nombreCompleto }} · {{ deliveryForm.telefono }}</dd>
+              </div>
+              <div *ngIf="deliveryForm.nota.trim()">
+                <dt>Nota</dt>
+                <dd>{{ deliveryForm.nota }}</dd>
+              </div>
+              <div>
+                <dt>Total</dt>
+                <dd>{{ formatPrice(total) }}</dd>
+              </div>
+            </dl>
+
+            <p class="checkout-error" *ngIf="errorPedido">{{ errorPedido }}</p>
+
+            <div class="checkout-actions checkout-actions--tight">
+              <button type="button" class="checkout-button checkout-button--ghost" (click)="volverPaso()" [disabled]="procesandoPedido">
+                Volver
+              </button>
+              <button
+                type="button"
+                class="checkout-button checkout-button--primary"
+                (click)="confirmarPedido()"
+                [disabled]="procesandoPedido">
+                {{ procesandoPedido ? 'Enviando pedido...' : 'Confirmar pedido' }}
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="checkout-success" *ngIf="pedidoExitoso">
+        <span class="checkout-success__eyebrow">Pedido confirmado</span>
+        <h2>Tu solicitud ya fue enviada a la tienda.</h2>
+        <p class="checkout-success__number">Pedido {{ numeroPedido }}</p>
+        <p>La tienda se pondrá en contacto contigo para coordinar el pago y entrega.</p>
+
+        <div class="checkout-actions checkout-actions--center">
+          <button type="button" class="checkout-button checkout-button--primary" (click)="irATiendas()">
+            Seguir comprando
+          </button>
+          <a routerLink="/mi-cuenta" class="checkout-button checkout-button--ghost">Ir a mi cuenta</a>
+        </div>
+      </section>
+    </ng-container>
+  </div>
+</section>

@@ -123,6 +123,16 @@
   box-shadow: 0 0 0 0.25rem rgba(106, 160, 94, 0.14);
 }
 
+.login-help__link {
+  color: var(--brand-moss);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.login-help__link:hover {
+  color: var(--brand-forest);
+}
+
 .login-button {
   min-width: 220px;
   border-radius: 999px;

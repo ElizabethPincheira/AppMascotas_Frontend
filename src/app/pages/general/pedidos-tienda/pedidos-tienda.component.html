@@ -1,0 +1,82 @@
+<section class="pedidos-tienda-page">
+  <div class="pedidos-tienda-shell">
+    <section class="pedidos-tienda-hero">
+      <div>
+        <button class="back-button" type="button" (click)="volverAMiTienda()">← Volver a mi tienda</button>
+        <span class="pedidos-tienda-hero__eyebrow">Pedidos</span>
+        <h1>Pedidos recibidos de {{ nombreTienda }}</h1>
+        <p>Revisa las compras entrantes, confirma avances y mantén actualizado el estado de cada pedido.</p>
+      </div>
+    </section>
+
+    <section class="pedidos-panel">
+      <div class="section-heading">
+        <div>
+          <span class="section-heading__eyebrow">Gestión</span>
+          <h2>Pedidos recibidos</h2>
+        </div>
+      </div>
+
+      <div *ngIf="cargandoPedidos" class="loading-message">
+        Cargando pedidos...
+      </div>
+
+      <div *ngIf="!cargandoPedidos && !tienePedidos" class="empty-message">
+        <p>Aún no has recibido pedidos en tu tienda.</p>
+        <a routerLink="/tiendas" class="btn-primary">Ver tiendas publicadas</a>
+      </div>
+
+      <div class="pedidos-lista" *ngIf="!cargandoPedidos && tienePedidos">
+        <article class="pedido-card" *ngFor="let pedido of pedidos">
+          <div class="pedido-card__header">
+            <div>
+              <span class="pedido-card__eyebrow">Pedido {{ getPedidoNumeroCorto(pedido) }}</span>
+              <h3>{{ pedido.comprador.nombreCompleto }}</h3>
+              <p>{{ pedido.createdAt | date:'dd/MM/yyyy HH:mm' }}</p>
+            </div>
+
+            <span class="pedido-status" [ngClass]="'pedido-status--' + getEstadoPedidoClass(pedido.estado)">
+              {{ pedido.estado }}
+            </span>
+          </div>
+
+          <div class="pedido-card__body">
+            <div class="pedido-card__items">
+              <h4>Productos pedidos</h4>
+              <ul>
+                <li *ngFor="let item of pedido.items">
+                  <span>{{ item.nombre }} x{{ item.cantidad }}</span>
+                  <strong>{{ formatPrice(item.precio * item.cantidad) }}</strong>
+                </li>
+              </ul>
+            </div>
+
+            <div class="pedido-card__summary">
+              <div class="pedido-summary__row">
+                <span>Total</span>
+                <strong>{{ formatPrice(pedido.total) }}</strong>
+              </div>
+
+              <div class="pedido-summary__row pedido-summary__row--stacked">
+                <span>Actualizar estado</span>
+                <div class="pedido-summary__actions">
+                  <select [(ngModel)]="pedidoEstadosForm[pedido._id]">
+                    <option *ngFor="let estado of estadosPedidoDisponibles" [value]="estado">{{ estado }}</option>
+                  </select>
+
+                  <button
+                    type="button"
+                    class="btn-primary"
+                    (click)="actualizarEstadoPedido(pedido)"
+                    [disabled]="actualizandoPedidoId === pedido._id || pedidoEstadosForm[pedido._id] === pedido.estado">
+                    {{ actualizandoPedidoId === pedido._id ? 'Actualizando...' : 'Actualizar' }}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+  </div>
+</section>

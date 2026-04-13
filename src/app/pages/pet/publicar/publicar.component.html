@@ -47,6 +47,40 @@
         </label>
 
         <label class="form-field">
+          <span>Sexo</span>
+          <select [(ngModel)]="sexo" name="sexo" required>
+            <option value="">Selecciona el sexo</option>
+            <option *ngFor="let item of sexos" [value]="item">{{ item }}</option>
+          </select>
+        </label>
+
+        <label class="form-field">
+          <span>Color</span>
+          <input
+            type="text"
+            [(ngModel)]="color"
+            name="color"
+            placeholder="Ej: negro, blanco con manchas café">
+        </label>
+
+        <label class="form-field">
+          <span>Tamaño</span>
+          <select [(ngModel)]="tamano" name="tamano">
+            <option value="">Selecciona un tamaño</option>
+            <option *ngFor="let item of tamanos" [value]="item">{{ item }}</option>
+          </select>
+        </label>
+
+        <label class="form-field">
+          <span>Chip</span>
+          <input
+            type="text"
+            [(ngModel)]="chip"
+            name="chip"
+            placeholder="Ej: 985112345678901">
+        </label>
+
+        <label class="form-field">
           <span>{{ labelRaza }}</span>
           <input type="text" [(ngModel)]="raza" name="raza" [placeholder]="placeholderRaza" [required]="!esSituacionDeCalle">
         </label>

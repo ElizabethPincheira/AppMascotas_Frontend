@@ -8,6 +8,12 @@ export const authGuard: CanActivateFn = () => {
   const router = inject(Router);
 
   if (authService.isLogged()) {
+    const user = authService.getUser();
+
+    if (user?.email_verified === false) {
+      authService.requestVerificationBanner();
+    }
+
     return true;
   }
 
@@ -15,4 +21,3 @@ export const authGuard: CanActivateFn = () => {
   return false;
 
 };
-
