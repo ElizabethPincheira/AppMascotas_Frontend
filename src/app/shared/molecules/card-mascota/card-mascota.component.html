@@ -124,18 +124,17 @@
       <div class="share-buttons-row">
         <span class="info-item__label">Compartir</span>
         <div class="share-buttons-container">
-          <a
+          <button
+            type="button"
             class="share-menu__item"
-            [href]="shareWhatsappUrl"
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="Compartir por WhatsApp"
-          title="Compartir por WhatsApp">
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M3 21l1.65-3.8a9 9 0 1 1 3.4 2.9L3 21" />
-            <path d="M9 10a.5.5 0 0 0 1 0V9a.5.5 0 0 0-1 0v1a.5.5 0 0 0 1 0v1a.5.5 0 0 0-1 0v1a.5.5 0 0 0 1 0v1a.5.5 0 0 0-1 0v1a.5.5 0 0 0 1 0v1" />
-          </svg>
-        </a>
+            (click)="shareToWhatsapp($event)"
+            aria-label="Compartir por WhatsApp"
+            title="Compartir por WhatsApp">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 21l1.65-3.8a9 9 0 1 1 3.4 2.9L3 21" />
+              <path d="M9 10a.5.5 0 0 0 1 0V9a.5.5 0 0 0-1 0v1a.5.5 0 0 0 1 0v1a.5.5 0 0 0-1 0v1a.5.5 0 0 0 1 0v1a.5.5 0 0 0-1 0v1a.5.5 0 0 0 1 0v1" />
+            </svg>
+          </button>
 
         <a
           class="share-menu__item"

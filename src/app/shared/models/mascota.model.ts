@@ -12,6 +12,7 @@ export interface Mascota {
   recompensa?: string;
   ubicacion?: string;
   ubicacionPerdida?: string;
+  perdidoDesde?: string | Date;
   callesCercanas?: string;
   regionPerdida?: string;
   provinciaPerdida?: string;

@@ -46,7 +46,7 @@ export class CardMascotaComponent {
   }
 
   get shareWhatsappUrl(): string {
-    return `https://wa.me/?text=${encodeURIComponent(this.getShareWhatsappText())}`;
+    return `https://wa.me/?text=${encodeURIComponent(this.getShareWhatsappText({ includeImageReference: true }))}`;
   }
 
   get facebookShareUrl(): string {
@@ -329,6 +329,21 @@ export class CardMascotaComponent {
     }
   }
 
+  async shareToWhatsapp(event?: Event): Promise<void> {
+    event?.stopPropagation();
+
+    const nativeShareSucceeded = await this.tryNativeShareWithPhoto();
+    if (nativeShareSucceeded) {
+      return;
+    }
+
+    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(
+      this.getShareWhatsappText({ includeImageReference: true }),
+    )}`;
+
+    window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
+  }
+
   getDistanceText(): string | null {
     if (!this.isLostCase() || typeof this.mascota.distanciaKm !== 'number' || !Number.isFinite(this.mascota.distanciaKm)) {
       return null;
@@ -460,8 +475,175 @@ export class CardMascotaComponent {
     return id ? `${origin}/mascotas/${id}` : origin;
   }
 
-  private getShareWhatsappText(): string {
-    return `🐾 Ayúdame a encontrar a ${this.mascota.nombre}. ${this.mascota.estado} en ${this.getShareLocation()}.\nMás info: ${this.getCaseUrl()}`;
+  private async tryNativeShareWithPhoto(): Promise<boolean> {
+    if (typeof navigator === 'undefined' || typeof navigator.share !== 'function') {
+      return false;
+    }
+
+    const shareData: ShareData = {
+      title: `Ayuda a ${this.mascota.nombre}`,
+      text: this.getShareWhatsappText({ includeImageReference: false }),
+      url: this.getCaseUrl(),
+    };
+
+    const shareNavigator = navigator as Navigator & {
+      canShare?: (data?: ShareData) => boolean;
+    };
+
+    const shareImageFile = await this.buildShareImageFile();
+
+    if (shareImageFile) {
+      const filePayload: ShareData = { files: [shareImageFile] };
+
+      if (!shareNavigator.canShare || shareNavigator.canShare(filePayload)) {
+        shareData.files = [shareImageFile];
+      }
+    }
+
+    try {
+      await navigator.share(shareData);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  private async buildShareImageFile(): Promise<File | null> {
+    const currentImageRaw = this.imageList[this.currentImageIndex];
+    const firstImageRaw = this.imageList[0];
+    const rawImage = currentImageRaw || firstImageRaw;
+
+    if (!rawImage) {
+      return null;
+    }
+
+    const imageSource = this.resolveImageSourceForFetch(rawImage);
+    if (!imageSource) {
+      return null;
+    }
+
+    try {
+      const response = await fetch(imageSource);
+      const blob = await response.blob();
+
+      if (!blob || !blob.size) {
+        return null;
+      }
+
+      const extension = this.getImageExtensionFromMime(blob.type);
+      const safeName = this.slugify(this.mascota.nombre || 'mascota');
+
+      return new File([blob], `${safeName}${extension}`, {
+        type: blob.type || 'image/jpeg',
+      });
+    } catch {
+      return null;
+    }
+  }
+
+  private resolveImageSourceForFetch(imageValue: string): string | null {
+    if (!imageValue) {
+      return null;
+    }
+
+    if (
+      imageValue.startsWith('http://') ||
+      imageValue.startsWith('https://') ||
+      imageValue.startsWith('data:')
+    ) {
+      return imageValue;
+    }
+
+    if (imageValue.startsWith('/')) {
+      const origin = typeof window !== 'undefined' ? window.location.origin : '';
+      return origin ? `${origin}${imageValue}` : null;
+    }
+
+    return `data:image/jpeg;base64,${imageValue}`;
+  }
+
+  private getShareImageReferenceUrl(): string | null {
+    const currentImageRaw = this.imageList[this.currentImageIndex];
+    const firstImageRaw = this.imageList[0];
+    const rawImage = currentImageRaw || firstImageRaw;
+
+    if (!rawImage) {
+      return null;
+    }
+
+    if (rawImage.startsWith('http://') || rawImage.startsWith('https://')) {
+      return rawImage;
+    }
+
+    if (rawImage.startsWith('/')) {
+      const origin = typeof window !== 'undefined' ? window.location.origin : '';
+      return origin ? `${origin}${rawImage}` : null;
+    }
+
+    return null;
+  }
+
+  private getImageExtensionFromMime(mimeType?: string): string {
+    switch (mimeType) {
+      case 'image/png':
+        return '.png';
+      case 'image/webp':
+        return '.webp';
+      case 'image/gif':
+        return '.gif';
+      case 'image/jpeg':
+      case 'image/jpg':
+      default:
+        return '.jpg';
+    }
+  }
+
+  private slugify(value: string): string {
+    const normalized = value
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+
+    return normalized || 'mascota';
+  }
+
+  private getShareWhatsappText(options?: { includeImageReference?: boolean }): string {
+    const includeImageReference = options?.includeImageReference ?? false;
+    const caseUrl = this.getCaseUrl();
+    const imageReference = includeImageReference ? this.getShareImageReferenceUrl() : null;
+    const imageLine = imageReference ? `\nFoto: ${imageReference}` : '';
+    const basicDataLines: string[] = [
+      `Nombre: ${this.mascota.nombre}`,
+      `Estado: ${this.mascota.estado}`,
+      `Última ubicación: ${this.getPrimaryLocation()}`,
+    ];
+
+    if (this.mascota.especie) {
+      basicDataLines.push(`Especie: ${this.mascota.especie}`);
+    }
+
+    if (this.mascota.raza) {
+      basicDataLines.push(`Raza: ${this.mascota.raza}`);
+    }
+
+    if (this.mascota.color) {
+      basicDataLines.push(`Color: ${this.mascota.color}`);
+    }
+
+    if (this.mascota.perdidoDesde) {
+      const lostDate = new Date(this.mascota.perdidoDesde);
+      if (!Number.isNaN(lostDate.getTime())) {
+        basicDataLines.push(
+          `Perdido desde: ${lostDate.toLocaleDateString('es-CL')}`,
+        );
+      }
+    }
+
+    const basicDataText = basicDataLines.join('\n');
+
+    return `🐾 ${this.getEmotionalMessage()}\n\n${basicDataText}${imageLine}\n\nMás info: ${caseUrl}`;
   }
 
   private isEmail(contact: string): boolean {
