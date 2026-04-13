@@ -82,7 +82,7 @@
           </button>
         </div>
 
-        <form class="postulacion-form" *ngIf="!cargandoPostulacion && !postulacion" (ngSubmit)="enviarPostulacion()">
+        <form class="postulacion-form" *ngIf="!cargandoPostulacion && !postulacion && !yaPostulo" (ngSubmit)="enviarPostulacion()">
           <div class="form-group">
             <label for="nombre">Nombre completo *</label>
             <input
@@ -96,16 +96,10 @@
           </div>
 
           <div class="form-group">
-            <label for="email">Email *</label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              [(ngModel)]="email"
-              placeholder="tu@email.com"
-              [readonly]="estaLogueado"
-              required
-            />
+            <label>Correo de tu cuenta *</label>
+            <div class="static-field">
+              {{ email || 'Cargando correo de sesión...' }}
+            </div>
           </div>
 
           <div class="form-group">

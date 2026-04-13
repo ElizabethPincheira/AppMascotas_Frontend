@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import axios from 'axios';
 import { environment } from '../../../../environments/environment';
 import Swal from 'sweetalert2';
+import { AuthService } from '../../../core/services/auth.service';
 
 export enum TipoColaboracion {
   REPARTO = 'reparto',
@@ -49,6 +50,7 @@ interface ColaboradoresResponse {
   styleUrl: './admin-colaboradores.component.css',
 })
 export class AdminColaboradoresComponent implements OnInit, OnDestroy {
+  private readonly authService = inject(AuthService);
   colaboradores: Colaborador[] = [];
   colaboradoresBackup: Colaborador[] = [];
   cargando = false;
@@ -126,6 +128,17 @@ export class AdminColaboradoresComponent implements OnInit, OnDestroy {
   }
 
   async cargarColaboradores() {
+    const token = this.authService.getToken();
+
+    if (!token) {
+      await Swal.fire({
+        icon: 'warning',
+        title: 'Sesión expirada',
+        text: 'Debes iniciar sesión nuevamente para ver las postulaciones.',
+      });
+      return;
+    }
+
     this.cargando = true;
     try {
       const params: any = {
@@ -142,18 +155,32 @@ export class AdminColaboradoresComponent implements OnInit, OnDestroy {
       }
 
       const response = await axios.get<ColaboradoresResponse>(
-        `${environment.apiUrl}/colaboradores`,
-        { params }
+        `${environment.apiUrl}colaboradores`,
+        {
+          params,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
 
       this.colaboradores = response.data.data;
       this.colaboradoresBackup = [...this.colaboradores];
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error al cargar colaboradores:', error);
+
+      const status = error?.response?.status;
+      const message =
+        status === 401
+          ? 'Tu sesión expiró o no es válida.'
+          : status === 403
+          ? 'No tienes permisos de administrador para ver estas postulaciones.'
+          : 'No se pudieron cargar las postulaciones';
+
       Swal.fire({
         icon: 'error',
         title: 'Error',
-        text: 'No se pudieron cargar las postulaciones',
+        text: message,
       });
     } finally {
       this.cargando = false;
@@ -164,6 +191,17 @@ export class AdminColaboradoresComponent implements OnInit, OnDestroy {
     colaboradorId: string,
     nuevoEstado: string
   ) {
+    const token = this.authService.getToken();
+
+    if (!token) {
+      await Swal.fire({
+        icon: 'warning',
+        title: 'Sesión expirada',
+        text: 'Debes iniciar sesión nuevamente para actualizar postulaciones.',
+      });
+      return;
+    }
+
     const estadoMap: Record<string, EstadoPostulacion> = {
       contactado: EstadoPostulacion.CONTACTADO,
       activo: EstadoPostulacion.ACTIVO,
@@ -190,8 +228,13 @@ export class AdminColaboradoresComponent implements OnInit, OnDestroy {
 
     try {
       await axios.patch(
-        `${environment.apiUrl}/colaboradores/${colaboradorId}/estado`,
-        { estado: estado }
+        `${environment.apiUrl}colaboradores/${colaboradorId}/estado`,
+        { estado: estado },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
 
       // Actualizar localmente
@@ -206,12 +249,21 @@ export class AdminColaboradoresComponent implements OnInit, OnDestroy {
         text: `Estado actualizado a ${this.estadoConfig[estado].label}`,
         timer: 2000,
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error al actualizar estado:', error);
+
+      const status = error?.response?.status;
+      const message =
+        status === 401
+          ? 'Tu sesión expiró o no es válida.'
+          : status === 403
+          ? 'No tienes permisos de administrador para cambiar este estado.'
+          : 'No se pudo actualizar el estado';
+
       Swal.fire({
         icon: 'error',
         title: 'Error',
-        text: 'No se pudo actualizar el estado',
+        text: message,
       });
     } finally {
       this.actualizando[colaboradorId] = false;
@@ -265,6 +317,11 @@ export class AdminColaboradoresComponent implements OnInit, OnDestroy {
   }
 
   mostrarDetalles(colaborador: Colaborador) {
+    const tiposTexto =
+      Array.isArray(colaborador.tipos) && colaborador.tipos.length > 0
+        ? colaborador.tipos.map((tipo) => this.getTipoLabel(tipo)).join(', ')
+        : 'No especificó';
+
     Swal.fire({
       icon: 'info',
       title: 'Detalles de la postulación',
@@ -274,6 +331,7 @@ export class AdminColaboradoresComponent implements OnInit, OnDestroy {
           <p><strong>Email:</strong> ${colaborador.email}</p>
           <p><strong>Teléfono:</strong> ${colaborador.telefono}</p>
           <p><strong>Zona:</strong> ${colaborador.region} / ${colaborador.provincia} / ${colaborador.comuna}</p>
+          <p><strong>Tipo de colaboración:</strong> ${tiposTexto}</p>
           <p><strong>Descripción:</strong></p>
           <p>${colaborador.descripcion || 'No especificó'}</p>
         </div>

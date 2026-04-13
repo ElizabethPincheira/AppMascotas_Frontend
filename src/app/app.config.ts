@@ -6,23 +6,23 @@ import axios from 'axios';
 import { routes } from './app.routes';
 import { AuthService } from './core/services/auth.service';
 
-let axios404RedirectInitialized = false;
+let axiosAuthRedirectInitialized = false;
 
-function setupAxios404Redirect(): () => void {
+function setupAxiosAuthRedirect(): () => void {
   const router = inject(Router);
   const authService = inject(AuthService);
 
   return () => {
-    if (axios404RedirectInitialized) {
+    if (axiosAuthRedirectInitialized) {
       return;
     }
 
-    axios404RedirectInitialized = true;
+    axiosAuthRedirectInitialized = true;
 
     axios.interceptors.response.use(
       (response) => response,
       async (error) => {
-        if (error?.response?.status === 404) {
+        if (error?.response?.status === 401) {
           authService.logout();
 
           if (router.url !== '/login') {
@@ -64,7 +64,7 @@ export const appConfig: ApplicationConfig = {
     {
       provide: APP_INITIALIZER,
       multi: true,
-      useFactory: setupAxios404Redirect,
+      useFactory: setupAxiosAuthRedirect,
     },
     {
       provide: APP_INITIALIZER,

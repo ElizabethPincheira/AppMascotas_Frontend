@@ -68,6 +68,7 @@ export class ColaboradoresPostulacionComponent implements OnInit, OnDestroy {
 
   async ngOnInit() {
     this.estaLogueado = this.authService.isLogged();
+    this.precargarDatosUsuario(this.authService.getUser());
 
     this.authService.user$
       .pipe(takeUntil(this.destroy$))
@@ -78,6 +79,7 @@ export class ColaboradoresPostulacionComponent implements OnInit, OnDestroy {
 
         if (cambioEstado && this.estaLogueado) {
           this.cargandoPostulacion = true;
+          this.precargarDatosUsuario(this.authService.getUser());
           void this.cargarPostulacionExistente();
         }
 
@@ -95,6 +97,8 @@ export class ColaboradoresPostulacionComponent implements OnInit, OnDestroy {
         if (!area) return;
         this.preSeleccionarArea(area);
       });
+
+    await this.asegurarDatosUsuarioSesion();
 
     try {
       this.regiones = await this.ubicacionesService.getUbicaciones();
@@ -114,6 +118,29 @@ export class ColaboradoresPostulacionComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
+  private precargarDatosUsuario(usuario: any): void {
+    if (!usuario) return;
+
+    if (usuario.email && !this.email) {
+      this.email = usuario.email;
+    }
+
+    if (usuario.nombre && !this.nombre) {
+      this.nombre = usuario.nombre;
+    }
+  }
+
+  private async asegurarDatosUsuarioSesion(): Promise<void> {
+    if (!this.estaLogueado || this.email) return;
+
+    try {
+      const usuarioActualizado = await this.authService.refreshCurrentUser();
+      this.precargarDatosUsuario(usuarioActualizado);
+    } catch (error) {
+      console.error('No se pudo refrescar usuario para completar correo de sesión:', error);
+    }
+  }
+
   private preSeleccionarArea(areaId: string): void {
     const existe = this.tiposColaboracion.some(tipo => tipo.id === areaId);
     if (!existe) return;
@@ -123,13 +150,30 @@ export class ColaboradoresPostulacionComponent implements OnInit, OnDestroy {
   }
 
   async cargarPostulacionExistente(): Promise<void> {
+    const token = this.authService.getToken();
+
+    if (!token) {
+      this.errorEnvio = 'Tu sesión expiró. Inicia sesión nuevamente para ver tu postulación.';
+      this.cargandoPostulacion = false;
+      return;
+    }
+
     try {
-      const response = await axios.get(`${environment.apiUrl}colaboradores/mi-postulacion`);
+      const response = await axios.get(`${environment.apiUrl}colaboradores/mi-postulacion`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
       if (response.data) {
         this.postulacion = response.data;
         this.yaPostulo = true;
       }
     } catch (error: any) {
+      if (error.response?.status === 401) {
+        this.errorEnvio = 'Tu sesión expiró. Inicia sesión nuevamente para continuar.';
+        return;
+      }
+
       if (error.response?.status !== 404) {
         console.error('Error loading existing application:', error);
       }
@@ -182,7 +226,16 @@ export class ColaboradoresPostulacionComponent implements OnInit, OnDestroy {
   }
 
   async enviarPostulacion(): Promise<void> {
-    if (!this.nombre || !this.email || !this.telefono || !this.region || !this.provincia || !this.comuna) {
+    if (!this.email && this.estaLogueado) {
+      this.precargarDatosUsuario(this.authService.getUser());
+    }
+
+    if (!this.email) {
+      this.errorEnvio = 'No pudimos recuperar tu correo de sesión. Cierra e inicia sesión nuevamente.';
+      return;
+    }
+
+    if (!this.nombre || !this.telefono || !this.region || !this.provincia || !this.comuna) {
       this.errorEnvio = 'Por favor completa todos los campos obligatorios.';
       return;
     }
@@ -194,6 +247,13 @@ export class ColaboradoresPostulacionComponent implements OnInit, OnDestroy {
 
     this.errorEnvio = '';
     this.enviando = true;
+    const token = this.authService.getToken();
+
+    if (!token) {
+      this.errorEnvio = 'Tu sesión expiró. Inicia sesión nuevamente para enviar tu postulación.';
+      this.enviando = false;
+      return;
+    }
 
     try {
       const payload = {
@@ -207,9 +267,18 @@ export class ColaboradoresPostulacionComponent implements OnInit, OnDestroy {
         descripcion: this.descripcion
       };
 
-      await axios.post(`${environment.apiUrl}colaboradores`, payload);
+      await axios.post(`${environment.apiUrl}colaboradores`, payload, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
       this.yaPostulo = true;
-    } catch (error) {
+    } catch (error: any) {
+      if (error.response?.status === 401) {
+        this.errorEnvio = 'Tu sesión expiró. Inicia sesión nuevamente para enviar tu postulación.';
+        return;
+      }
+
       console.error('Error enviando postulación:', error);
       this.errorEnvio = 'Hubo un error al enviar tu postulación. Por favor intenta de nuevo.';
     } finally {

@@ -109,8 +109,19 @@ export class MiUserComponent {
   }
 
   private async cargarPostulacion(): Promise<void> {
+    const token = this.authService.getToken();
+
+    if (!token) {
+      this.cargandoPostulacion = false;
+      return;
+    }
+
     try {
-      const response = await axios.get(`${environment.apiUrl}colaboradores/mi-postulacion`);
+      const response = await axios.get(`${environment.apiUrl}colaboradores/mi-postulacion`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       if (response.data) {
         this.postulacion = response.data;
       }

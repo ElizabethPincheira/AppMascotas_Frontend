@@ -115,6 +115,9 @@
               >
                 {{ getTipoLabel(tipo) }}
               </span>
+              <span class="tipo-empty" *ngIf="!colab.tipos || colab.tipos.length === 0">
+                Sin tipo
+              </span>
             </div>
           </td>
 
@@ -227,6 +230,9 @@
                 [class]="'chip-tipo--' + tipo"
               >
                 {{ getTipoLabel(tipo) }}
+              </span>
+              <span class="tipo-empty" *ngIf="!colab.tipos || colab.tipos.length === 0">
+                Sin tipo
               </span>
             </div>
           </div>
