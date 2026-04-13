@@ -81,6 +81,15 @@
         </label>
 
         <label class="form-field">
+          <span>Recompensa (opcional)</span>
+          <input
+            type="text"
+            [(ngModel)]="recompensa"
+            name="recompensa"
+            placeholder="Ej: $50.000, ofrece recompensa">
+        </label>
+
+        <label class="form-field">
           <span>{{ labelRaza }}</span>
           <input type="text" [(ngModel)]="raza" name="raza" [placeholder]="placeholderRaza" [required]="!esSituacionDeCalle">
         </label>

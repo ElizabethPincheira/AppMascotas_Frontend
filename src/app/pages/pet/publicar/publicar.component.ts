@@ -38,6 +38,7 @@ export class PublicarComponent implements AfterViewInit {
   tamano: 'Pequeño' | 'Mediano' | 'Grande' | 'Gigante' | '' = '';
   raza = '';
   chip = '';
+  recompensa = '';
   estado = 'Extraviado';
   fechaNacimiento = '';
   perdidoDesde = '';
@@ -508,6 +509,7 @@ export class PublicarComponent implements AfterViewInit {
         tamano: this.tamano || undefined,
         raza: this.raza.trim() || undefined,
         chip: this.chip.trim() || undefined,
+        recompensa: this.recompensa.trim() || undefined,
         estado: this.estado,
         fechaNacimiento: this.fechaNacimiento || undefined,
         perdidoDesde: this.requierePerdidoDesde ? (this.perdidoDesde || undefined) : undefined,
@@ -590,6 +592,7 @@ export class PublicarComponent implements AfterViewInit {
     this.tamano = mascota.tamano ?? '';
     this.raza = mascota.raza ?? '';
     this.chip = mascota.chip ?? '';
+    this.recompensa = (mascota as any).recompensa ?? '';
     this.estado = mascota.estado ?? 'Extraviado';
     this.fechaNacimiento = this.toInputDate(mascota.fechaNacimiento);
     this.perdidoDesde = this.toInputDate((mascota as any).perdidoDesde);

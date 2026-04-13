@@ -9,6 +9,7 @@ export interface Mascota {
   tamano?: 'Pequeño' | 'Mediano' | 'Grande' | 'Gigante';
   raza: string;
   chip?: string | null;
+  recompensa?: string;
   ubicacion?: string;
   ubicacionPerdida?: string;
   callesCercanas?: string;
