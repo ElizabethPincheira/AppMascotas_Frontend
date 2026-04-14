@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { AuthService } from '../../../core/services/auth.service';
 import { Mascota } from '../../../shared/models/mascota.model';
 import { MascotaService } from '../../../core/services/mascota.service';
 import { SeoService } from '../../../core/services/seo.service';
@@ -29,6 +30,7 @@ export class PetsPageComponent {
   constructor(
     private mascotaService: MascotaService,
     private seoService: SeoService,
+    private authService: AuthService,
   ) { }
 
   async ngOnInit() {
@@ -74,6 +76,20 @@ export class PetsPageComponent {
 
   hasAnySectionData(): boolean {
     return this.mascotasPerdidasRecientes.length > 0 || this.mascotasEnAdopcion.length > 0 || this.mascotasEnCalle.length > 0;
+  }
+
+  get totalMascotasVisibles(): number {
+    return this.mascotas.length;
+  }
+
+  get totalCasosActivos(): number {
+    return this.mascotas.filter((mascota) =>
+      ['Robado', 'Extraviado', 'Encontrado', 'Busca hogar', 'Situacion de calle'].includes(mascota.estado)
+    ).length;
+  }
+
+  get rutaAgregarMascota(): string {
+    return this.authService.isLogged() ? '/publicar' : '/login';
   }
 
   private async obtenerUbicacionUsuario(): Promise<{ latitude: number; longitude: number } | null> {

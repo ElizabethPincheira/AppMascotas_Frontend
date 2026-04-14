@@ -7,6 +7,7 @@ import { Mascota } from '../../models/mascota.model';
 
 @Component({
   selector: 'app-card-mascota',
+  standalone: true,
   imports: [CommonModule],
   templateUrl: './card-mascota.component.html',
   styleUrls: ['./card-mascota.component.css']

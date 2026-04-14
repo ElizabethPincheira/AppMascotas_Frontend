@@ -1,40 +1,38 @@
 <section class="pets-showcase">
   <div class="pets-shell">
-    
 
-    <div class="section-block" *ngIf="cargando">
-      <div class="section-heading">
-        <div>
-          <h2>Mascotas Perdidas Recientes</h2>
-          <p>Casos visibles en la comunidad para ayudar a reencontrarlas.</p>
-        </div>
-      </div>
-      <div class="cards-grid">
-        <app-skeleton-card *ngFor="let i of [0,1,2,3]"></app-skeleton-card>
-      </div>
-    </div>
 
-    <div class="section-block" *ngIf="!cargando && mascotasPerdidasRecientes.length > 0">
-      <div class="section-heading">
+    <section class="section-band" *ngIf="cargando || mascotasPerdidasRecientes.length > 0">
+      <div class="section-heading section-heading--wide">
         <div>
-          <h2>Mascotas Perdidas Recientes</h2>
-          <p>Casos visibles en la comunidad para ayudar a reencontrarlas.</p>
+          <span class="section-kicker">Actualizaciones urgentes</span>
+          <h2>Recientemente perdidas</h2>
+          <p>Casos visibles para apoyar reencuentros en la comunidad.</p>
         </div>
         <a class="more-link" routerLink="/perdidos">Ver más</a>
       </div>
 
-      <div class="cards-grid">
-        <app-card-mascota
-          *ngFor="let mascota of mascotasPerdidasRecientes; trackBy: trackById"
-          [mascota]="mascota">
-        </app-card-mascota>
+      <div class="cards-grid" *ngIf="cargando; else lostPetsContent">
+        <app-skeleton-card *ngFor="let i of [0,1,2,3]"></app-skeleton-card>
       </div>
-    </div>
 
-    <div class="section-block" *ngIf="!cargando && mascotasEnAdopcion.length > 0">
+      <ng-template #lostPetsContent>
+        <div class="cards-grid">
+          <app-card-mascota
+            *ngFor="let mascota of mascotasPerdidasRecientes; trackBy: trackById"
+            [mascota]="mascota">
+          </app-card-mascota>
+        </div>
+      </ng-template>
+    </section>
+
+  
+
+    <section class="section-block" *ngIf="!cargando && mascotasEnAdopcion.length > 0">
       <div class="section-heading">
         <div>
-          <h2>En Adopción</h2>
+          <span class="section-kicker">Nuevos comienzos</span>
+          <h2>En adopción</h2>
           <p>Compañeros listos para encontrar un nuevo hogar.</p>
         </div>
         <a class="more-link" routerLink="/adopcion">Ver más</a>
@@ -46,33 +44,15 @@
           [mascota]="mascota">
         </app-card-mascota>
       </div>
-    </div>
+    </section>
 
-    <div class="section-block" *ngIf="mascotasEnCalle.length > 0">
-      <div class="section-heading">
-        <div>
-          <h2>Animales En Situacion De Calle</h2>
-          <p>Publicaciones para ayudarles a encontrar un hogar, resguardo o adopcion responsable.</p>
-        </div>
-        <div>
-          <a class="more-link" routerLink="/situacion-de-calle">Ver mas</a>
-          <a class="more-link" routerLink="/situacion-de-calle/publicar">Publicar</a>
-        </div>
-      </div>
 
-      <div class="cards-grid">
-        <app-card-mascota
-          *ngFor="let mascota of mascotasEnCalle; trackBy: trackById"
-          [mascota]="mascota">
-        </app-card-mascota>
-      </div>
-    </div>
-  </div>
 
-  <ng-template #emptyState>
-    <div class="empty-state">
+
+
+    <div class="empty-state" *ngIf="!cargando && !hasAnySectionData()">
       <h2>Estamos preparando esta vitrina</h2>
       <p>Cuando haya mascotas cargadas, aquí aparecerán primero los casos perdidos y luego los de adopción.</p>
     </div>
-  </ng-template>
+  </div>
 </section>
