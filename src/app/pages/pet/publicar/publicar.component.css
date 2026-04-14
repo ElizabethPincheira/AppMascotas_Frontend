@@ -283,6 +283,17 @@
   gap: 0.55rem;
 }
 
+.form-global-error {
+  margin-bottom: 1rem;
+  padding: 0.95rem 1rem;
+  border-radius: 14px;
+  border: 1px solid rgba(216, 91, 88, 0.3);
+  background: rgba(216, 91, 88, 0.1);
+  color: #8f1f1c;
+  font-size: 0.92rem;
+  font-weight: 800;
+}
+
 .form-field--full {
   grid-column: 1 / -1;
 }
@@ -323,6 +334,23 @@
 .form-field textarea:focus {
   border-color: #6aa05e;
   box-shadow: 0 0 0 0.25rem rgba(106, 160, 94, 0.14);
+}
+
+.field-error {
+  color: #b42318;
+  font-size: 0.82rem;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.field-error--block {
+  margin-top: -0.35rem;
+  margin-bottom: 1rem;
+}
+
+.gps-panel--error {
+  border-color: rgba(216, 91, 88, 0.4);
+  background: linear-gradient(180deg, #fff5f5 0%, #fce9e9 100%);
 }
 
 .upload-panel {

@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { AfterViewInit, Component, ElementRef, ViewChild, inject } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, NgForm, NgModel } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import Swal from 'sweetalert2';
 import { environment } from '../../../../environments/environment';
@@ -26,6 +26,7 @@ export class PublicarComponent implements AfterViewInit {
   private readonly route = inject(ActivatedRoute);
 
   @ViewChild('googleMapContainer') googleMapContainer?: ElementRef<HTMLDivElement>;
+  @ViewChild('publicarForm') publicarForm?: NgForm;
 
   mascotaId: string | null = null;
   modoEdicion = false;
@@ -59,6 +60,7 @@ export class PublicarComponent implements AfterViewInit {
   resolviendoDireccionGps = false;
 
   enviandoFormulario = false;
+  intentoEnvio = false;
 
   existingImagePreviews: string[] = [];
   newImagePreviews: string[] = [];
@@ -103,6 +105,7 @@ export class PublicarComponent implements AfterViewInit {
   mapCenterLng = -71.543;
   mapZoom = 5;
   private readonly googleMapsApiKey = environment.googleMapsApiKey;
+  private readonly emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   googleMapsDisponible = false;
   googleMapsError = '';
   private googleMap?: any;
@@ -253,6 +256,41 @@ export class PublicarComponent implements AfterViewInit {
     if (!this.requierePerdidoDesde) {
       this.perdidoDesde = '';
     }
+  }
+
+  debeMostrarError(control?: NgModel | null, invalidoExtra = false): boolean {
+    const controlInvalido = !!control?.invalid;
+    return (controlInvalido || invalidoExtra) && (this.intentoEnvio || !!control?.touched);
+  }
+
+  get ubicacionInvalida(): boolean {
+    return this.latitud === null || this.longitud === null;
+  }
+
+  get fechaNacimientoInvalida(): boolean {
+    return !!this.fechaNacimiento && !this.isFechaNacimientoValida();
+  }
+
+  get perdidoDesdeInvalida(): boolean {
+    return this.requierePerdidoDesde && !!this.perdidoDesde && !this.isPerdidoDesdeValida();
+  }
+
+  get correoManualInvalido(): boolean {
+    if (this.modoContacto !== 'mail' || this.puedeUsarCorreoPerfil) {
+      return false;
+    }
+
+    const correo = this.contacto.trim();
+    return !!correo && !this.emailRegex.test(correo);
+  }
+
+  get telefonoContactoInvalido(): boolean {
+    if (this.modoContacto !== 'telefono') {
+      return false;
+    }
+
+    const telefono = this.contacto.replace(/\s+/g, '');
+    return !!this.contacto.trim() && telefono.length < 8;
   }
 
   seleccionarModoUbicacion(modo: 'mapa' | 'gps'): void {
@@ -450,6 +488,9 @@ export class PublicarComponent implements AfterViewInit {
   }
 
   async submit(): Promise<void> {
+    this.intentoEnvio = true;
+    this.marcarFormularioComoTocado();
+
     if (this.mensajeErrorImagenes) {
       await Swal.fire({
         icon: 'warning',
@@ -459,36 +500,16 @@ export class PublicarComponent implements AfterViewInit {
       return;
     }
 
-    if (!this.isFechaNacimientoValida()) {
-      await Swal.fire({
-        icon: 'warning',
-        title: 'Fecha de nacimiento inválida',
-        text: 'La fecha de nacimiento no puede ser futura.',
-      });
+    if (this.enviandoFormulario) {
       return;
     }
 
-    if (!this.isPerdidoDesdeValida()) {
+    if (!this.formularioCompleto) {
       await Swal.fire({
         icon: 'warning',
-        title: 'Fecha de pérdida inválida',
-        text: 'La fecha de pérdida no puede ser futura. Sí puede ser hoy.',
+        title: 'Faltan datos por completar',
+        text: 'Revisa los campos marcados para continuar con la publicación.',
       });
-      return;
-    }
-
-    if (!this.isContactoValido()) {
-      await Swal.fire({
-        icon: 'warning',
-        title: 'Contacto incompleto',
-        text: this.modoContacto === 'mail'
-          ? 'Tu perfil no tiene un correo disponible para usar como contacto.'
-          : 'Debes ingresar un teléfono de contacto válido.',
-      });
-      return;
-    }
-
-    if (!this.formularioCompleto || this.enviandoFormulario) {
       return;
     }
 
@@ -572,6 +593,17 @@ export class PublicarComponent implements AfterViewInit {
     } finally {
       this.enviandoFormulario = false;
     }
+  }
+
+  private marcarFormularioComoTocado(): void {
+    if (!this.publicarForm) {
+      return;
+    }
+
+    Object.values(this.publicarForm.controls).forEach((control) => {
+      control.markAsTouched();
+      control.updateValueAndValidity({ onlySelf: true });
+    });
   }
 
   private async cargarMascotaParaEditar(id: string): Promise<void> {
@@ -673,7 +705,7 @@ export class PublicarComponent implements AfterViewInit {
         return true;
       }
 
-      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.contacto.trim());
+      return this.emailRegex.test(this.contacto.trim());
     }
 
     const telefono = this.contacto.replace(/\s+/g, '');

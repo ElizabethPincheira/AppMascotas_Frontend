@@ -24,7 +24,7 @@
       </div>
     </section>
 
-    <form class="publicar-card" (ngSubmit)="submit()">
+    <form class="publicar-card" #publicarForm="ngForm" (ngSubmit)="submit()">
       <div class="section-heading">
         <div>
           <span class="section-heading__eyebrow">Ficha base</span>
@@ -32,26 +32,45 @@
         </div>
       </div>
 
+      <div class="form-global-error" *ngIf="intentoEnvio && !formularioCompleto">
+        Revisa los campos marcados en rojo. Aún faltan datos obligatorios o hay información inválida.
+      </div>
+
       <div class="form-grid">
         <label class="form-field form-field--full">
           <span>{{ labelNombre }}</span>
-          <input type="text" [(ngModel)]="nombre" name="nombre" [placeholder]="placeholderNombre" [required]="!esSituacionDeCalle">
+          <input
+            type="text"
+            [(ngModel)]="nombre"
+            #nombreModel="ngModel"
+            name="nombre"
+            [placeholder]="placeholderNombre"
+            [required]="!esSituacionDeCalle">
+          <small class="field-error" *ngIf="debeMostrarError(nombreModel)">
+            {{ esSituacionDeCalle ? 'Agrega una referencia para identificar al animal.' : 'El nombre es obligatorio.' }}
+          </small>
         </label>
 
         <label class="form-field">
           <span>Especie</span>
-          <select [(ngModel)]="especie" name="especie" required>
+          <select [(ngModel)]="especie" #especieModel="ngModel" name="especie" required>
             <option value="">Selecciona una especie</option>
             <option *ngFor="let item of especies" [value]="item">{{ item }}</option>
           </select>
+          <small class="field-error" *ngIf="debeMostrarError(especieModel)">
+            Selecciona la especie.
+          </small>
         </label>
 
         <label class="form-field">
           <span>Sexo</span>
-          <select [(ngModel)]="sexo" name="sexo" required>
+          <select [(ngModel)]="sexo" #sexoModel="ngModel" name="sexo" required>
             <option value="">Selecciona el sexo</option>
             <option *ngFor="let item of sexos" [value]="item">{{ item }}</option>
           </select>
+          <small class="field-error" *ngIf="debeMostrarError(sexoModel)">
+            Selecciona el sexo.
+          </small>
         </label>
 
         <label class="form-field">
@@ -91,7 +110,16 @@
 
         <label class="form-field">
           <span>{{ labelRaza }}</span>
-          <input type="text" [(ngModel)]="raza" name="raza" [placeholder]="placeholderRaza" [required]="!esSituacionDeCalle">
+          <input
+            type="text"
+            [(ngModel)]="raza"
+            #razaModel="ngModel"
+            name="raza"
+            [placeholder]="placeholderRaza"
+            [required]="!esSituacionDeCalle">
+          <small class="field-error" *ngIf="debeMostrarError(razaModel)">
+            {{ esSituacionDeCalle ? 'Agrega el tipo o raza de referencia.' : 'La raza es obligatoria.' }}
+          </small>
         </label>
 
         <label class="form-field">
@@ -104,12 +132,34 @@
 
         <label class="form-field">
           <span>{{ labelFechaNacimiento }}</span>
-          <input type="date" [(ngModel)]="fechaNacimiento" name="fechaNacimiento" [max]="maxFechaHoy" [required]="!esSituacionDeCalle">
+          <input
+            type="date"
+            [(ngModel)]="fechaNacimiento"
+            #fechaNacimientoModel="ngModel"
+            name="fechaNacimiento"
+            [max]="maxFechaHoy"
+            [required]="!esSituacionDeCalle">
+          <small
+            class="field-error"
+            *ngIf="debeMostrarError(fechaNacimientoModel) && fechaNacimientoModel.errors?.['required']">
+            {{ esSituacionDeCalle ? 'Si la conoces, agrega una fecha aproximada.' : 'La fecha de nacimiento es obligatoria.' }}
+          </small>
+          <small class="field-error" *ngIf="debeMostrarError(fechaNacimientoModel, fechaNacimientoInvalida)">
+            La fecha de nacimiento no puede ser futura.
+          </small>
         </label>
 
         <label class="form-field" *ngIf="requierePerdidoDesde">
           <span>{{ labelPerdidoDesde }}</span>
-          <input type="date" [(ngModel)]="perdidoDesde" name="perdidoDesde" [max]="maxFechaHoy">
+          <input
+            type="date"
+            [(ngModel)]="perdidoDesde"
+            #perdidoDesdeModel="ngModel"
+            name="perdidoDesde"
+            [max]="maxFechaHoy">
+          <small class="field-error" *ngIf="debeMostrarError(perdidoDesdeModel, perdidoDesdeInvalida)">
+            La fecha de pérdida no puede ser futura.
+          </small>
         </label>
 
         <div class="form-field form-field--full">
@@ -142,9 +192,16 @@
             <input
               type="email"
               [(ngModel)]="contacto"
+              #contactoMailModel="ngModel"
               name="contactoMail"
               placeholder="correo@ejemplo.cl"
               [required]="modoContacto === 'mail' && !esSituacionDeCalle">
+            <small class="field-error" *ngIf="debeMostrarError(contactoMailModel) && contactoMailModel.errors?.['required']">
+              Ingresa un correo de contacto.
+            </small>
+            <small class="field-error" *ngIf="debeMostrarError(contactoMailModel, correoManualInvalido)">
+              El correo no tiene un formato válido.
+            </small>
             <small>Usaremos este correo para que puedan contactarte por este caso.</small>
           </div>
 
@@ -153,9 +210,16 @@
             <input
               type="tel"
               [(ngModel)]="contacto"
+              #contactoTelefonoModel="ngModel"
               name="contactoTelefono"
               placeholder="Ej: +56 9 1234 5678"
               [required]="modoContacto === 'telefono' && !esSituacionDeCalle">
+            <small class="field-error" *ngIf="debeMostrarError(contactoTelefonoModel) && contactoTelefonoModel.errors?.['required']">
+              Ingresa un teléfono de contacto.
+            </small>
+            <small class="field-error" *ngIf="debeMostrarError(contactoTelefonoModel, telefonoContactoInvalido)">
+              El teléfono debe tener al menos 8 dígitos.
+            </small>
             <small>Ingresa un número que revises con frecuencia para responder rápido.</small>
           </div>
         </div>
@@ -186,7 +250,7 @@
         </button>
       </div>
 
-      <div class="gps-panel" *ngIf="modoUbicacion === 'mapa'">
+      <div class="gps-panel" [class.gps-panel--error]="debeMostrarError(undefined, ubicacionInvalida)" *ngIf="modoUbicacion === 'mapa'">
         <div>
           <strong>{{ esSituacionDeCalle ? 'Marca el punto donde fue visto' : 'Marca el punto donde se perdio' }}</strong>
           <p>{{ textoMapa }}</p>
@@ -228,7 +292,7 @@
         </div>
       </div>
 
-      <div class="gps-panel" *ngIf="modoUbicacion === 'gps'">
+      <div class="gps-panel" [class.gps-panel--error]="debeMostrarError(undefined, ubicacionInvalida)" *ngIf="modoUbicacion === 'gps'">
         <div>
           <strong>Ubicación por GPS</strong>
           <p>{{ textoGps }}</p>
@@ -245,6 +309,10 @@
         <div class="gps-panel__status" *ngIf="ubicacionGpsLista && !resolviendoDireccionGps">
           Dirección detectada: {{ direccionGps }}
         </div>
+      </div>
+
+      <div class="field-error field-error--block" *ngIf="debeMostrarError(undefined, ubicacionInvalida)">
+        Debes marcar la última ubicación en el mapa o detectar la ubicación por GPS.
       </div>
 
       <div class="form-grid">
@@ -338,7 +406,7 @@
 
       <div class="form-actions">
         <a class="secondary-link" routerLink="/">Volver al inicio</a>
-        <button type="submit" class="submit-button" [disabled]="!formularioCompleto || enviandoFormulario">
+        <button type="submit" class="submit-button" [disabled]="enviandoFormulario">
           {{ enviandoFormulario ? 'Guardando...' : (modoEdicion ? 'Guardar cambios' : 'Inscribir mascota') }}
         </button>
       </div>
