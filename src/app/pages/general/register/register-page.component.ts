@@ -1,10 +1,12 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Meta } from '@angular/platform-browser';
 import Swal from 'sweetalert2';
 import { Router, RouterLink } from '@angular/router';
 import { UsersService } from '../../../core/services/users.service';
 import { UbicacionesService } from '../../../core/services/ubicaciones.service';
+import { SeoService } from '../../../core/services/seo.service';
 
 
 @Component({
@@ -41,11 +43,19 @@ export class RegisterPageComponent {
   constructor(
     private usersService: UsersService,
     private ubicacionesService: UbicacionesService,
-    private router: Router
+    private router: Router,
+    private seoService: SeoService,
+    private metaService: Meta,
   ) { }
 
 
   async ngOnInit() {
+    this.seoService.setPage(
+      'Crear cuenta | Circulo Animal',
+      'Crea tu cuenta en Circulo Animal para publicar casos, gestionar mascotas y participar en la comunidad.',
+    );
+    this.metaService.updateTag({ name: 'robots', content: 'noindex, nofollow' });
+
     await this.cargarRegiones();
   }
 

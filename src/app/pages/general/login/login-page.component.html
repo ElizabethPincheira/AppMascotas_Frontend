@@ -4,15 +4,11 @@
       <div class="login-form-shell">
         <div class="login-brand">
           <span class="login-brand__name">Circulo Animal</span>
-          <span class="login-brand__tag">Comunidad de apoyo animal</span>
         </div>
 
         <div class="login-copy">
-          <span class="login-copy__eyebrow">Bienvenido otra vez</span>
-          <h1>Retoma tus publicaciones y sigue ayudando a cada mascota.</h1>
-          <p>
-            Ingresa a tu cuenta para administrar casos, revisar reportes y mantenerte cerca de la comunidad.
-          </p>
+          <h1>Inicia sesion</h1>
+          <p>Accede a tu cuenta para continuar.</p>
         </div>
 
         <form class="login-form" (ngSubmit)="login()">
@@ -43,11 +39,6 @@
               required>
           </div>
 
-          <div class="login-status">
-            <span class="login-status__pill" [class.is-active]="!!email">Correo listo</span>
-            <span class="login-status__pill" [class.is-active]="!!password">Contrasena lista</span>
-          </div>
-
           <button
             type="submit"
             class="login-button"
@@ -56,21 +47,6 @@
             <span>{{ enviandoFormulario ? 'Ingresando...' : 'Iniciar sesion' }}</span>
           </button>
         </form>
-
-        <div class="login-divider">
-          <span>Acceso seguro para usuarios registrados</span>
-        </div>
-
-        <div class="login-benefits">
-          <article class="benefit-card">
-            <span class="benefit-card__label">Publicaciones</span>
-            <p>Crea, edita y sigue tus casos de mascotas perdidas o en adopcion.</p>
-          </article>
-          <article class="benefit-card">
-            <span class="benefit-card__label">Comunidad</span>
-            <p>Recibe apoyo rapido desde una red enfocada en ayuda y reencuentro.</p>
-          </article>
-        </div>
 
         <div class="switch-auth">
           <span>Aun no tienes cuenta?</span>

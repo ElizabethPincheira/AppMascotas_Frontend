@@ -2,9 +2,11 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { Meta } from '@angular/platform-browser';
 import Swal from 'sweetalert2';
 import { UsersService } from '../../../core/services/users.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { SeoService } from '../../../core/services/seo.service';
 
 
 @Component({
@@ -29,9 +31,17 @@ export class LoginPageComponent {
     private router: Router,
     private authService: AuthService,
     private route: ActivatedRoute,
+    private seoService: SeoService,
+    private metaService: Meta,
   ) { }
 
   ngOnInit(): void {
+    this.seoService.setPage(
+      'Iniciar sesion | Circulo Animal',
+      'Accede a tu cuenta de Circulo Animal para gestionar publicaciones, casos de mascotas y tu perfil.',
+    );
+    this.metaService.updateTag({ name: 'robots', content: 'noindex, nofollow' });
+
     const message = this.route.snapshot.queryParamMap.get('message')?.trim();
     this.redirectUrl = this.getSafeRedirectUrl(
       this.route.snapshot.queryParamMap.get('redirect'),

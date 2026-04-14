@@ -31,7 +31,7 @@
   display: flex;
   flex-direction: column;
   gap: 0.3rem;
-  margin-bottom: 3.2rem;
+  margin-bottom: 2.2rem;
 }
 
 .login-brand__name {
@@ -41,44 +41,25 @@
   letter-spacing: -0.03em;
 }
 
-.login-brand__tag {
-  color: #5f6a7c;
-  font-size: 0.94rem;
-}
-
 .login-copy {
-  margin-bottom: 2.3rem;
-}
-
-.login-copy__eyebrow {
-  display: inline-flex;
-  margin-bottom: 0.95rem;
-  padding: 0.45rem 0.85rem;
-  border-radius: 999px;
-  background: rgba(0, 97, 164, 0.09);
-  color: #0061a4;
-  font-size: 0.78rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  margin-bottom: 2rem;
 }
 
 .login-copy h1 {
   margin: 0;
   color: #1b2330;
   font-family: "Plus Jakarta Sans", var(--font-display);
-  font-size: clamp(2.4rem, 4vw, 3.85rem);
+  font-size: clamp(2.1rem, 3.4vw, 3rem);
   font-weight: 800;
-  line-height: 0.98;
+  line-height: 1.02;
   letter-spacing: -0.05em;
-  text-wrap: balance;
 }
 
 .login-copy p {
-  margin: 1rem 0 0;
+  margin: 0.75rem 0 0;
   color: #5f6a7c;
-  font-size: 1.02rem;
-  line-height: 1.75;
+  font-size: 0.98rem;
+  line-height: 1.6;
 }
 
 .login-form {
@@ -141,32 +122,10 @@
   text-decoration: underline;
 }
 
-.login-status {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.7rem;
-}
-
-.login-status__pill {
-  display: inline-flex;
-  align-items: center;
-  padding: 0.55rem 0.95rem;
-  border-radius: 999px;
-  background: #edf1f7;
-  color: #6b7280;
-  font-size: 0.88rem;
-  font-weight: 700;
-}
-
-.login-status__pill.is-active {
-  background: #dcecff;
-  color: #00558e;
-}
-
 .login-button {
   width: 100%;
   min-height: 60px;
-  margin-top: 0.45rem;
+  margin-top: 0.2rem;
   border: 0;
   border-radius: 999px;
   background: linear-gradient(135deg, #0061a4 0%, #3e91d5 100%);
@@ -193,65 +152,11 @@
   box-shadow: none;
 }
 
-.login-divider {
-  position: relative;
-  margin: 2rem 0 1.6rem;
-  text-align: center;
-}
-
-.login-divider::before {
-  content: "";
-  position: absolute;
-  inset: 50% 0 auto;
-  border-top: 1px solid rgba(115, 119, 127, 0.22);
-}
-
-.login-divider span {
-  position: relative;
-  display: inline-block;
-  padding: 0 1rem;
-  background: rgba(249, 251, 255, 0.92);
-  color: rgba(67, 71, 78, 0.68);
-  font-size: 0.88rem;
-  font-weight: 600;
-}
-
-.login-benefits {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1rem;
-}
-
-.benefit-card {
-  padding: 1.15rem 1.1rem;
-  border-radius: 24px;
-  background: rgba(255, 255, 255, 0.74);
-  border: 1px solid rgba(133, 147, 170, 0.14);
-  box-shadow: 0 12px 24px rgba(31, 41, 55, 0.06);
-}
-
-.benefit-card__label {
-  display: inline-flex;
-  margin-bottom: 0.55rem;
-  color: #0061a4;
-  font-size: 0.77rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.benefit-card p {
-  margin: 0;
-  color: #4b5563;
-  font-size: 0.95rem;
-  line-height: 1.55;
-}
-
 .switch-auth {
-  margin-top: 1.8rem;
+  margin-top: 1.35rem;
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 0.45rem;
   color: #5f6a7c;
   font-size: 0.96rem;
@@ -426,10 +331,6 @@
   .switch-auth {
     flex-direction: column;
     align-items: flex-start;
-  }
-
-  .login-benefits {
-    grid-template-columns: 1fr;
   }
 
   .login-visual-panel {

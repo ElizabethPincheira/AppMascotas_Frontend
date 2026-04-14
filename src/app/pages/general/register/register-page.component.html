@@ -1,253 +1,196 @@
-<section class="register-page py-4 py-lg-5">
-  <div class="container-fluid px-3 px-lg-4">
-    <div class="row g-4 g-xl-5 align-items-stretch justify-content-center" *ngIf="registroExitoso; else registerFormState">
-      <div class="col-12 col-lg-10 col-xl-8">
-        <div class="card border-0 shadow-lg register-card">
-          <div class="card-body p-4 p-xl-5 text-center">
-            <span class="badge rounded-pill text-bg-success-subtle progress-badge is-active mb-3">Verificación pendiente</span>
-            <h1 class="h2 fw-bold mb-3">Revisa tu correo. Te enviamos un link para verificar tu cuenta.</h1>
-            <p class="text-secondary mb-4">
-              Enviamos las instrucciones a <strong>{{ emailRegistrado }}</strong>. Cuando confirmes tu correo, ya podrás usar tu cuenta con normalidad.
-            </p>
+<section class="register-page" *ngIf="!registroExitoso; else registerSuccessState">
+  <div class="register-layout">
+    <section class="register-form-panel">
+      <div class="register-form-shell">
+        <div class="register-brand">
+          <span class="register-brand__name">Circulo Animal</span>
+        </div>
 
-            <div class="d-flex flex-column flex-sm-row justify-content-center gap-3">
-              <a routerLink="/login" class="btn btn-success btn-lg px-4 register-button">Ir al login</a>
-              <button type="button" class="btn btn-outline-secondary btn-lg px-4" (click)="registroExitoso = false">
-                Volver al formulario
-              </button>
+        <div class="register-copy">
+          <h1>Crea tu cuenta</h1>
+          <p>Completa tus datos para comenzar.</p>
+        </div>
+
+        <form class="register-form" (ngSubmit)="register()">
+          <div class="register-field">
+            <label for="register-name">Nombre</label>
+            <input
+              id="register-name"
+              type="text"
+              name="nombre"
+              placeholder="Tu nombre"
+              [(ngModel)]="nombre"
+              [disabled]="enviandoFormulario"
+              required>
+          </div>
+
+          <div class="register-field">
+            <label for="register-email">Correo electronico</label>
+            <input
+              id="register-email"
+              type="email"
+              name="email"
+              placeholder="nombre@correo.com"
+              [(ngModel)]="email"
+              [disabled]="enviandoFormulario"
+              required>
+          </div>
+
+          <div class="register-field-grid">
+            <div class="register-field">
+              <label for="register-password">Contrasena</label>
+              <input
+                id="register-password"
+                type="password"
+                name="password"
+                placeholder="********"
+                [(ngModel)]="password"
+                [disabled]="enviandoFormulario"
+                required>
+            </div>
+
+            <div class="register-field">
+              <label for="register-confirm-password">Confirmar contrasena</label>
+              <input
+                id="register-confirm-password"
+                type="password"
+                name="confirmPassword"
+                placeholder="********"
+                [(ngModel)]="confirmPassword"
+                [disabled]="enviandoFormulario"
+                [class.input-error]="confirmPassword && !contraseniasCoinciden"
+                required>
             </div>
           </div>
-        </div>
-      </div>
-    </div>
 
-    <ng-template #registerFormState>
-    <div class="row g-4 g-xl-5 align-items-stretch justify-content-center">
-      <div class="col-12 col-lg-5">
-        <div class="card border-0 shadow-lg register-hero h-100">
-          <div class="card-body p-4 p-xl-5 d-flex flex-column">
-            <span class="badge rounded-pill text-bg-light hero-badge mb-3">Circulo Animal</span>
-            <h1 class="display-6 fw-bold mb-3">Crea tu cuenta y conecta con una red que cuida mascotas.</h1>
-            <p class="lead text-light-emphasis mb-4">
-              Registra tu ubicacion para publicar, buscar y ayudar desde tu comuna con informacion valida.
-            </p>
+          <p class="register-feedback register-feedback--error" *ngIf="confirmPassword && !contraseniasCoinciden">
+            Las contrasenas no coinciden.
+          </p>
 
-            <div class="row g-3 mt-1">
-              <div class="col-12 col-sm-6">
-                <div class="mini-stat card border-0 h-100">
-                  <div class="card-body">
-                    <div class="mini-stat__label">Ubicacion guiada</div>
-                    <div class="mini-stat__value">Region, provincia y comuna conectadas</div>
-                  </div>
-                </div>
-              </div>
-
-              <div class="col-12 col-sm-6">
-                <div class="mini-stat card border-0 h-100">
-                  <div class="card-body">
-                    <div class="mini-stat__label">Datos consistentes</div>
-                    <div class="mini-stat__value">Validacion contra listado oficial</div>
-                  </div>
-                </div>
+          <div class="register-location-card">
+            <div class="register-location-card__header">
+              <h2>Ubicacion</h2>
+              <div class="spinner-border spinner-border-sm text-primary" role="status" *ngIf="cargandoRegiones || cargandoProvincias || cargandoComunas">
+                <span class="visually-hidden">Cargando...</span>
               </div>
             </div>
 
-            <div class="alert alert-light border-0 mt-4 mb-0 register-alert" role="alert">
-              Completa tu perfil base para comenzar a publicar mascotas perdidas, encontradas o en adopcion.
+            <div class="register-field-grid register-field-grid--triple">
+              <div class="register-field">
+                <label for="register-region">Region</label>
+                <select
+                  id="register-region"
+                  name="regiones"
+                  [(ngModel)]="regionSeleccionada"
+                  (ngModelChange)="onRegionChange()"
+                  [disabled]="cargandoRegiones || enviandoFormulario"
+                  required>
+                  <option value="">Seleccione una region</option>
+                  <option *ngFor="let region of regiones" [value]="region">{{ region }}</option>
+                </select>
+              </div>
+
+              <div class="register-field">
+                <label for="register-province">Provincia</label>
+                <select
+                  id="register-province"
+                  name="provincias"
+                  [(ngModel)]="provinciaSeleccionada"
+                  (ngModelChange)="onProvinciaChange()"
+                  [disabled]="!regionSeleccionada || cargandoProvincias || enviandoFormulario"
+                  required>
+                  <option value="">Seleccione una provincia</option>
+                  <option *ngFor="let provincia of provincias" [value]="provincia">{{ provincia }}</option>
+                </select>
+              </div>
+
+              <div class="register-field">
+                <label for="register-comuna">Comuna</label>
+                <select
+                  id="register-comuna"
+                  name="comunas"
+                  [(ngModel)]="comunaSeleccionada"
+                  (ngModelChange)="onComunaChange()"
+                  [disabled]="!provinciaSeleccionada || cargandoComunas || enviandoFormulario"
+                  required>
+                  <option value="">Seleccione una comuna</option>
+                  <option *ngFor="let comuna of comunas" [value]="comuna">{{ comuna }}</option>
+                </select>
+              </div>
             </div>
           </div>
+
+          <label class="register-terms" for="register-terms">
+            <input
+              id="register-terms"
+              type="checkbox"
+              name="aceptaTerminos"
+              [(ngModel)]="aceptaTerminos"
+              [disabled]="enviandoFormulario">
+            <span>
+              Acepto los <a routerLink="/terminos" target="_blank" rel="noopener noreferrer">terminos y condiciones</a>.
+            </span>
+          </label>
+
+          <button
+            type="submit"
+            class="register-button"
+            [disabled]="enviandoFormulario || !formularioCompleto">
+            <span class="spinner-border spinner-border-sm" role="status" *ngIf="enviandoFormulario"></span>
+            <span>{{ enviandoFormulario ? 'Creando cuenta...' : 'Crear cuenta' }}</span>
+          </button>
+        </form>
+
+        <div class="switch-auth">
+          <span>Ya tienes cuenta?</span>
+          <a routerLink="/login" class="switch-auth__link">Iniciar sesion</a>
         </div>
       </div>
+    </section>
 
-      <div class="col-12 col-lg-7 col-xl-6">
-        <div class="card border-0 shadow-lg register-card">
-          <div class="card-body p-4 p-xl-5">
-            <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-4">
-              <div>
-                <h2 class="h3 fw-bold mb-1">Registro</h2>
-                <p class="text-secondary mb-0">Completa tus datos para crear tu cuenta.</p>
-              </div>
+    <aside class="register-visual-panel">
+      <div class="register-visual-backdrop"></div>
 
-              <div class="d-flex flex-wrap gap-2">
-                <span class="badge text-bg-success-subtle progress-badge" [class.is-active]="!!regionSeleccionada">
-                  Region
-                </span>
-                <span class="badge text-bg-success-subtle progress-badge" [class.is-active]="!!provinciaSeleccionada">
-                  Provincia
-                </span>
-                <span class="badge text-bg-success-subtle progress-badge" [class.is-active]="!!comunaSeleccionada">
-                  Comuna
-                </span>
-              </div>
+      <div class="register-visual-content">
+        <div class="register-visual-icon" aria-hidden="true">CA</div>
+
+        <div class="register-visual-frame">
+          <img
+            src="https://images.unsplash.com/photo-1548199973-03cce0bbc87b?auto=format&fit=crop&w=1200&q=80"
+            alt="Perro mirando a camara en un entorno luminoso">
+        </div>
+
+        <article class="register-quote">
+          <span class="register-quote__eyebrow">Cuenta lista para ayudar</span>
+          <h2>"Unirte hace mas facil publicar, seguir casos y colaborar con la comunidad."</h2>
+          <div class="register-quote__author">
+            <div class="register-quote__avatar">CA</div>
+            <div>
+              <strong>Circulo Animal</strong>
+              <p>Red de apoyo para mascotas y familias</p>
             </div>
-
-            <form (ngSubmit)="register()">
-              <div class="row g-3">
-                <div class="col-12">
-                  <div class="form-floating">
-                    <input
-                      type="text"
-                      class="form-control"
-                      id="exampleInputName"
-                      name="nombre"
-                      placeholder="Tu nombre"
-                      [(ngModel)]="nombre"
-                      required>
-                    <label for="exampleInputName">Nombre</label>
-                  </div>
-                </div>
-
-                <div class="col-12">
-                  <div class="form-floating">
-                    <input
-                      type="email"
-                      class="form-control"
-                      id="exampleInputEmail1"
-                      name="email"
-                      placeholder="nombre@correo.com"
-                      [(ngModel)]="email"
-                      required>
-                    <label for="exampleInputEmail1">Correo electronico</label>
-                  </div>
-                  <div class="form-text text-secondary mt-2">
-                    Nunca compartiremos tu correo electronico con nadie mas.
-                  </div>
-                </div>
-
-                <div class="col-12">
-                  <div class="form-floating">
-                    <input
-                      type="password"
-                      class="form-control"
-                      id="exampleInputPassword1"
-                      name="password"
-                      placeholder="Contraseña"
-                      [(ngModel)]="password"
-                      required>
-                    <label for="exampleInputPassword1">Contraseña</label>
-                  </div>
-                </div>
-
-                <div class="col-12">
-                  <div class="form-floating">
-                    <input
-                      type="password"
-                      class="form-control"
-                      id="exampleInputConfirmPassword"
-                      name="confirmPassword"
-                      placeholder="Confirmar contraseña"
-                      [(ngModel)]="confirmPassword"
-                      [class.is-invalid]="confirmPassword && !contraseniasCoinciden"
-                      required>
-                    <label for="exampleInputConfirmPassword">Confirmar contraseña</label>
-                  </div>
-                  <div class="form-text text-danger d-block mt-2" *ngIf="confirmPassword && !contraseniasCoinciden">
-                    Las contraseñas no coinciden.
-                  </div>
-                </div>
-
-                <div class="col-12">
-                  <div class="card border-0 location-card">
-                    <div class="card-body p-3 p-lg-4">
-                      <div class="d-flex align-items-center justify-content-between mb-3">
-                        <h3 class="h6 fw-bold mb-0">Ubicacion</h3>
-                        <div class="spinner-border spinner-border-sm text-success" role="status" *ngIf="cargandoRegiones || cargandoProvincias || cargandoComunas">
-                          <span class="visually-hidden">Cargando...</span>
-                        </div>
-                      </div>
-
-                      <div class="row g-3">
-                        <div class="col-12 col-md-4">
-                          <div class="form-floating">
-                            <select
-                              class="form-select"
-                              id="exampleInputRegiones"
-                              name="regiones"
-                              [(ngModel)]="regionSeleccionada"
-                              (ngModelChange)="onRegionChange()"
-                              [disabled]="cargandoRegiones"
-                              required>
-                              <option value="">Seleccione una región</option>
-                              <option *ngFor="let region of regiones" [value]="region">{{ region }}</option>
-                            </select>
-                            <label for="exampleInputRegiones">Region</label>
-                          </div>
-                        </div>
-
-                        <div class="col-12 col-md-4">
-                          <div class="form-floating">
-                            <select
-                              class="form-select"
-                              id="exampleInputProvincia"
-                              name="provincias"
-                              [(ngModel)]="provinciaSeleccionada"
-                              (ngModelChange)="onProvinciaChange()"
-                              [disabled]="!regionSeleccionada || cargandoProvincias"
-                              required>
-                              <option value="">Seleccione una provincia</option>
-                              <option *ngFor="let provincia of provincias" [value]="provincia">{{ provincia }}</option>
-                            </select>
-                            <label for="exampleInputProvincia">Provincia</label>
-                          </div>
-                        </div>
-
-                        <div class="col-12 col-md-4">
-                          <div class="form-floating">
-                            <select
-                              class="form-select"
-                              id="exampleInputComuna"
-                              name="comunas"
-                              [(ngModel)]="comunaSeleccionada"
-                              (ngModelChange)="onComunaChange()"
-                              [disabled]="!provinciaSeleccionada || cargandoComunas"
-                              required>
-                              <option value="">Seleccione una comuna</option>
-                              <option *ngFor="let comuna of comunas" [value]="comuna">{{ comuna }}</option>
-                            </select>
-                            <label for="exampleInputComuna">Comuna</label>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="col-12">
-                  <div class="form-check">
-                    <input 
-                      type="checkbox" 
-                      class="form-check-input" 
-                      id="exampleCheck1"
-                      name="aceptaTerminos"
-                      [(ngModel)]="aceptaTerminos">
-                    <label class="form-check-label text-secondary" for="exampleCheck1">
-                      Acepto los <a routerLink="/terminos" target="_blank" rel="noopener noreferrer">términos y condiciones</a> de uso de la plataforma.
-                    </label>
-                  </div>
-                </div>
-
-                <div class="col-12 d-grid d-sm-flex justify-content-sm-end">
-                  <button
-                    type="submit"
-                    class="btn btn-success btn-lg px-4 register-button"
-                    [disabled]="enviandoFormulario || !formularioCompleto">
-                    <span class="spinner-border spinner-border-sm me-2" role="status" *ngIf="enviandoFormulario"></span>
-                    Registrarse
-                  </button>
-                </div>
-
-                <div class="col-12">
-                  <div class="switch-auth text-center">
-                    <span class="text-secondary">Si ya estas registrado,</span>
-                    <a routerLink="/login" class="btn btn-link switch-auth__link">inicia sesion aqui</a>
-                  </div>
-                </div>
-              </div>
-            </form>
           </div>
-        </div>
+        </article>
       </div>
-    </div>
-    </ng-template>
+    </aside>
   </div>
 </section>
+
+<ng-template #registerSuccessState>
+  <section class="register-page register-page--success">
+    <div class="register-success-card">
+      <span class="register-success-card__eyebrow">Verificacion pendiente</span>
+      <h1>Revisa tu correo</h1>
+      <p>
+        Enviamos un enlace de verificacion a <strong>{{ emailRegistrado }}</strong>. Cuando confirmes tu correo, podras iniciar sesion.
+      </p>
+
+      <div class="register-success-card__actions">
+        <a routerLink="/login" class="register-button register-button--inline">Ir al login</a>
+        <button type="button" class="register-secondary-button" (click)="registroExitoso = false">
+          Volver al formulario
+        </button>
+      </div>
+    </div>
+  </section>
+</ng-template>
