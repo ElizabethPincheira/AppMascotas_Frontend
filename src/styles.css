@@ -1,33 +1,22 @@
 :root {
   --font-ui: "Trebuchet MS", "Segoe UI", sans-serif;
   --font-display: "Palatino Linotype", "Book Antiqua", Georgia, serif;
-  --bg-page:
-    radial-gradient(circle at 14% 12%, rgba(118, 167, 63, 0.18), transparent 18%),
-    radial-gradient(circle at 82% 10%, rgba(221, 156, 69, 0.18), transparent 16%),
-    radial-gradient(circle at 75% 65%, rgba(70, 112, 82, 0.13), transparent 24%),
-    repeating-linear-gradient(
-      115deg,
-      rgba(58, 82, 52, 0.02) 0,
-      rgba(58, 82, 52, 0.02) 14px,
-      transparent 14px,
-      transparent 32px
-    ),
-    linear-gradient(180deg, #f3ead7 0%, #e8deca 100%);
-  --bg-panel: rgba(251, 247, 238, 0.84);
-  --bg-card: rgba(255, 251, 243, 0.96);
-  --bg-soft: #eee4d0;
-  --bg-muted: #e7ecdf;
-  --line-soft: rgba(70, 84, 50, 0.18);
-  --shadow-soft: 0 24px 48px rgba(41, 56, 36, 0.12);
-  --shadow-card: 0 22px 44px rgba(38, 45, 29, 0.12);
-  --text-strong: #1f3125;
-  --text-main: #4f5f51;
-  --text-soft: #748071;
-  --brand-forest: #233a2a;
-  --brand-moss: #55753d;
-  --brand-lime: #86ad48;
-  --brand-earth: #ba7135;
-  --brand-sand: #e8bf74;
+  --bg-page: linear-gradient(180deg, #f8faff 0%, #f0f5ff 100%);
+  --bg-panel: rgba(248, 250, 255, 0.9);
+  --bg-card: rgba(250, 252, 255, 0.98);
+  --bg-soft: #e8eef8;
+  --bg-muted: #e3ebf5;
+  --line-soft: rgba(0, 91, 196, 0.1);
+  --shadow-soft: 0 24px 48px rgba(0, 91, 196, 0.08);
+  --shadow-card: 0 22px 44px rgba(0, 91, 196, 0.1);
+  --text-strong: #1a2844;
+  --text-main: #2a343a;
+  --text-soft: #566167;
+  --brand-forest: #005bc4;
+  --brand-moss: #0048a3;
+  --brand-lime: #4388fd;
+  --brand-earth: #005bc4;
+  --brand-sand: #e8f0ff;
   --brand-danger: #d36255;
   --radius-xl: 30px;
   --radius-lg: 22px;
@@ -47,6 +36,7 @@ body {
   background-attachment: fixed;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  padding-top: 6rem;
 }
 
 h1,
@@ -72,4 +62,20 @@ main {
 .form-control,
 .form-select {
   font-family: var(--font-ui);
+}
+
+/* Material Symbols Outlined */
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal;
+  font-style: normal;
+  font-size: 1.5rem;
+  display: inline-flex;
+  line-height: 1;
+  text-transform: none;
+  letter-spacing: normal;
+  word-wrap: normal;
+  white-space: nowrap;
+  direction: ltr;
 }

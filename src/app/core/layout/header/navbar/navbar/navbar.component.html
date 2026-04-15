@@ -1,173 +1,167 @@
-<header class="site-navbar-wrap">
-  <nav class="site-navbar">
-    <div class="container-fluid px-3 px-lg-4 site-navbar__inner">
-      <div class="site-navbar__left">
-        <button
-          class="site-navbar__toggler d-lg-none"
-          type="button"
-          (click)="toggleMobileMenu()"
-          [attr.aria-expanded]="mobileMenuOpen"
-          aria-controls="mobileNavbarDrawer"
-          aria-label="Abrir menu principal">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-
-        <a class="navbar-brand site-navbar__brand" routerLink="/" (click)="closeMobileMenu()">
-          <span class="site-navbar__brand-icon">
-            <img
-              src="assets/icons/icon_patita.png"
-              alt="CirculoAnimal"
-              width="34"
-              height="34">
-          </span>
-          <span class="site-navbar__brand-text">
-            Circulo<span>Animal</span>.cl
-          </span>
-        </a>
-      </div>
-
-      <div class="site-navbar__desktop-nav d-none d-lg-flex">
-        <ul class="navbar-nav mx-auto align-items-lg-center gap-lg-2">
-          <li class="nav-item" *ngFor="let item of navItems">
-            <a
-              *ngIf="item.path; else disabledItem"
-              class="nav-link site-navbar__link"
-              [routerLink]="item.path"
-              routerLinkActive="active-link"
-              [routerLinkActiveOptions]="{ exact: item.exact ?? false }">
-              {{ item.label }}
-            </a>
-
-            <ng-template #disabledItem>
-              <span class="nav-link site-navbar__link site-navbar__link--static">
-                {{ item.label }}
-              </span>
-            </ng-template>
-          </li>
-        </ul>
-      </div>
-
-      <div class="site-navbar__actions" *ngIf="!user?.nombre; else loggedUserActions">
-        <button class="btn site-navbar__cart" type="button" (click)="irAlCarrito()">
-          <svg class="site-navbar__cart-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
-            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
-          </svg>
-          <span class="site-navbar__cart-count" *ngIf="cantidadCarrito$ | async as cantidad">{{ cantidad }}</span>
-        </button>
-        <a class="btn site-navbar__login" routerLink="/login">Ingresar</a>
-        <a class="btn site-navbar__register" routerLink="/register">Registrarse</a>
-      </div>
-
-      <ng-template #loggedUserActions>
-        <div class="site-navbar__actions site-navbar__actions--logged">
-          <button class="btn site-navbar__cart" type="button" (click)="irAlCarrito()">
-            <svg class="site-navbar__cart-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
-              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
-            </svg>
-            <span class="site-navbar__cart-count" *ngIf="cantidadCarrito$ | async as cantidad">{{ cantidad }}</span>
-          </button>
-          <div class="site-navbar__profile-menu" [class.is-open]="profileMenuOpen">
-            <button
-              class="btn site-navbar__profile-toggle"
-              type="button"
-              (click)="toggleProfileMenu()"
-              [attr.aria-expanded]="profileMenuOpen"
-              aria-haspopup="menu">
-              <span class="site-navbar__avatar">{{ user.nombre?.charAt(0) || 'U' }}</span>
-              <span class="site-navbar__welcome">Hola {{ user.nombre }}</span>
-              <span class="site-navbar__profile-caret" aria-hidden="true"></span>
-            </button>
-
-            <ul class="site-navbar__dropdown" *ngIf="profileMenuOpen">
-              <li>
-                <a class="site-navbar__dropdown-item" routerLink="/mi-cuenta" (click)="closeProfileMenu()">Mi cuenta</a>
-              </li>
-              <li *ngIf="esUnaTienda">
-                <a class="site-navbar__dropdown-item" routerLink="/mi-tienda" (click)="closeProfileMenu()">Mi tienda</a>
-              </li>
-              <li *ngIf="esUnaTienda">
-                <a class="site-navbar__dropdown-item" routerLink="/pedidos-tienda" (click)="closeProfileMenu()">Pedidos recibidos</a>
-              </li>
-              <li>
-                <a class="site-navbar__dropdown-item" routerLink="/mis-mascotas" (click)="closeProfileMenu()">Mis mascotas</a>
-              </li>
-               <li *ngIf="esAdministrador">
-                <a class="site-navbar__dropdown-item" routerLink="/admin" (click)="closeProfileMenu()">Administrador</a>
-              </li>
-              <li><hr class="site-navbar__dropdown-divider"></li>
-              <li>
-                <button class="site-navbar__dropdown-item site-navbar__dropdown-item--danger" type="button" (click)="logout()">
-                  Salir
-                </button>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </ng-template>
-    </div>
-  </nav>
-
-  <div class="site-navbar__backdrop" *ngIf="mobileMenuOpen" (click)="closeMobileMenu()"></div>
-
-  <aside
-    id="mobileNavbarDrawer"
-    class="site-navbar__drawer d-lg-none"
-    [class.is-open]="mobileMenuOpen"
-    aria-label="Menu principal movil">
-    <div class="site-navbar__drawer-header">
-      <span class="site-navbar__drawer-title">Explora el sitio</span>
+<!-- Top Navigation Bar -->
+<header class="navbar-wrapper">
+  <nav class="navbar-container">
+    <!-- Brand Logo -->
+    <div class="navbar-brand-group">
       <button
+        class="navbar-toggler d-lg-none"
         type="button"
-        class="site-navbar__drawer-close"
-        (click)="closeMobileMenu()"
-        aria-label="Cerrar menu">
-        ×
+        (click)="toggleMobileMenu()"
+        [attr.aria-expanded]="mobileMenuOpen"
+        aria-controls="mobileNavbarDrawer"
+        aria-label="Abrir menu principal">
+        <span class="navbar-toggler-icon"></span>
       </button>
+
+      <a class="navbar-brand" routerLink="/" (click)="closeMobileMenu()">
+        <div class="navbar-brand-icon">
+          <span class="material-symbols-outlined navbar-brand-pets-icon">pets</span>
+        </div>
+        <span class="navbar-brand-text">CirculoAnimal.cl</span>
+      </a>
     </div>
 
-    <ul class="site-navbar__drawer-list">
+    <!-- Navigation Links -->
+    <ul class="navbar-nav d-none d-md-flex">
       <li *ngFor="let item of navItems">
         <a
-          *ngIf="item.path; else mobileDisabledItem"
-          class="site-navbar__drawer-link"
+          *ngIf="item.path; else disabledItem"
+          class="nav-link"
           [routerLink]="item.path"
-          routerLinkActive="is-active"
-          [routerLinkActiveOptions]="{ exact: item.exact ?? false }"
-          (click)="closeMobileMenu()">
+          routerLinkActive="nav-link-active"
+          [routerLinkActiveOptions]="{ exact: item.exact ?? false }">
           {{ item.label }}
         </a>
 
-        <ng-template #mobileDisabledItem>
-          <span class="site-navbar__drawer-link site-navbar__drawer-link--static">
+        <ng-template #disabledItem>
+          <span class="nav-link nav-link-static">
             {{ item.label }}
           </span>
         </ng-template>
       </li>
-
-      <li *ngIf="user?.nombre">
-        <a class="site-navbar__drawer-link" routerLink="/mi-cuenta" (click)="closeMobileMenu()">Mi cuenta</a>
-      </li>
-
-      <li *ngIf="esUnaTienda">
-        <a class="site-navbar__drawer-link" routerLink="/mi-tienda" (click)="closeMobileMenu()">Mi tienda</a>
-      </li>
-
-      <li *ngIf="esUnaTienda">
-        <a class="site-navbar__drawer-link" routerLink="/pedidos-tienda" (click)="closeMobileMenu()">Pedidos recibidos</a>
-      </li>
-
-      <li *ngIf="esAdministrador">
-        <a class="site-navbar__drawer-link" routerLink="/admin" (click)="closeMobileMenu()">Administrador</a>
-      </li>
-
-      <li>
-        <button type="button" class="site-navbar__drawer-link site-navbar__drawer-link--button" (click)="irAlCarrito()">
-          Carrito
-          <span class="site-navbar__drawer-cart-count" *ngIf="cantidadCarrito$ | async as cantidad">{{ cantidad }}</span>
-        </button>
-      </li>
     </ul>
-  </aside>
+
+    <!-- Actions -->
+    <div class="navbar-actions" *ngIf="!user?.nombre; else loggedUserActions">
+      <button class="navbar-cart-btn" type="button" (click)="irAlCarrito()" aria-label="Carrito de compras">
+        <span class="material-symbols-outlined">shopping_cart</span>
+        <span class="navbar-cart-badge" *ngIf="cantidadCarrito$ | async as cantidad">{{ cantidad }}</span>
+      </button>
+
+      <div class="navbar-divider"></div>
+
+      <a class="navbar-btn navbar-btn-text" routerLink="/login">Ingresar</a>
+      <a class="navbar-btn navbar-btn-primary" routerLink="/register">Registrarse</a>
+    </div>
+
+    <ng-template #loggedUserActions>
+      <div class="navbar-actions navbar-actions-logged">
+        <button class="navbar-cart-btn" type="button" (click)="irAlCarrito()" aria-label="Carrito de compras">
+          <span class="material-symbols-outlined">shopping_cart</span>
+          <span class="navbar-cart-badge" *ngIf="cantidadCarrito$ | async as cantidad">{{ cantidad }}</span>
+        </button>
+
+        <div class="navbar-profile-menu" [class.is-open]="profileMenuOpen">
+          <button
+            class="navbar-profile-toggle"
+            type="button"
+            (click)="toggleProfileMenu()"
+            [attr.aria-expanded]="profileMenuOpen"
+            aria-haspopup="menu">
+            <span class="navbar-avatar">{{ user.nombre?.charAt(0) || 'U' }}</span>
+            <span class="navbar-welcome">Hola {{ user.nombre }}</span>
+            <span class="material-symbols-outlined navbar-profile-caret">expand_more</span>
+          </button>
+
+          <ul class="navbar-dropdown" *ngIf="profileMenuOpen">
+            <li>
+              <a class="navbar-dropdown-item" routerLink="/mi-cuenta" (click)="closeProfileMenu()">Mi cuenta</a>
+            </li>
+            <li *ngIf="esUnaTienda">
+              <a class="navbar-dropdown-item" routerLink="/mi-tienda" (click)="closeProfileMenu()">Mi tienda</a>
+            </li>
+            <li *ngIf="esUnaTienda">
+              <a class="navbar-dropdown-item" routerLink="/pedidos-tienda" (click)="closeProfileMenu()">Pedidos recibidos</a>
+            </li>
+            <li>
+              <a class="navbar-dropdown-item" routerLink="/mis-mascotas" (click)="closeProfileMenu()">Mis mascotas</a>
+            </li>
+            <li *ngIf="esAdministrador">
+              <a class="navbar-dropdown-item" routerLink="/admin" (click)="closeProfileMenu()">Administrador</a>
+            </li>
+            <li><hr class="navbar-dropdown-divider"></li>
+            <li>
+              <button class="navbar-dropdown-item navbar-dropdown-item-danger" type="button" (click)="logout()">
+                Salir
+              </button>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </ng-template>
+  </nav>
 </header>
+
+<!-- Mobile Menu Backdrop -->
+<div class="navbar-backdrop" *ngIf="mobileMenuOpen" (click)="closeMobileMenu()"></div>
+
+<!-- Mobile Menu Drawer -->
+<aside
+  id="mobileNavbarDrawer"
+  class="navbar-drawer d-md-none"
+  [class.is-open]="mobileMenuOpen"
+  aria-label="Menu principal móvil">
+  <div class="navbar-drawer-header">
+    <span class="navbar-drawer-title">Explora el sitio</span>
+    <button
+      type="button"
+      class="navbar-drawer-close"
+      (click)="closeMobileMenu()"
+      aria-label="Cerrar menu">
+      ×
+    </button>
+  </div>
+
+  <ul class="navbar-drawer-list">
+    <li *ngFor="let item of navItems">
+      <a
+        *ngIf="item.path; else mobileDisabledItem"
+        class="navbar-drawer-link"
+        [routerLink]="item.path"
+        routerLinkActive="is-active"
+        [routerLinkActiveOptions]="{ exact: item.exact ?? false }"
+        (click)="closeMobileMenu()">
+        {{ item.label }}
+      </a>
+
+      <ng-template #mobileDisabledItem>
+        <span class="navbar-drawer-link navbar-drawer-link-static">
+          {{ item.label }}
+        </span>
+      </ng-template>
+    </li>
+
+    <li *ngIf="user?.nombre">
+      <a class="navbar-drawer-link" routerLink="/mi-cuenta" (click)="closeMobileMenu()">Mi cuenta</a>
+    </li>
+
+    <li *ngIf="esUnaTienda">
+      <a class="navbar-drawer-link" routerLink="/mi-tienda" (click)="closeMobileMenu()">Mi tienda</a>
+    </li>
+
+    <li *ngIf="esUnaTienda">
+      <a class="navbar-drawer-link" routerLink="/pedidos-tienda" (click)="closeMobileMenu()">Pedidos recibidos</a>
+    </li>
+
+    <li *ngIf="esAdministrador">
+      <a class="navbar-drawer-link" routerLink="/admin" (click)="closeMobileMenu()">Administrador</a>
+    </li>
+
+    <li>
+      <button type="button" class="navbar-drawer-link navbar-drawer-link-button" (click)="irAlCarrito()">
+        Carrito
+        <span class="navbar-drawer-cart-badge" *ngIf="cantidadCarrito$ | async as cantidad">{{ cantidad }}</span>
+      </button>
+    </li>
+  </ul>
+</aside>
