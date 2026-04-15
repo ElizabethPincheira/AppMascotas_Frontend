@@ -18,6 +18,7 @@ export class CardMascotaComponent {
   private _mascota!: Mascota;
   currentImageIndex = 0;
   private touchStartX: number | null = null;
+  @Input() variant: 'default' | 'home' = 'default';
 
   @Input() set mascota(value: Mascota) {
     this._mascota = value;
@@ -26,6 +27,10 @@ export class CardMascotaComponent {
 
   get mascota(): Mascota {
     return this._mascota;
+  }
+
+  get isHomeVariant(): boolean {
+    return this.variant === 'home';
   }
 
   shareMenuOpen = false;

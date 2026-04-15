@@ -20,6 +20,7 @@
         <div class="cards-grid">
           <app-card-mascota
             *ngFor="let mascota of mascotasPerdidasRecientes; trackBy: trackById"
+            variant="home"
             [mascota]="mascota">
           </app-card-mascota>
         </div>
@@ -41,6 +42,7 @@
       <div class="cards-grid">
         <app-card-mascota
           *ngFor="let mascota of mascotasEnAdopcion; trackBy: trackById"
+          variant="home"
           [mascota]="mascota">
         </app-card-mascota>
       </div>
