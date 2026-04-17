@@ -3,9 +3,8 @@
 .pets-showcase {
   min-height: 100vh;
   padding: 28px 18px 72px;
-  background:
-    radial-gradient(circle at top left, rgba(89, 146, 255, 0.16), transparent 26%),
-    linear-gradient(180deg, #f6fafe 0%, #edf4fb 100%);
+  background: linear-gradient(180deg, #f8faff 0%, #f0f5ff 100%);
+  background-attachment: fixed;
 }
 
 .pets-shell {

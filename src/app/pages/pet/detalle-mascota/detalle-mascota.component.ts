@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, HostListener, inject } from '@angular/core';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import Swal from 'sweetalert2';
 import { AuthService } from '../../../core/services/auth.service';
 import { MascotaService } from '../../../core/services/mascota.service';
@@ -10,9 +10,9 @@ import { Mascota } from '../../../shared/models/mascota.model';
 @Component({
   selector: 'app-detalle-mascota',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterModule],
   templateUrl: './detalle-mascota.component.html',
-  styleUrls: ['./detalle-mascota.component.css']
+  styleUrl: './detalle-mascota.component.css'
 })
 export class DetalleMascotaComponent {
   private readonly route = inject(ActivatedRoute);
