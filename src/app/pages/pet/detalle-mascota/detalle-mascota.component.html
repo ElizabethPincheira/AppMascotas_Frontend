@@ -33,7 +33,7 @@
           <div class="pet-tags">
             <span class="pet-tag">{{ mascota.especie || 'Especie desconocida' }}</span>
             <span class="pet-tag">{{ getAgeText() || 'Edad desconocida' }}</span>
-            <span class="pet-tag">{{ mascota.sexo === 'M' ? 'Macho' : mascota.sexo === 'H' ? 'Hembra' : (mascota.sexo || 'Sexo desconocido') }}</span>
+            <span class="pet-tag">{{ mascota.sexo || 'Sexo desconocido' }}</span>
           </div>
         </section>
 
