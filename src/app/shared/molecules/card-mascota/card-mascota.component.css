@@ -747,7 +747,7 @@
 
 @media (max-width: 576px) {
   .mascota-card {
-    min-height: 700px;
+    min-height: 0;
   }
 
   .mascota-card__header {
