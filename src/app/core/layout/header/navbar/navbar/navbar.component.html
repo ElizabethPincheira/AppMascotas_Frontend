@@ -23,13 +23,13 @@
 
     <!-- Navigation Links -->
     <ul class="navbar-nav d-none d-md-flex">
-      <li *ngFor="let item of navItems">
+      <li *ngFor="let item of primaryNavItems; trackBy: trackByPath">
         <a
           *ngIf="item.path; else disabledItem"
           class="nav-link"
           [routerLink]="item.path"
           routerLinkActive="nav-link-active"
-          [routerLinkActiveOptions]="{ exact: item.exact ?? false }">
+          [routerLinkActiveOptions]="item.exact ? exactLinkActiveOptions : partialLinkActiveOptions">
           {{ item.label }}
         </a>
 
@@ -77,12 +77,17 @@
             <li>
               <a class="navbar-dropdown-item" routerLink="/mi-cuenta" (click)="closeProfileMenu()">Mi cuenta</a>
             </li>
+            <li class="navbar-dropdown-label">Tienda</li>
+            <li>
+              <a class="navbar-dropdown-item" routerLink="/mis-compras" (click)="closeProfileMenu()">Mis compras</a>
+            </li>
             <li *ngIf="esUnaTienda">
               <a class="navbar-dropdown-item" routerLink="/mi-tienda" (click)="closeProfileMenu()">Mi tienda</a>
             </li>
             <li *ngIf="esUnaTienda">
               <a class="navbar-dropdown-item" routerLink="/pedidos-tienda" (click)="closeProfileMenu()">Pedidos recibidos</a>
             </li>
+            <li class="navbar-dropdown-label">Mascotas</li>
             <li>
               <a class="navbar-dropdown-item" routerLink="/mis-mascotas" (click)="closeProfileMenu()">Mis mascotas</a>
             </li>
@@ -112,7 +117,10 @@
   [class.is-open]="mobileMenuOpen"
   aria-label="Menu principal móvil">
   <div class="navbar-drawer-header">
-    <span class="navbar-drawer-title">Explora el sitio</span>
+    <div>
+      <span class="navbar-drawer-eyebrow">CirculoAnimal.cl</span>
+      <span class="navbar-drawer-title">Explora el sitio</span>
+    </div>
     <button
       type="button"
       class="navbar-drawer-close"
@@ -123,13 +131,13 @@
   </div>
 
   <ul class="navbar-drawer-list">
-    <li *ngFor="let item of navItems">
+    <li *ngFor="let item of primaryNavItems; trackBy: trackByPath">
       <a
         *ngIf="item.path; else mobileDisabledItem"
         class="navbar-drawer-link"
         [routerLink]="item.path"
         routerLinkActive="is-active"
-        [routerLinkActiveOptions]="{ exact: item.exact ?? false }"
+        [routerLinkActiveOptions]="item.exact ? exactLinkActiveOptions : partialLinkActiveOptions"
         (click)="closeMobileMenu()">
         {{ item.label }}
       </a>
@@ -143,6 +151,11 @@
 
     <li *ngIf="user?.nombre">
       <a class="navbar-drawer-link" routerLink="/mi-cuenta" (click)="closeMobileMenu()">Mi cuenta</a>
+    </li>
+
+    <li class="navbar-drawer-section-label" *ngIf="user?.nombre || esUnaTienda || esAdministrador">Tienda</li>
+    <li *ngIf="user?.nombre">
+      <a class="navbar-drawer-link" routerLink="/mis-compras" (click)="closeMobileMenu()">Mis compras</a>
     </li>
 
     <li *ngIf="esUnaTienda">

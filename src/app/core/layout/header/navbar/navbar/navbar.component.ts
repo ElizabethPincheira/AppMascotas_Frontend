@@ -5,6 +5,12 @@ import { AuthService } from '../../../../services/auth.service';
 import { CommonModule } from '@angular/common';
 import { CarritoService } from '../../../../services/carrito.service';
 
+interface NavItem {
+  label: string;
+  path: string;
+  exact?: boolean;
+}
+
 @Component({
   selector: 'app-navbar',
   imports: [RouterLink, RouterLinkActive, CommonModule],
@@ -17,18 +23,15 @@ export class NavbarComponent {
   user: any;
   profileMenuOpen = false;
   mobileMenuOpen = false;
+  readonly exactLinkActiveOptions = { exact: true };
+  readonly partialLinkActiveOptions = { exact: false };
   readonly cantidadCarrito$ = this.carritoService.items$.pipe(
     map((items) => items.reduce((sum, item) => sum + item.cantidad, 0)),
   );
-  readonly navItems = [
+  readonly primaryNavItems: NavItem[] = [
     { label: 'Inicio', path: '/', exact: true },
-    { label: 'Perdidos', path: '/perdidos' },
-    { label: 'Adopcion', path: '/adopcion' },
-    { label: 'En calle', path: '/situacion-de-calle' },
     { label: 'Tiendas', path: '/tiendas' },
     { label: 'Ser parte', path: '/colaboradores' },
-    //{ label: 'Fauna', path: '/fauna' },
-    //{ label: 'Donar', path: '/donar' },
   ];
 
   constructor(private authService: AuthService,
@@ -94,6 +97,10 @@ export class NavbarComponent {
     this.closeMobileMenu();
     this.authService.logout();
     //this.router.navigate(['/']);
+  }
+
+  trackByPath(_index: number, item: NavItem): string {
+    return item.path;
   }
 
   get esUnaTienda(): boolean {

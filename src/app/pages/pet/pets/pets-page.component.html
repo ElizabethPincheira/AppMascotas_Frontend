@@ -1,8 +1,92 @@
 <section class="pets-showcase">
   <div class="pets-shell">
+    <section class="home-filters">
+      <div class="home-filters__intro">
+        <span class="section-kicker">Inicio con filtros</span>
+        <h2>{{ inicioFiltrosTitulo }}</h2>
+        <p>{{ inicioFiltrosDescripcion }}</p>
+      </div>
 
+      <div class="home-filters__toolbar">
+        <div class="home-filter-chips">
+          <button
+            *ngFor="let modo of modosInicio"
+            type="button"
+            class="home-filter-chip"
+            [class.is-active]="filtroModoInicio === modo.value"
+            (click)="setFiltroModoInicio(modo.value)">
+            {{ modo.label }}
+          </button>
+        </div>
 
-    <section class="section-band" *ngIf="cargando || mascotasPerdidasRecientes.length > 0">
+        <div class="home-filters__controls">
+          <label class="home-filter-field">
+            <span>Especie</span>
+            <select
+              [(ngModel)]="filtroEspecie"
+              name="filtroEspecieInicio"
+              (ngModelChange)="activarExploracionInicio()">
+              <option *ngFor="let especie of especiesFiltro" [value]="especie">{{ especie }}</option>
+            </select>
+          </label>
+
+          <label class="home-filter-field home-filter-field--search">
+            <span>Buscar</span>
+            <input
+              type="text"
+              [(ngModel)]="filtroTexto"
+              (ngModelChange)="activarExploracionInicio()"
+              name="filtroTextoInicio"
+              placeholder="Nombre, raza, comuna o región">
+          </label>
+        </div>
+      </div>
+
+      <div class="home-filters__summary">
+        <strong>{{ resultadosInicioTexto }}</strong>
+        <span *ngIf="hayFiltrosInicioActivos">con los filtros actuales</span>
+        <button
+          *ngIf="hayFiltrosInicioActivos"
+          type="button"
+          class="home-filters__reset"
+          (click)="limpiarFiltrosInicio()">
+          Limpiar filtros
+        </button>
+      </div>
+    </section>
+
+    <section class="section-band" *ngIf="!mostrarVistaCurada">
+      <div class="section-heading section-heading--wide">
+        <div>
+          <span class="section-kicker">Resultados del inicio</span>
+          <h2>{{ inicioFiltrosTitulo }}</h2>
+          <p>{{ inicioFiltrosDescripcion }}</p>
+        </div>
+      </div>
+
+      <div class="cards-grid" *ngIf="cargando; else filteredHomeContent">
+        <app-skeleton-card *ngFor="let i of [0,1,2,3]"></app-skeleton-card>
+      </div>
+
+      <ng-template #filteredHomeContent>
+        <div class="cards-grid" *ngIf="mascotasInicioVisibles.length > 0; else filteredHomeEmpty">
+          <app-card-mascota
+            *ngFor="let mascota of mascotasInicioVisibles; trackBy: trackById"
+            variant="home"
+            [mascota]="mascota">
+          </app-card-mascota>
+        </div>
+      </ng-template>
+
+      <ng-template #filteredHomeEmpty>
+        <div class="empty-state">
+          <h2>No encontramos casos con esos filtros</h2>
+          <p>Prueba cambiando la categoría, la especie o el texto de búsqueda para ampliar los resultados del inicio.</p>
+        </div>
+      </ng-template>
+    </section>
+
+    <section class="section-band" *ngIf="mostrarVistaCurada && (cargando || mascotasPerdidasRecientes.length > 0)">
       <div class="section-heading section-heading--wide">
         <div>
           <span class="section-kicker">Actualizaciones urgentes</span>
@@ -27,9 +111,7 @@
       </ng-template>
     </section>
 
-  
-
-    <section class="section-block" *ngIf="!cargando && mascotasEnAdopcion.length > 0">
+    <section class="section-block" *ngIf="mostrarVistaCurada && !cargando && mascotasEnAdopcion.length > 0">
       <div class="section-heading">
         <div>
           <span class="section-kicker">Nuevos comienzos</span>
@@ -48,13 +130,28 @@
       </div>
     </section>
 
+    <section class="section-block" *ngIf="mostrarVistaCurada && !cargando && mascotasEnCalle.length > 0">
+      <div class="section-heading">
+        <div>
+          <span class="section-kicker">Ayuda inmediata</span>
+          <h2>En calle</h2>
+          <p>Casos visibles de animales que hoy necesitan refugio, alimento o una red de apoyo.</p>
+        </div>
+        <a class="more-link" routerLink="/situacion-de-calle">Ver más</a>
+      </div>
 
+      <div class="cards-grid">
+        <app-card-mascota
+          *ngFor="let mascota of mascotasEnCalle; trackBy: trackById"
+          variant="home"
+          [mascota]="mascota">
+        </app-card-mascota>
+      </div>
+    </section>
 
-
-
-    <div class="empty-state" *ngIf="!cargando && !hasAnySectionData()">
+    <div class="empty-state" *ngIf="mostrarVistaCurada && !cargando && !hasAnySectionData()">
       <h2>Estamos preparando esta vitrina</h2>
-      <p>Cuando haya mascotas cargadas, aquí aparecerán primero los casos perdidos y luego los de adopción.</p>
+      <p>Cuando haya mascotas cargadas, aquí aparecerán primero los casos perdidos, de adopción y de situación de calle.</p>
     </div>
   </div>
 </section>

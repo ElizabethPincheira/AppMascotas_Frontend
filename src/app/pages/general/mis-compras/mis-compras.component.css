@@ -1,0 +1,294 @@
+.mis-compras-page {
+  display: grid;
+  gap: 2rem;
+  padding: 2rem 1rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.mis-compras-shell {
+  display: grid;
+  gap: 2rem;
+}
+
+.mis-compras-hero,
+.mis-compras-panel {
+  background: white;
+  border-radius: 1rem;
+  padding: 2rem;
+  border: 1px solid #eee;
+}
+
+.mis-compras-hero {
+  background: linear-gradient(135deg, #f5f5f5 0%, #fafafa 100%);
+}
+
+.mis-compras-hero__eyebrow,
+.section-heading__eyebrow,
+.compra-card__eyebrow {
+  display: inline-flex;
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.mis-compras-hero__eyebrow,
+.section-heading__eyebrow {
+  color: #666;
+}
+
+.mis-compras-hero h1,
+.section-heading h2 {
+  margin: 0.75rem 0 0;
+  color: #1a1a1a;
+}
+
+.mis-compras-hero h1 {
+  font-size: 2rem;
+}
+
+.mis-compras-hero p,
+.compra-card__header p,
+.empty-message p {
+  color: #666;
+  line-height: 1.6;
+}
+
+.back-button {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  margin-bottom: 1rem;
+  background: transparent;
+  border: 2px solid #ddd;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #666;
+  cursor: pointer;
+}
+
+.section-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.loading-message,
+.empty-message {
+  padding: 1rem;
+  border-radius: 0.75rem;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+}
+
+.empty-message {
+  display: grid;
+  gap: 1rem;
+}
+
+.compras-lista {
+  display: grid;
+  gap: 1rem;
+}
+
+.compra-card {
+  display: grid;
+  gap: 1.2rem;
+  padding: 1.35rem;
+  border-radius: 1rem;
+  border: 1px solid #e5e7eb;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.05);
+}
+
+.compra-card__header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: start;
+}
+
+.compra-card__eyebrow {
+  margin-bottom: 0.4rem;
+  color: #64748b;
+}
+
+.compra-card__header h3 {
+  margin: 0;
+  color: #111827;
+  font-size: 1.1rem;
+}
+
+.compra-card__header p {
+  margin: 0.45rem 0 0;
+}
+
+.pedido-status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 36px;
+  padding: 0.45rem 0.85rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
+.pedido-status--pendiente {
+  background: rgba(245, 158, 11, 0.16);
+  color: #b45309;
+}
+
+.pedido-status--confirmado {
+  background: rgba(59, 130, 246, 0.14);
+  color: #1d4ed8;
+}
+
+.pedido-status--en-camino {
+  background: rgba(14, 165, 233, 0.14);
+  color: #0369a1;
+}
+
+.pedido-status--entregado {
+  background: rgba(34, 197, 94, 0.14);
+  color: #15803d;
+}
+
+.pedido-status--cancelado {
+  background: rgba(239, 68, 68, 0.14);
+  color: #b91c1c;
+}
+
+.compra-card__body {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(260px, 0.8fr);
+  gap: 1rem;
+}
+
+.compra-card__items h4 {
+  margin: 0 0 0.75rem;
+  color: #1f2937;
+}
+
+.compra-card__items ul {
+  display: grid;
+  gap: 0.7rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.compra-card__items li,
+.compra-summary__row {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+}
+
+.compra-card__items li {
+  padding: 0.8rem 0.95rem;
+  border-radius: 0.85rem;
+  background: white;
+  border: 1px solid #e5e7eb;
+}
+
+.compra-card__summary {
+  display: grid;
+  gap: 1rem;
+  padding: 1rem;
+  border-radius: 1rem;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+}
+
+.compra-summary__block {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.compra-summary__title {
+  color: #0f172a;
+  font-weight: 700;
+}
+
+.compra-summary__details {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.compra-summary__detail {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  align-items: start;
+  padding: 0.75rem 0.85rem;
+  border-radius: 0.85rem;
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+}
+
+.compra-summary__detail span {
+  color: #475569;
+  font-weight: 600;
+}
+
+.compra-summary__detail strong {
+  color: #111827;
+  text-align: right;
+  word-break: break-word;
+}
+
+.compra-summary__detail--stacked {
+  display: grid;
+}
+
+.compra-summary__detail--stacked strong {
+  text-align: left;
+}
+
+.compra-summary__row span {
+  color: #475569;
+  font-weight: 600;
+}
+
+.compra-summary__row strong {
+  color: #111827;
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1.5rem;
+  background: #0066ff;
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  .mis-compras-page {
+    padding: 1rem;
+  }
+
+  .mis-compras-hero,
+  .mis-compras-panel {
+    padding: 1.5rem;
+  }
+
+  .compra-card__header {
+    flex-direction: column;
+  }
+
+  .compra-card__body {
+    grid-template-columns: 1fr;
+  }
+}

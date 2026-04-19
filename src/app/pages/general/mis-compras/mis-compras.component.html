@@ -1,0 +1,100 @@
+<section class="mis-compras-page">
+  <div class="mis-compras-shell">
+    <section class="mis-compras-hero">
+      <div>
+        <button class="back-button" type="button" (click)="volverAMiCuenta()">← Volver a mi cuenta</button>
+        <span class="mis-compras-hero__eyebrow">Compras</span>
+        <h1>Mis compras de {{ displayName }}</h1>
+        <p>Revisa el estado de cada pedido y los datos importantes para seguir tu compra.</p>
+      </div>
+    </section>
+
+    <section class="mis-compras-panel">
+      <div class="section-heading">
+        <div>
+          <span class="section-heading__eyebrow">Seguimiento</span>
+          <h2>Pedidos realizados</h2>
+        </div>
+      </div>
+
+      <div *ngIf="cargandoCompras" class="loading-message">
+        Cargando compras...
+      </div>
+
+      <div *ngIf="!cargandoCompras && !tieneCompras" class="empty-message">
+        <p>Aun no has realizado compras.</p>
+        <a routerLink="/tiendas" class="btn-primary">Explorar tiendas</a>
+      </div>
+
+      <div class="compras-lista" *ngIf="!cargandoCompras && tieneCompras">
+        <article class="compra-card" *ngFor="let pedido of compras">
+          <div class="compra-card__header">
+            <div>
+              <span class="compra-card__eyebrow">Pedido {{ getPedidoNumeroCorto(pedido) }}</span>
+              <h3>{{ getNombreTienda(pedido) }}</h3>
+              <p>{{ pedido.createdAt | date:'dd/MM/yyyy HH:mm' }}</p>
+            </div>
+
+            <span class="pedido-status" [ngClass]="'pedido-status--' + getEstadoPedidoClass(pedido.estado)">
+              {{ pedido.estado }}
+            </span>
+          </div>
+
+          <div class="compra-card__body">
+            <div class="compra-card__items">
+              <h4>Productos comprados</h4>
+              <ul>
+                <li *ngFor="let item of pedido.items">
+                  <span>{{ item.nombre }} x{{ item.cantidad }}</span>
+                  <strong>{{ formatPrice(item.precio * item.cantidad) }}</strong>
+                </li>
+              </ul>
+            </div>
+
+            <div class="compra-card__summary">
+              <div class="compra-summary__block">
+                <span class="compra-summary__title">Datos importantes</span>
+                <div class="compra-summary__details">
+                  <div class="compra-summary__detail compra-summary__detail--stacked">
+                    <span>Entrega</span>
+                    <strong>
+                      {{ pedido.comprador.direccionEntrega }},
+                      {{ pedido.comprador.comuna }},
+                      {{ pedido.comprador.provincia }},
+                      {{ pedido.comprador.region }}
+                    </strong>
+                  </div>
+                  <div class="compra-summary__detail">
+                    <span>Contacto</span>
+                    <strong>{{ pedido.comprador.nombreCompleto }} · {{ pedido.comprador.telefono }}</strong>
+                  </div>
+                  <div class="compra-summary__detail" *ngIf="pedido.comprador.email">
+                    <span>Correo</span>
+                    <strong>{{ pedido.comprador.email }}</strong>
+                  </div>
+                  <div class="compra-summary__detail" *ngIf="pedido.tienda?.telefonoTienda">
+                    <span>Telefono tienda</span>
+                    <strong>{{ pedido.tienda?.telefonoTienda }}</strong>
+                  </div>
+                  <div class="compra-summary__detail compra-summary__detail--stacked" *ngIf="getDireccionTienda(pedido)">
+                    <span>Direccion tienda</span>
+                    <strong>{{ getDireccionTienda(pedido) }}</strong>
+                  </div>
+                  <div class="compra-summary__detail compra-summary__detail--stacked" *ngIf="pedido.comprador.nota">
+                    <span>Nota del pedido</span>
+                    <strong>{{ pedido.comprador.nota }}</strong>
+                  </div>
+                </div>
+              </div>
+
+              <div class="compra-summary__row">
+                <span>Total</span>
+                <strong>{{ formatPrice(pedido.total) }}</strong>
+              </div>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+  </div>
+</section>
