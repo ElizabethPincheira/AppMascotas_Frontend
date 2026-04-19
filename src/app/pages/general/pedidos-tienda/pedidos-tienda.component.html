@@ -52,6 +52,37 @@
             </div>
 
             <div class="pedido-card__summary">
+              <div class="pedido-summary__block">
+                <span class="pedido-summary__title">Datos del comprador</span>
+                <div class="pedido-summary__details">
+                  <div class="pedido-summary__detail">
+                    <span>Nombre</span>
+                    <strong>{{ pedido.comprador.nombreCompleto }}</strong>
+                  </div>
+                  <div class="pedido-summary__detail" *ngIf="pedido.comprador.email">
+                    <span>Correo</span>
+                    <strong>{{ pedido.comprador.email }}</strong>
+                  </div>
+                  <div class="pedido-summary__detail">
+                    <span>Teléfono</span>
+                    <strong>{{ pedido.comprador.telefono }}</strong>
+                  </div>
+                  <div class="pedido-summary__detail pedido-summary__detail--stacked">
+                    <span>Dirección</span>
+                    <strong>
+                      {{ pedido.comprador.direccionEntrega }},
+                      {{ pedido.comprador.comuna }},
+                      {{ pedido.comprador.provincia }},
+                      {{ pedido.comprador.region }}
+                    </strong>
+                  </div>
+                  <div class="pedido-summary__detail pedido-summary__detail--stacked" *ngIf="pedido.comprador.nota">
+                    <span>Nota</span>
+                    <strong>{{ pedido.comprador.nota }}</strong>
+                  </div>
+                </div>
+              </div>
+
               <div class="pedido-summary__row">
                 <span>Total</span>
                 <strong>{{ formatPrice(pedido.total) }}</strong>

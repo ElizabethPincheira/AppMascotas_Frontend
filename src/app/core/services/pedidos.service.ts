@@ -19,6 +19,7 @@ export type EstadoPedido =
 
 export interface PedidoCompradorPayload {
   nombreCompleto: string;
+  email?: string;
   direccionEntrega: string;
   region: string;
   provincia: string;

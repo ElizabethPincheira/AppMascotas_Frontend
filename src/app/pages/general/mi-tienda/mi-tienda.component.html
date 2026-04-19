@@ -184,8 +184,8 @@
 
           <div class="info-field">
             <span class="info-field__label">Imagen de la tienda</span>
-            <div class="store-image-preview store-image-preview--compact" *ngIf="user?.imagenTienda; else noStoreImageInfo">
-              <img [src]="user?.imagenTienda" alt="Imagen actual de la tienda" />
+            <div class="store-image-preview store-image-preview--compact" *ngIf="getImagenTiendaInfo(); else noStoreImageInfo">
+              <img [src]="getImagenTiendaInfo()" alt="Imagen actual de la tienda" />
             </div>
             <ng-template #noStoreImageInfo>
               <p class="info-field__value">Sin imagen registrada.</p>
@@ -399,8 +399,8 @@
 
           <div *ngIf="!cargandoProductos && productos.length > 0" class="productos-grid">
             <article class="producto-card" *ngFor="let producto of productos" [class.producto-sin-stock]="producto.stock === 0">
-              <div class="producto-card__image" *ngIf="producto.imagen">
-                <img [src]="producto.imagen" alt="{{ producto.nombre }}" />
+              <div class="producto-card__image" *ngIf="getImagenProducto(producto)">
+                <img [src]="getImagenProducto(producto)" alt="{{ producto.nombre }}" />
               </div>
 
               <div class="producto-card__header">

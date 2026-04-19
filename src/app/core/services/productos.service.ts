@@ -40,14 +40,23 @@ export class ProductosService {
 
   async createProducto(productoData: CreateProductoDto): Promise<any> {
     const token = localStorage.getItem('token');
+    const payload: CreateProductoDto = {
+      ...productoData,
+      imagen: this.toBase64Payload(productoData.imagen),
+    };
 
-    const response = await axios.post(this.apiUrl + 'productos', productoData, {
+    const response = await axios.post(this.apiUrl + 'productos', payload, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
 
-    return response.data;
+    return {
+      ...response.data,
+      producto: response.data?.producto
+        ? this.normalizeProductoImage(response.data.producto)
+        : response.data?.producto,
+    };
   }
 
   async getProductosByTienda(): Promise<Producto[]> {
@@ -60,7 +69,9 @@ export class ProductosService {
         },
       });
 
-      return response.data.productos || [];
+      return (response.data.productos || []).map((producto: Producto) =>
+        this.normalizeProductoImage(producto),
+      );
     } catch (error) {
       console.error('Error al obtener productos:', error);
       return [];
@@ -69,14 +80,25 @@ export class ProductosService {
 
   async updateProducto(productoId: string, updateData: UpdateProductoDto): Promise<any> {
     const token = localStorage.getItem('token');
+    const payload: UpdateProductoDto = {
+      ...updateData,
+      ...(Object.prototype.hasOwnProperty.call(updateData, 'imagen')
+        ? { imagen: this.toBase64Payload(updateData.imagen) }
+        : {}),
+    };
 
-    const response = await axios.patch(this.apiUrl + `productos/${productoId}`, updateData, {
+    const response = await axios.patch(this.apiUrl + `productos/${productoId}`, payload, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
 
-    return response.data;
+    return {
+      ...response.data,
+      producto: response.data?.producto
+        ? this.normalizeProductoImage(response.data.producto)
+        : response.data?.producto,
+    };
   }
 
   async deleteProducto(productoId: string): Promise<any> {
@@ -134,5 +156,36 @@ export class ProductosService {
       reader.onerror = () => reject(new Error('Error al leer el archivo'));
       reader.readAsDataURL(file);
     });
+  }
+
+  private normalizeProductoImage(producto: Producto): Producto {
+    return {
+      ...producto,
+      imagen: this.toDisplayImage(producto.imagen),
+    };
+  }
+
+  private toBase64Payload(image?: string): string | undefined {
+    if (!image?.trim()) {
+      return image;
+    }
+
+    return image.replace(/^data:image\/[a-zA-Z0-9.+-]+;base64,/, '').trim();
+  }
+
+  private toDisplayImage(image?: string): string | undefined {
+    if (!image?.trim()) {
+      return image;
+    }
+
+    if (
+      image.startsWith('data:') ||
+      image.startsWith('http://') ||
+      image.startsWith('https://')
+    ) {
+      return image;
+    }
+
+    return `data:image/jpeg;base64,${image}`;
   }
 }

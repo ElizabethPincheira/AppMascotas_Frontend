@@ -138,7 +138,7 @@ export class MiTiendaComponent implements OnInit {
   }
 
   get imagenTiendaActual(): string | null {
-    return this.imagenTiendaPreview || this.user?.imagenTienda || null;
+    return this.imagenTiendaPreview || this.toDisplayImage(this.user?.imagenTienda) || null;
   }
 
   get categoriasTienda(): string[] {
@@ -245,6 +245,14 @@ export class MiTiendaComponent implements OnInit {
       stock: 0,
     };
     this.imagenPreview = null;
+  }
+
+  getImagenProducto(producto: Producto): string | null {
+    return this.toDisplayImage(producto.imagen) || null;
+  }
+
+  getImagenTiendaInfo(): string | null {
+    return this.toDisplayImage(this.user?.imagenTienda) || null;
   }
 
   async onImagenTiendaSeleccionada(event: Event): Promise<void> {
@@ -639,5 +647,21 @@ export class MiTiendaComponent implements OnInit {
         cierre: existing?.cierre ?? '',
       };
     });
+  }
+
+  private toDisplayImage(image?: string | null): string | null {
+    if (!image?.trim()) {
+      return null;
+    }
+
+    if (
+      image.startsWith('data:') ||
+      image.startsWith('http://') ||
+      image.startsWith('https://')
+    ) {
+      return image;
+    }
+
+    return `data:image/jpeg;base64,${image}`;
   }
 }

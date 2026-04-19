@@ -95,7 +95,7 @@ export class TiendasService {
   }
 
   toDeliveryStore(store: Store, products: BackendProducto[] = []): DeliveryStore {
-    const storeImage = store.imagenTienda?.trim() || this.fallbackImage;
+    const storeImage = this.toDisplayImage(store.imagenTienda?.trim()) || this.fallbackImage;
 
     return {
       id: store._id,
@@ -137,7 +137,7 @@ export class TiendasService {
         maximumFractionDigits: 0,
       }).format(product.precio),
       priceValue: product.precio,
-      image: product.imagen || this.fallbackImage,
+      image: this.toDisplayImage(product.imagen) || this.fallbackImage,
       description: product.descripcion,
       tags: [
         `Stock ${product.stock}`,
@@ -181,5 +181,21 @@ export class TiendasService {
       apertura: entry.apertura || '',
       cierre: entry.cierre || '',
     }));
+  }
+
+  private toDisplayImage(image?: string): string | undefined {
+    if (!image?.trim()) {
+      return image;
+    }
+
+    if (
+      image.startsWith('data:') ||
+      image.startsWith('http://') ||
+      image.startsWith('https://')
+    ) {
+      return image;
+    }
+
+    return `data:image/jpeg;base64,${image}`;
   }
 }
