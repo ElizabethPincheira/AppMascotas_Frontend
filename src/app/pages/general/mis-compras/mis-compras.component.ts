@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
-import { EstadoPedido, Pedido, PedidosService } from '../../../core/services/pedidos.service';
+import { EstadoPedido, Pedido, PedidoItemPayload, PedidosService } from '../../../core/services/pedidos.service';
 
 @Component({
   selector: 'app-mis-compras',
@@ -50,6 +50,24 @@ export class MisComprasComponent {
 
   formatPrice(value: number): string {
     return this.clpFormatter.format(value);
+  }
+
+  getImagenProducto(item: PedidoItemPayload): string | null {
+    const image = item.imagen?.trim();
+
+    if (!image) {
+      return null;
+    }
+
+    if (
+      image.startsWith('data:') ||
+      image.startsWith('http://') ||
+      image.startsWith('https://')
+    ) {
+      return image;
+    }
+
+    return `data:image/jpeg;base64,${image}`;
   }
 
   getNombreTienda(pedido: Pedido): string {

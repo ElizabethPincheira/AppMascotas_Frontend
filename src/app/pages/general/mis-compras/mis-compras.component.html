@@ -45,7 +45,26 @@
               <h4>Productos comprados</h4>
               <ul>
                 <li *ngFor="let item of pedido.items">
-                  <span>{{ item.nombre }} x{{ item.cantidad }}</span>
+                  <div class="compra-item__main">
+                    <div class="compra-item__image-wrap">
+                      <img
+                        *ngIf="getImagenProducto(item) as imagenProducto; else itemWithoutImage"
+                        class="compra-item__image"
+                        [src]="imagenProducto"
+                        [alt]="item.nombre" />
+
+                      <ng-template #itemWithoutImage>
+                        <div class="compra-item__image-placeholder">
+                          <span class="material-symbols-outlined">inventory_2</span>
+                        </div>
+                      </ng-template>
+                    </div>
+
+                    <div class="compra-item__meta">
+                      <span class="compra-item__name">{{ item.nombre }}</span>
+                      <small>{{ formatPrice(item.precio) }} c/u</small>
+                    </div>
+                  </div>
                   <strong>{{ formatPrice(item.precio * item.cantidad) }}</strong>
                 </li>
               </ul>

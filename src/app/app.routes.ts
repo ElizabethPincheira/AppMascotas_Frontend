@@ -155,6 +155,13 @@ export const routes: Routes = [
             .then(m => m.PedidosTiendaComponent)
       },
       {
+        path: 'mis-compras',
+        canActivate: [authGuard],
+        loadComponent: () =>
+          import('./pages/general/mis-compras/mis-compras.component')
+            .then(m => m.MisComprasComponent)
+      },
+      {
         path: 'admin',
         canActivate: [authGuard, adminGuard],
         loadComponent: () =>

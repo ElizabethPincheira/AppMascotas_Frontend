@@ -28,6 +28,15 @@ export interface PedidoCompradorPayload {
   nota?: string;
 }
 
+export interface PedidoTiendaInfo {
+  nombreTienda: string;
+  telefonoTienda?: string;
+  direccionTienda?: string;
+  comunaTienda?: string;
+  provinciaTienda?: string;
+  regionTienda?: string;
+}
+
 export interface CrearPedidoPayload {
   items: PedidoItemPayload[];
   comprador: PedidoCompradorPayload;
@@ -45,6 +54,7 @@ export interface Pedido {
   comprador: PedidoCompradorPayload;
   total: number;
   estado: EstadoPedido;
+  tienda?: PedidoTiendaInfo;
   createdAt: string;
   updatedAt: string;
 }
@@ -70,6 +80,14 @@ export class PedidosService {
 
   async getPedidosByTienda(tiendaId: string): Promise<Pedido[]> {
     const response = await axios.get(this.apiUrl + `pedidos/tienda/${tiendaId}`, {
+      headers: this.authHeaders,
+    });
+
+    return response.data?.pedidos ?? [];
+  }
+
+  async getMisCompras(): Promise<Pedido[]> {
+    const response = await axios.get(this.apiUrl + 'pedidos/mis-compras', {
       headers: this.authHeaders,
     });
 
