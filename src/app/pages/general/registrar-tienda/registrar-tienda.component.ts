@@ -187,7 +187,9 @@ export class RegistrarTiendaComponent {
       await Swal.fire({
         icon: 'success',
         title: 'Solicitud enviada',
-        text: response.message || 'Tu solicitud como tienda fue registrada.',
+        text:
+          response.message ||
+          'Tu solicitud como tienda fue registrada y quedara pendiente de aprobacion. Te avisaremos cuando sea aprobada.',
         confirmButtonText: 'Perfecto'
       });
 
