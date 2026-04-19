@@ -334,16 +334,39 @@
       </div>
 
       <div class="upload-panel">
-        <label class="upload-box">
+        <div class="upload-box">
           <span class="upload-box__title">Seleccionar imágenes</span>
           <span class="upload-box__text">
-            Sube hasta {{ maxImagenes }} fotos claras de tu mascota. El sistema las optimiza automáticamente antes de subirlas.
+            Sube hasta {{ maxImagenes }} fotos claras de tu mascota. Puedes tomar una foto al momento o elegir imágenes desde tu galería.
           </span>
           <span class="upload-box__hint">
             Recomendado: fotos de hasta 1600 px por lado largo. El objetivo es que cada imagen final quede liviana, normalmente entre 200 KB y 500 KB.
           </span>
-          <input type="file" accept="image/*" multiple (change)="onImagesSelected($event)">
-        </label>
+
+          <div class="upload-box__actions">
+            <button type="button" class="upload-box__button upload-box__button--primary" (click)="abrirCamara()">
+              Tomar foto
+            </button>
+            <button type="button" class="upload-box__button" (click)="abrirGaleria()">
+              Elegir de galería
+            </button>
+          </div>
+
+          <input
+            #cameraInput
+            type="file"
+            accept="image/*"
+            capture="environment"
+            (change)="onImagesSelected($event)"
+          >
+          <input
+            #galleryInput
+            type="file"
+            accept="image/*"
+            multiple
+            (change)="onImagesSelected($event)"
+          >
+        </div>
 
         <div class="upload-warning" *ngIf="mensajeErrorImagenes">
           {{ mensajeErrorImagenes }}

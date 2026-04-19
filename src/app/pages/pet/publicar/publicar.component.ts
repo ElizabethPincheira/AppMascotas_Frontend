@@ -27,6 +27,8 @@ export class PublicarComponent implements AfterViewInit {
 
   @ViewChild('googleMapContainer') googleMapContainer?: ElementRef<HTMLDivElement>;
   @ViewChild('publicarForm') publicarForm?: NgForm;
+  @ViewChild('cameraInput') cameraInput?: ElementRef<HTMLInputElement>;
+  @ViewChild('galleryInput') galleryInput?: ElementRef<HTMLInputElement>;
 
   mascotaId: string | null = null;
   modoEdicion = false;
@@ -435,6 +437,14 @@ export class PublicarComponent implements AfterViewInit {
     this.newImagePreviews = [...this.newImagePreviews, ...preparedImages.map((image) => image.preview)];
     this.imagePayloads = [...this.imagePayloads, ...preparedImages.map((image) => image.base64)];
     input.value = '';
+  }
+
+  abrirCamara(): void {
+    this.cameraInput?.nativeElement.click();
+  }
+
+  abrirGaleria(): void {
+    this.galleryInput?.nativeElement.click();
   }
 
   removeNewImage(index: number): void {
