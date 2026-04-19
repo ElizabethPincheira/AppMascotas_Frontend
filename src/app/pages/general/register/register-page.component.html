@@ -180,13 +180,46 @@
   <section class="register-page register-page--success">
     <div class="register-success-card">
       <span class="register-success-card__eyebrow">Verificacion pendiente</span>
-      <h1>Revisa tu correo</h1>
+      <h1>Ingresa tu codigo</h1>
       <p>
-        Enviamos un enlace de verificacion a <strong>{{ emailRegistrado }}</strong>. Cuando confirmes tu correo, podras iniciar sesion.
+        Enviamos un codigo de verificacion a <strong>{{ emailRegistrado }}</strong>. Escribelo aqui para activar tu cuenta y luego iniciar sesion.
       </p>
 
+      <div class="register-field register-field--success">
+        <label for="register-verification-code">Codigo de verificacion</label>
+        <input
+          id="register-verification-code"
+          type="text"
+          inputmode="numeric"
+          maxlength="6"
+          name="codigoVerificacion"
+          placeholder="123456"
+          [(ngModel)]="codigoVerificacion"
+          [disabled]="verificandoCodigo || reenviandoCodigo">
+      </div>
+
       <div class="register-success-card__actions">
-        <a routerLink="/login" class="register-button register-button--inline">Ir al login</a>
+        <button
+          type="button"
+          class="register-button register-button--inline"
+          (click)="confirmarCodigo()"
+          [disabled]="verificandoCodigo || reenviandoCodigo || !codigoNormalizado">
+          <span class="spinner-border spinner-border-sm" role="status" *ngIf="verificandoCodigo"></span>
+          <span>{{ verificandoCodigo ? 'Verificando...' : 'Verificar codigo' }}</span>
+        </button>
+        <button
+          type="button"
+          class="register-secondary-button"
+          (click)="reenviarCodigo()"
+          [disabled]="verificandoCodigo || reenviandoCodigo">
+          {{ reenviandoCodigo ? 'Reenviando...' : 'Reenviar codigo' }}
+        </button>
+        <a
+          [routerLink]="['/verificar-email']"
+          [queryParams]="{ email: emailRegistrado }"
+          class="register-secondary-button register-secondary-button--link">
+          Abrir pantalla de verificacion
+        </a>
         <button type="button" class="register-secondary-button" (click)="registroExitoso = false">
           Volver al formulario
         </button>

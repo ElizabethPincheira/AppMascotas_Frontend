@@ -75,6 +75,10 @@
   gap: 0.65rem;
 }
 
+.register-field--success {
+  margin-top: 1.5rem;
+}
+
 .register-field-grid {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
@@ -225,6 +229,13 @@
   border: 1px solid rgba(125, 140, 166, 0.24);
   background: #fff;
   color: #1f2937;
+}
+
+.register-secondary-button--link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
 }
 
 .register-secondary-button:hover {

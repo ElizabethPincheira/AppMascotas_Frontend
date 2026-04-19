@@ -9,7 +9,9 @@
               [class.verify-badge--success]="estado === 'exito'"
               [class.verify-badge--error]="estado === 'error'">
               {{
-                estado === 'cargando'
+                estado === 'ingreso'
+                  ? 'Codigo pendiente'
+                  : estado === 'cargando'
                   ? 'Verificando'
                   : estado === 'exito'
                     ? 'Cuenta verificada'
@@ -19,7 +21,9 @@
 
             <h1 class="h2 fw-bold mb-3">
               {{
-                estado === 'cargando'
+                estado === 'ingreso'
+                  ? 'Verifica tu correo'
+                  : estado === 'cargando'
                   ? 'Estamos verificando tu cuenta'
                   : estado === 'exito'
                     ? 'Tu correo ya fue confirmado'
@@ -29,11 +33,55 @@
 
             <p class="text-secondary mb-4">{{ mensaje }}</p>
 
-            <div class="d-flex flex-column flex-sm-row justify-content-center gap-3">
+            <form class="verify-form" *ngIf="estado === 'ingreso'" (ngSubmit)="confirmarCodigo()">
+              <div class="verify-field">
+                <label for="verify-email">Correo electronico</label>
+                <input
+                  id="verify-email"
+                  type="email"
+                  name="email"
+                  placeholder="nombre@correo.com"
+                  [(ngModel)]="email"
+                  [disabled]="procesando || reenviando"
+                  required>
+              </div>
+
+              <div class="verify-field">
+                <label for="verify-code">Codigo de verificacion</label>
+                <input
+                  id="verify-code"
+                  type="text"
+                  name="codigo"
+                  inputmode="numeric"
+                  maxlength="6"
+                  placeholder="123456"
+                  [(ngModel)]="codigo"
+                  [disabled]="procesando || reenviando"
+                  required>
+              </div>
+
+              <div class="verify-actions verify-actions--form">
+                <button type="submit" class="btn btn-success btn-lg px-4" [disabled]="procesando || !email.trim() || !codigoNormalizado">
+                  {{ procesando ? 'Verificando...' : 'Verificar codigo' }}
+                </button>
+                <button type="button" class="btn btn-outline-secondary btn-lg px-4" (click)="reenviarCodigo()" [disabled]="procesando || reenviando">
+                  {{ reenviando ? 'Reenviando...' : 'Reenviar codigo' }}
+                </button>
+              </div>
+            </form>
+
+            <div class="d-flex flex-column flex-sm-row justify-content-center gap-3 verify-actions" *ngIf="estado !== 'ingreso'">
               <a routerLink="/login" class="btn btn-success btn-lg px-4">Ir al login</a>
               <a routerLink="/recuperar-password" class="btn btn-outline-secondary btn-lg px-4" *ngIf="estado === 'error'">
                 Necesito ayuda
               </a>
+              <button
+                type="button"
+                class="btn btn-outline-secondary btn-lg px-4"
+                *ngIf="estado === 'error'"
+                (click)="estado = 'ingreso'; mensaje = 'Ingresa el correo y el codigo que te enviamos para verificar tu cuenta.'">
+                Ingresar codigo
+              </button>
             </div>
           </div>
         </div>

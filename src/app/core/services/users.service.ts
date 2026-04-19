@@ -55,6 +55,15 @@ export class UsersService {
     return response.data;
   }
 
+  async verifyEmailCode(email: string, code: string): Promise<any> {
+    const response = await axios.post(this.apiUrl + 'auth/verificar-email', {
+      email,
+      code,
+    });
+
+    return response.data;
+  }
+
   async resendVerificationEmail(email: string): Promise<any> {
     const response = await axios.post(this.apiUrl + 'auth/reenviar-verificacion', {
       email,

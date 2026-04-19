@@ -30,6 +30,9 @@ export class RegisterPageComponent {
   respuesta: any;
   registroExitoso = false;
   emailRegistrado = '';
+  codigoVerificacion = '';
+  verificandoCodigo = false;
+  reenviandoCodigo = false;
 
   regionSeleccionada: string = '';
   provinciaSeleccionada: string = '';
@@ -74,9 +77,71 @@ export class RegisterPageComponent {
 
       console.log(this.respuesta, 'respuesta del servidor');
       this.emailRegistrado = this.email.trim();
+      this.codigoVerificacion = '';
       this.registroExitoso = true;
     } finally {
       this.enviandoFormulario = false;
+    }
+  }
+
+  async confirmarCodigo(): Promise<void> {
+    if (!this.emailRegistrado || !this.codigoNormalizado) {
+      return;
+    }
+
+    this.verificandoCodigo = true;
+
+    try {
+      const response = await this.usersService.verifyEmailCode(
+        this.emailRegistrado,
+        this.codigoNormalizado,
+      );
+
+      await Swal.fire({
+        icon: 'success',
+        title: 'Correo verificado',
+        text: response?.message || 'Tu cuenta ya quedó verificada.',
+        confirmButtonText: 'Ir al login',
+      });
+
+      await this.router.navigate(['/login']);
+    } catch (error: any) {
+      await Swal.fire({
+        icon: 'error',
+        title: 'Codigo invalido',
+        text: error?.response?.data?.message || 'No pudimos verificar tu cuenta con ese codigo.',
+        confirmButtonText: 'Intentar nuevamente',
+      });
+    } finally {
+      this.verificandoCodigo = false;
+    }
+  }
+
+  async reenviarCodigo(): Promise<void> {
+    if (!this.emailRegistrado) {
+      return;
+    }
+
+    this.reenviandoCodigo = true;
+
+    try {
+      const response = await this.usersService.resendVerificationEmail(this.emailRegistrado);
+
+      await Swal.fire({
+        icon: 'success',
+        title: 'Codigo reenviado',
+        text: response?.message || 'Si tu cuenta sigue pendiente, enviaremos un nuevo codigo.',
+        confirmButtonText: 'Continuar',
+      });
+    } catch (error: any) {
+      await Swal.fire({
+        icon: 'error',
+        title: 'No se pudo reenviar',
+        text: error?.response?.data?.message || 'Ocurrió un problema al reenviar el codigo.',
+        confirmButtonText: 'Entendido',
+      });
+    } finally {
+      this.reenviandoCodigo = false;
     }
   }
 
@@ -137,6 +202,10 @@ export class RegisterPageComponent {
 
   get contraseniasCoinciden(): boolean {
     return this.password === this.confirmPassword;
+  }
+
+  get codigoNormalizado(): string {
+    return this.codigoVerificacion.replace(/\s+/g, '').trim();
   }
 
   private async cargarRegiones() {

@@ -10,13 +10,21 @@
         <p>Confirma tu correo para activar todas las funciones de Circulo Animal.</p>
       </div>
 
-      <button
-        type="button"
-        class="verification-banner__button"
-        (click)="reenviarVerificacion()"
-        [disabled]="reenviandoVerificacion">
-        {{ reenviandoVerificacion ? 'Reenviando...' : 'Reenviar email de verificación' }}
-      </button>
+      <div class="verification-banner__actions">
+        <a
+          class="verification-banner__button verification-banner__button--ghost"
+          [routerLink]="['/verificar-email']"
+          [queryParams]="{ email: user?.email }">
+          Ingresar codigo
+        </a>
+        <button
+          type="button"
+          class="verification-banner__button"
+          (click)="reenviarVerificacion()"
+          [disabled]="reenviandoVerificacion">
+          {{ reenviandoVerificacion ? 'Reenviando...' : 'Reenviar codigo' }}
+        </button>
+      </div>
     </div>
   </section>
 
