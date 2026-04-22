@@ -107,6 +107,10 @@
   background: linear-gradient(180deg, rgba(59, 130, 246, 0.12) 0%, rgba(255, 255, 255, 1) 100%);
 }
 
+.summary-card--flow {
+  background: linear-gradient(180deg, rgba(14, 165, 233, 0.12) 0%, rgba(255, 255, 255, 1) 100%);
+}
+
 .section-heading {
   margin-bottom: 1.5rem;
 }
@@ -144,6 +148,39 @@
   background: rgba(239, 68, 68, 0.12);
   border-color: rgba(239, 68, 68, 0.22);
   color: #991b1b;
+}
+
+.flow-payment-box {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding: 1.1rem 1.2rem;
+  border-radius: 1rem;
+  border: 1px solid #dbe4f0;
+  background: linear-gradient(180deg, #f9fbff 0%, #ffffff 100%);
+}
+
+.flow-payment-box__eyebrow {
+  display: inline-flex;
+  margin-bottom: 0.45rem;
+  color: #2563eb;
+  font-size: 0.8rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.flow-payment-box h3 {
+  margin: 0;
+  color: #111827;
+}
+
+.flow-payment-box p {
+  margin: 0.45rem 0 0;
+  color: #64748b;
+  line-height: 1.6;
 }
 
 .empty-message {
@@ -273,6 +310,11 @@
 
   .cobros-summary-grid {
     grid-template-columns: 1fr;
+  }
+
+  .flow-payment-box {
+    flex-direction: column;
+    align-items: stretch;
   }
 
   .cobro-card__header {

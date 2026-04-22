@@ -30,6 +30,16 @@
         <strong>{{ formatPrice(resumen.totalGenerado) }}</strong>
         <small>{{ resumen.totalPedidosCanceladosSinCobro }} pedido(s) cancelados no generan deuda pendiente.</small>
       </article>
+
+      <article class="summary-card summary-card--flow" *ngIf="resumen.totalAdeudado > 0">
+        <span>Total a pagar con Flow</span>
+        <strong>{{ formatPrice(resumen.flowTotalAPagar || resumen.totalAdeudado) }}</strong>
+        <small>
+          Base {{ formatPrice(resumen.totalAdeudado) }} + comisión Flow
+          {{ formatPrice(resumen.flowComisionEstimada || 0) }}
+          ({{ resumen.flowCommissionPercent || 0 }}% + IVA).
+        </small>
+      </article>
     </section>
 
     <section class="cobros-panel">
@@ -42,6 +52,24 @@
 
       <div *ngIf="flowStatus" class="flow-message" [ngClass]="flowMessageClass">
         {{ flowMessage }}
+      </div>
+
+      <div class="flow-payment-box" *ngIf="!cargandoCobros && resumen.totalAdeudado > 0">
+        <div>
+          <span class="flow-payment-box__eyebrow">Pago consolidado</span>
+          <h3>Regulariza todos tus pedidos pendientes en una sola transacción</h3>
+          <p>
+            Flow cobrará una única operación por el total adeudado más su comisión estimada,
+            para que el sitio reciba el neto completo.
+          </p>
+        </div>
+        <button
+          type="button"
+          class="btn-primary"
+          [disabled]="!puedePagarConFlow"
+          (click)="pagarConFlow()">
+          {{ procesandoPagoFlow ? 'Conectando con Flow...' : 'Pagar en linea' }}
+        </button>
       </div>
 
       <div *ngIf="cargandoCobros" class="loading-message">
@@ -89,16 +117,6 @@
 
             <div class="cobro-card__note" *ngIf="pedido.estado === 'cancelado' && pedido.estadoCobroSitio !== 'pagado'">
               Este pedido fue cancelado, por lo que no suma deuda pendiente mientras siga sin cobrarse.
-            </div>
-
-            <div class="cobro-card__actions" *ngIf="puedePagarConFlow(pedido)">
-              <button
-                type="button"
-                class="btn-primary"
-                [disabled]="procesandoPagoPedidoId === pedido._id"
-                (click)="pagarConFlow(pedido)">
-                {{ procesandoPagoPedidoId === pedido._id ? 'Conectando con Flow...' : 'Pagar con Flow' }}
-              </button>
             </div>
           </div>
         </article>

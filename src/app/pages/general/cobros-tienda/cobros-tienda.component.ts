@@ -24,9 +24,10 @@ export class CobrosTiendaComponent {
 
   user = this.authService.getUser();
   cargandoCobros = false;
-  procesandoPagoPedidoId: string | null = null;
+  procesandoPagoFlow = false;
   pedidos: Pedido[] = [];
   flowStatus: 'paid' | 'pending' | 'failed' | null = null;
+  flowPedidoId: string | null = null;
   resumen: ResumenCobrosTienda = {
     cargoPorPedido: 1000,
     totalPagado: 0,
@@ -39,6 +40,7 @@ export class CobrosTiendaComponent {
 
   async ngOnInit(): Promise<void> {
     this.flowStatus = this.readFlowStatusParam();
+    this.flowPedidoId = this.route.snapshot.queryParamMap.get('pedidoId');
     await this.cargarCobros();
   }
 
@@ -58,6 +60,10 @@ export class CobrosTiendaComponent {
 
   get pedidosPagados(): Pedido[] {
     return this.pedidos.filter((pedido) => pedido.estadoCobroSitio === 'pagado');
+  }
+
+  get puedePagarConFlow(): boolean {
+    return this.resumen.totalAdeudado > 0 && !this.procesandoPagoFlow;
   }
 
   formatPrice(value: number): string {
@@ -98,23 +104,19 @@ export class CobrosTiendaComponent {
     }
   }
 
-  puedePagarConFlow(pedido: Pedido): boolean {
-    return pedido.estadoCobroSitio !== 'pagado' && pedido.estado !== 'cancelado';
-  }
-
   volverAMiTienda(): void {
     this.router.navigate(['/mi-tienda']);
   }
 
-  async pagarConFlow(pedido: Pedido): Promise<void> {
-    if (!this.puedePagarConFlow(pedido) || this.procesandoPagoPedidoId) {
+  async pagarConFlow(): Promise<void> {
+    if (!this.puedePagarConFlow) {
       return;
     }
 
-    this.procesandoPagoPedidoId = pedido._id;
+    this.procesandoPagoFlow = true;
 
     try {
-      const response = await this.pedidosService.createFlowCobroCheckout(pedido._id);
+      const response = await this.pedidosService.createFlowCobroCheckout();
 
       if (!response?.checkoutUrl) {
         throw new Error('Flow no devolvió una URL de pago.');
@@ -123,7 +125,7 @@ export class CobrosTiendaComponent {
       window.location.href = response.checkoutUrl;
     } catch (error) {
       console.error('Error al iniciar pago con Flow:', error);
-      this.procesandoPagoPedidoId = null;
+      this.procesandoPagoFlow = false;
     }
   }
 
@@ -134,6 +136,7 @@ export class CobrosTiendaComponent {
       const response = await this.pedidosService.getMisCobrosTienda();
       this.pedidos = response?.pedidos ?? [];
       this.resumen = response?.resumen ?? this.resumen;
+      this.reconcileFlowReturnState();
     } catch (error) {
       console.error('Error al cargar cobros de tienda:', error);
       this.pedidos = [];
@@ -150,5 +153,26 @@ export class CobrosTiendaComponent {
     }
 
     return null;
+  }
+
+  private reconcileFlowReturnState(): void {
+    if (!this.flowPedidoId) {
+      return;
+    }
+
+    const pedido = this.pedidos.find((item) => item._id === this.flowPedidoId);
+
+    if (!pedido) {
+      return;
+    }
+
+    if (pedido.estadoCobroSitio === 'pagado') {
+      this.flowStatus = 'paid';
+      return;
+    }
+
+    if (this.flowStatus === 'failed') {
+      this.flowStatus = 'pending';
+    }
   }
 }

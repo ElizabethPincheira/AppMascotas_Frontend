@@ -72,6 +72,11 @@ export interface ResumenCobrosTienda {
   totalPedidosPagados: number;
   totalPedidosAdeudados: number;
   totalPedidosCanceladosSinCobro: number;
+  flowCommissionPercent?: number;
+  flowCommissionVatPercent?: number;
+  flowCommissionEffectivePercent?: number;
+  flowComisionEstimada?: number;
+  flowTotalAPagar?: number;
 }
 
 export interface CobrosMiTiendaResponse {
@@ -183,18 +188,28 @@ export class PedidosService {
     return response.data?.pedido;
   }
 
-  async createFlowCobroCheckout(
-    pedidoId: string,
-  ): Promise<{ checkoutUrl: string; pedido?: Pedido }> {
+  async createFlowCobroCheckout(): Promise<{
+    checkoutUrl: string;
+    resumenPago?: {
+      subtotalAdeudado: number;
+      porcentajeBase: number;
+      porcentajeIva: number;
+      porcentajeEfectivo: number;
+      comisionFlow: number;
+      totalConComision: number;
+    };
+    pedidos?: Pedido[];
+  }> {
     const response = await axios.post(
-      this.apiUrl + `pedidos/${pedidoId}/cobro-sitio/flow`,
+      this.apiUrl + 'pedidos/mi-tienda/cobros/flow',
       {},
       { headers: this.authHeaders },
     );
 
     return {
       checkoutUrl: response.data?.checkoutUrl,
-      pedido: response.data?.pedido,
+      resumenPago: response.data?.resumenPago,
+      pedidos: response.data?.pedidos ?? [],
     };
   }
 }
