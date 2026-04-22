@@ -111,6 +111,25 @@
       </ng-template>
     </section>
 
+    <section class="section-block" *ngIf="mostrarVistaCurada && !cargando && mascotasRecuperadas.length > 0">
+      <div class="section-heading">
+        <div>
+          <span class="section-kicker">Buenas noticias</span>
+          <h2>Recuperadas</h2>
+          <p>Casos que ya tuvieron un final feliz y siguen visibles sin datos personales.</p>
+        </div>
+        <a class="more-link" routerLink="/perdidos">Ver más</a>
+      </div>
+
+      <div class="cards-grid">
+        <app-card-mascota
+          *ngFor="let mascota of mascotasRecuperadas; trackBy: trackById"
+          variant="home"
+          [mascota]="mascota">
+        </app-card-mascota>
+      </div>
+    </section>
+
     <section class="section-block" *ngIf="mostrarVistaCurada && !cargando && mascotasEnAdopcion.length > 0">
       <div class="section-heading">
         <div>

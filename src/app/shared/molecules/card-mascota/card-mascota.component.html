@@ -95,6 +95,7 @@
     <div class="card-body mascota-card__body mascota-card__body--home">
       <div class="mascota-card__info-grid mascota-card__info-grid--home">
         <a
+          *ngIf="!esMascotaRecuperada(); else recoveredHomePrivacyTemplate"
           class="mascota-card__location-panel"
           [href]="getMapUrl() || null"
           target="_blank"
@@ -138,6 +139,16 @@
             Escribeme por WhatsApp
           </a>
         </div>
+
+        <ng-template #recoveredHomePrivacyTemplate>
+          <div class="mascota-card__privacy-panel mascota-card__privacy-panel--home">
+            <span class="info-item__label info-item__label--home">Caso recuperado</span>
+            <strong class="mascota-card__privacy-title">Volvió a casa</strong>
+            <p class="mascota-card__privacy-text">
+              Gracias a la ayuda de la comunidad, esta historia tuvo un final feliz.
+            </p>
+          </div>
+        </ng-template>
       </div>
     </div>
   </ng-container>
@@ -219,7 +230,7 @@
     <div class="card-body mascota-card__body">
       <a
         class="mascota-card__distance-highlight"
-        *ngIf="getDistanceText() as distance"
+        *ngIf="!esMascotaRecuperada() && getDistanceText() as distance"
         [href]="getMapUrl()"
         target="_blank"
         rel="noopener noreferrer"
@@ -240,11 +251,11 @@
 
       <div class="mascota-card__info-grid">
         <div class="info-item">
-          <span class="info-item__label">Última ubicación</span>
+          <span class="info-item__label">{{ esMascotaRecuperada() ? 'Privacidad' : 'Última ubicación' }}</span>
           <span class="info-item__value">{{ getPrimaryLocation() }}</span>
         </div>
 
-        <div class="info-item" *ngIf="getWhatsappUrl() as whatsappUrl">
+        <div class="info-item" *ngIf="getWhatsappUrl() as whatsappUrl; else recoveredContactTemplate">
           <span class="info-item__label">Contacto</span>
           <a
             class="contact-action contact-action--link"
@@ -255,6 +266,13 @@
             Contactar por WhatsApp
           </a>
         </div>
+
+        <ng-template #recoveredContactTemplate>
+          <div class="info-item" *ngIf="esMascotaRecuperada()">
+            <span class="info-item__label">Caso recuperado</span>
+            <span class="info-item__value">Ocultamos WhatsApp y dirección exacta para resguardar la privacidad.</span>
+          </div>
+        </ng-template>
 
         <div class="share-buttons-row">
           <span class="info-item__label">Compartir</span>

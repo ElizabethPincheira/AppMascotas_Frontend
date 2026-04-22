@@ -29,6 +29,8 @@ export class PetsPageComponent {
   filtroEspecie: 'Todas' | 'Perro' | 'Gato' | 'Otro' = 'Todas';
   filtroTexto = '';
   readonly estadosPerdidos = ['Robado', 'Extraviado', 'Encontrado', 'Recuperado'];
+  readonly estadosPerdidosActivos = ['Robado', 'Extraviado', 'Encontrado'];
+  readonly estadosRecuperados = ['Recuperado'];
   readonly estadosAdopcion = ['Busca hogar'];
   readonly estadosCalle = ['Situacion de calle'];
   readonly especiesFiltro: Array<'Todas' | 'Perro' | 'Gato' | 'Otro'> = ['Todas', 'Perro', 'Gato', 'Otro'];
@@ -70,7 +72,13 @@ export class PetsPageComponent {
 
   get mascotasPerdidasRecientes(): Mascota[] {
     return this.mascotas
-      .filter((mascota) => this.estadosPerdidos.includes(mascota.estado))
+      .filter((mascota) => this.estadosPerdidosActivos.includes(mascota.estado))
+      .slice(0, 4);
+  }
+
+  get mascotasRecuperadas(): Mascota[] {
+    return this.mascotas
+      .filter((mascota) => this.estadosRecuperados.includes(mascota.estado))
       .slice(0, 4);
   }
 
@@ -190,7 +198,12 @@ export class PetsPageComponent {
   }
 
   hasAnySectionData(): boolean {
-    return this.mascotasPerdidasRecientes.length > 0 || this.mascotasEnAdopcion.length > 0 || this.mascotasEnCalle.length > 0;
+    return (
+      this.mascotasPerdidasRecientes.length > 0 ||
+      this.mascotasRecuperadas.length > 0 ||
+      this.mascotasEnAdopcion.length > 0 ||
+      this.mascotasEnCalle.length > 0
+    );
   }
 
   get totalMascotasVisibles(): number {

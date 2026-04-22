@@ -69,11 +69,19 @@ export class DetalleMascotaComponent {
   }
 
   get contactoEmail(): string | null {
+    if (this.esMascotaRecuperada()) {
+      return null;
+    }
+
     const contacto = this.getPreferredContact();
     return contacto && this.isEmail(contacto) ? contacto : null;
   }
 
   get whatsappUrl(): string | null {
+    if (this.esMascotaRecuperada()) {
+      return null;
+    }
+
     const contacto = this.mascota?.contacto?.trim();
 
     if (!contacto || this.isEmail(contacto)) {
@@ -109,6 +117,14 @@ export class DetalleMascotaComponent {
 
     const ownerId = this.obtenerUsuarioId(this.mascota.usuarioId);
     return !!this.usuarioActualId && !!ownerId && this.usuarioActualId === ownerId;
+  }
+
+  esMascotaRecuperada(): boolean {
+    return this.mascota?.estado === 'Recuperado';
+  }
+
+  getRecoveredPrivacyMessage(): string {
+    return 'Este caso ya fue resuelto y ocultamos los datos personales para cuidar a la familia y a la mascota.';
   }
 
   async cargarMascota(): Promise<void> {
@@ -224,6 +240,10 @@ export class DetalleMascotaComponent {
   }
 
   getPrimaryLocation(): string {
+    if (this.esMascotaRecuperada()) {
+      return 'Ubicación protegida por privacidad';
+    }
+
     const comuna = this.mascota?.comunaPerdida?.trim();
     const nearbyReference = this.getNearbyReference();
     const locationWithReference =
@@ -245,7 +265,7 @@ export class DetalleMascotaComponent {
   }
 
   getUbicacionCompleta(): string[] {
-    if (!this.mascota) {
+    if (!this.mascota || this.esMascotaRecuperada()) {
       return [];
     }
 

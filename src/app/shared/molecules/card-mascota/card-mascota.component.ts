@@ -119,6 +119,10 @@ export class CardMascotaComponent {
   }
 
   getOwnerLocation(): string | null {
+    if (this.esMascotaRecuperada()) {
+      return null;
+    }
+
     if (typeof this.mascota.usuarioId !== 'object' || !this.mascota.usuarioId) {
       return null;
     }
@@ -127,6 +131,10 @@ export class CardMascotaComponent {
   }
 
   getOwnerEmail(): string | null {
+    if (this.esMascotaRecuperada()) {
+      return null;
+    }
+
     if (typeof this.mascota.usuarioId !== 'object' || !this.mascota.usuarioId?.email) {
       return null;
     }
@@ -135,11 +143,19 @@ export class CardMascotaComponent {
   }
 
   getEmailContact(): string | null {
+    if (this.esMascotaRecuperada()) {
+      return null;
+    }
+
     const contact = this.getPreferredContact();
     return contact && this.isEmail(contact) ? contact : null;
   }
 
   getWhatsappUrl(): string | null {
+    if (this.esMascotaRecuperada()) {
+      return null;
+    }
+
     const contact = this.mascota.contacto?.trim();
 
     if (!contact || this.isEmail(contact)) {
@@ -151,6 +167,10 @@ export class CardMascotaComponent {
   }
 
   getPrimaryLocation(): string {
+    if (this.esMascotaRecuperada()) {
+      return 'Ubicación protegida por privacidad';
+    }
+
     const comuna = this.mascota.comunaPerdida?.trim();
     const nearbyReference = this.getNearbyReference();
     const locationWithReference =
@@ -269,6 +289,10 @@ export class CardMascotaComponent {
   }
 
   getShareLocation(): string {
+    if (this.esMascotaRecuperada()) {
+      return 'Ubicación protegida por privacidad';
+    }
+
     return this.mascota.ubicacionPerdida ?? this.getCaseLocation() ?? this.mascota.ubicacion ?? 'Chile';
   }
 
@@ -296,6 +320,10 @@ export class CardMascotaComponent {
 
   esCasoResuelto(): boolean {
     return ['Recuperado', 'Adoptado', 'Emparejado'].includes(this.mascota.estado);
+  }
+
+  esMascotaRecuperada(): boolean {
+    return this.mascota.estado === 'Recuperado';
   }
 
   toggleShareMenu(): void {
@@ -351,6 +379,10 @@ export class CardMascotaComponent {
   }
 
   getDistanceText(): string | null {
+    if (this.esMascotaRecuperada()) {
+      return null;
+    }
+
     if (!this.isLostCase() || typeof this.mascota.distanciaKm !== 'number' || !Number.isFinite(this.mascota.distanciaKm)) {
       return null;
     }
@@ -363,6 +395,10 @@ export class CardMascotaComponent {
   }
 
   getMapUrl(): string | null {
+    if (this.esMascotaRecuperada()) {
+      return null;
+    }
+
     if (typeof this.mascota.latitud === 'number' && typeof this.mascota.longitud === 'number') {
       return `https://www.google.com/maps/search/?api=1&query=${this.mascota.latitud},${this.mascota.longitud}`;
     }

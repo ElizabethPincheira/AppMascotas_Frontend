@@ -13,9 +13,6 @@
           <div class="pet-thumbnail" *ngFor="let imagen of imageList.slice(1, 4); let index = index">
             <img [src]="getImageSrc(imagen)" [alt]="mascota.nombre + ' foto ' + (index + 2)" class="pet-thumb-image">
           </div>
-          <div class="pet-thumbnail-placeholder" *ngIf="imageList.length < 4">
-            <span class="material-symbols-outlined">add_a_photo</span>
-          </div>
         </div>
       </div>
 
@@ -37,6 +34,18 @@
           </div>
         </section>
 
+        <section class="pet-recovered-banner" *ngIf="esMascotaRecuperada()">
+          <div class="pet-recovered-icon">
+            <span class="material-symbols-outlined">favorite</span>
+          </div>
+          <div>
+            <p class="pet-recovered-label">Caso recuperado</p>
+            <h3 class="pet-recovered-title">Esta mascota ya volvió a estar a salvo.</h3>
+            <p class="pet-recovered-text">{{ getEmotionalMessage() }}</p>
+            <p class="pet-recovered-note">{{ getRecoveredPrivacyMessage() }}</p>
+          </div>
+        </section>
+
         <!-- Description -->
         <section class="pet-description-section">
           <h3 class="section-label">Descripción</h3>
@@ -49,10 +58,10 @@
         <div class="pet-metadata">
           <div class="metadata-item">
             <div class="metadata-icon">
-              <span class="material-symbols-outlined">location_on</span>
+              <span class="material-symbols-outlined">{{ esMascotaRecuperada() ? 'shield_locked' : 'location_on' }}</span>
             </div>
             <div>
-              <h4 class="metadata-label">Última ubicación</h4>
+              <h4 class="metadata-label">{{ esMascotaRecuperada() ? 'Privacidad protegida' : 'Última ubicación' }}</h4>
               <p class="metadata-value">{{ getPrimaryLocation() || 'Ubicación no informada' }}</p>
             </div>
           </div>
@@ -72,8 +81,10 @@
               <span class="material-symbols-outlined">contact_support</span>
             </div>
             <div>
-              <h4 class="metadata-label">Contacto</h4>
-              <p class="metadata-value">{{ whatsappUrl ? 'WhatsApp disponible' : contactoEmail ? 'Correo protegido' : 'Sin contacto' }}</p>
+              <h4 class="metadata-label">{{ esMascotaRecuperada() ? 'Estado del caso' : 'Contacto' }}</h4>
+              <p class="metadata-value">
+                {{ esMascotaRecuperada() ? 'Caso cerrado con resguardo de datos personales' : (whatsappUrl ? 'WhatsApp disponible' : contactoEmail ? 'Correo protegido' : 'Sin contacto') }}
+              </p>
             </div>
           </div>
         </div>
@@ -89,6 +100,11 @@
             <span class="material-symbols-outlined">chat</span>
             Contactar por WhatsApp
           </a>
+
+          <div class="pet-privacy-card" *ngIf="esMascotaRecuperada()">
+            <span class="material-symbols-outlined">visibility_off</span>
+            <p>{{ getRecoveredPrivacyMessage() }}</p>
+          </div>
 
           <div class="pet-actions-secondary">
             <button class="pet-action-secondary">
