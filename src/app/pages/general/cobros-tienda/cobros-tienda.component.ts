@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { Pedido, PedidosService, ResumenCobrosTienda } from '../../../core/services/pedidos.service';
 
@@ -15,6 +15,7 @@ export class CobrosTiendaComponent {
   private readonly authService = inject(AuthService);
   private readonly pedidosService = inject(PedidosService);
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
   private readonly clpFormatter = new Intl.NumberFormat('es-CL', {
     style: 'currency',
     currency: 'CLP',
@@ -23,7 +24,9 @@ export class CobrosTiendaComponent {
 
   user = this.authService.getUser();
   cargandoCobros = false;
+  procesandoPagoPedidoId: string | null = null;
   pedidos: Pedido[] = [];
+  flowStatus: 'paid' | 'pending' | 'failed' | null = null;
   resumen: ResumenCobrosTienda = {
     cargoPorPedido: 1000,
     totalPagado: 0,
@@ -35,6 +38,7 @@ export class CobrosTiendaComponent {
   };
 
   async ngOnInit(): Promise<void> {
+    this.flowStatus = this.readFlowStatusParam();
     await this.cargarCobros();
   }
 
@@ -68,8 +72,59 @@ export class CobrosTiendaComponent {
     return pedido.estadoCobroSitio === 'pagado' ? 'is-paid' : 'is-pending';
   }
 
+  get flowMessage(): string {
+    switch (this.flowStatus) {
+      case 'paid':
+        return 'Flow confirmó el pago y el cobro ya quedó regularizado.';
+      case 'pending':
+        return 'El pago quedó pendiente en Flow. Te avisaremos cuando se confirme.';
+      case 'failed':
+        return 'No se pudo confirmar el pago en Flow. Si el cobro persiste, vuelve a intentarlo.';
+      default:
+        return '';
+    }
+  }
+
+  get flowMessageClass(): string {
+    switch (this.flowStatus) {
+      case 'paid':
+        return 'is-success';
+      case 'pending':
+        return 'is-pending';
+      case 'failed':
+        return 'is-error';
+      default:
+        return '';
+    }
+  }
+
+  puedePagarConFlow(pedido: Pedido): boolean {
+    return pedido.estadoCobroSitio !== 'pagado' && pedido.estado !== 'cancelado';
+  }
+
   volverAMiTienda(): void {
     this.router.navigate(['/mi-tienda']);
+  }
+
+  async pagarConFlow(pedido: Pedido): Promise<void> {
+    if (!this.puedePagarConFlow(pedido) || this.procesandoPagoPedidoId) {
+      return;
+    }
+
+    this.procesandoPagoPedidoId = pedido._id;
+
+    try {
+      const response = await this.pedidosService.createFlowCobroCheckout(pedido._id);
+
+      if (!response?.checkoutUrl) {
+        throw new Error('Flow no devolvió una URL de pago.');
+      }
+
+      window.location.href = response.checkoutUrl;
+    } catch (error) {
+      console.error('Error al iniciar pago con Flow:', error);
+      this.procesandoPagoPedidoId = null;
+    }
   }
 
   private async cargarCobros(): Promise<void> {
@@ -85,5 +140,15 @@ export class CobrosTiendaComponent {
     } finally {
       this.cargandoCobros = false;
     }
+  }
+
+  private readFlowStatusParam(): 'paid' | 'pending' | 'failed' | null {
+    const value = this.route.snapshot.queryParamMap.get('flowStatus');
+
+    if (value === 'paid' || value === 'pending' || value === 'failed') {
+      return value;
+    }
+
+    return null;
   }
 }

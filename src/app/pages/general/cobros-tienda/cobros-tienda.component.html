@@ -40,6 +40,10 @@
         </div>
       </div>
 
+      <div *ngIf="flowStatus" class="flow-message" [ngClass]="flowMessageClass">
+        {{ flowMessage }}
+      </div>
+
       <div *ngIf="cargandoCobros" class="loading-message">
         Cargando cobros de tu tienda...
       </div>
@@ -85,6 +89,16 @@
 
             <div class="cobro-card__note" *ngIf="pedido.estado === 'cancelado' && pedido.estadoCobroSitio !== 'pagado'">
               Este pedido fue cancelado, por lo que no suma deuda pendiente mientras siga sin cobrarse.
+            </div>
+
+            <div class="cobro-card__actions" *ngIf="puedePagarConFlow(pedido)">
+              <button
+                type="button"
+                class="btn-primary"
+                [disabled]="procesandoPagoPedidoId === pedido._id"
+                (click)="pagarConFlow(pedido)">
+                {{ procesandoPagoPedidoId === pedido._id ? 'Conectando con Flow...' : 'Pagar con Flow' }}
+              </button>
             </div>
           </div>
         </article>

@@ -182,4 +182,19 @@ export class PedidosService {
 
     return response.data?.pedido;
   }
+
+  async createFlowCobroCheckout(
+    pedidoId: string,
+  ): Promise<{ checkoutUrl: string; pedido?: Pedido }> {
+    const response = await axios.post(
+      this.apiUrl + `pedidos/${pedidoId}/cobro-sitio/flow`,
+      {},
+      { headers: this.authHeaders },
+    );
+
+    return {
+      checkoutUrl: response.data?.checkoutUrl,
+      pedido: response.data?.pedido,
+    };
+  }
 }
