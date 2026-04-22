@@ -5,6 +5,11 @@
       <div class="pet-visuals">
         <!-- Main Image -->
         <div class="pet-image-container">
+          <div class="pet-badges">
+            <span class="pet-badge-state" [ngClass]="getEstadoClase(mascota.estado)">
+              {{ mascota.estado }}
+            </span>
+          </div>
           <img [src]="imagenPrincipal" [alt]="mascota.nombre" class="pet-main-image">
         </div>
 

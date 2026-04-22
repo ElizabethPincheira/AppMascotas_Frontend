@@ -118,17 +118,57 @@
   text-align: center;
   min-width: fit-content;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--on-surface);
 }
 
-.pet-badge-state[ngClass*="extraviado"],
-.pet-badge-state.extraviado {
+.pet-badge-state.estado-robado {
+  background-color: #d85b58;
+  color: #fff;
+}
+
+.pet-badge-state.estado-extraviado {
   background-color: var(--error-container);
   color: var(--on-error-container);
 }
 
-.pet-badge-state[ngClass*="encontrado"],
-.pet-badge-state.encontrado {
+.pet-badge-state.estado-encontrado {
   background-color: #32a852;
+  color: #ffffff;
+}
+
+.pet-badge-state.estado-recuperado {
+  background-color: #397e56;
+  color: #ffffff;
+}
+
+.pet-badge-state.estado-busca-hogar {
+  background-color: #46889d;
+  color: #ffffff;
+}
+
+.pet-badge-state.estado-adoptado {
+  background-color: #ebc55a;
+  color: #2d2a17;
+}
+
+.pet-badge-state.estado-situacion-calle {
+  background-color: #8b6f47;
+  color: #ffffff;
+}
+
+.pet-badge-state.estado-buscando-pareja {
+  background-color: #c96a95;
+  color: #ffffff;
+}
+
+.pet-badge-state.estado-emparejado {
+  background-color: #7655b3;
+  color: #ffffff;
+}
+
+.pet-badge-state.estado-default {
+  background-color: #6f7a72;
   color: #ffffff;
 }
 
