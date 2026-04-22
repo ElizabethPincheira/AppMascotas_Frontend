@@ -67,6 +67,13 @@ export class MiUserComponent {
       badge: 'Panel personal',
       tone: 'lime'
     },
+    ...(this.user?.esTienda ? [{
+      title: 'Cobros del sitio',
+      description: 'Consulta lo adeudado y lo pagado por los pedidos recibidos en tu tienda.',
+      path: '/cobros-tienda',
+      badge: 'Finanzas',
+      tone: 'sky' as const,
+    }] : []),
     {
       title: 'Registrate como tienda',
       description: 'Abre tu tienda en nuestra plataforma y comparte tus productos con la comunidad.',

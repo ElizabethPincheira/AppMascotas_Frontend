@@ -155,6 +155,13 @@ export const routes: Routes = [
             .then(m => m.PedidosTiendaComponent)
       },
       {
+        path: 'cobros-tienda',
+        canActivate: [authGuard],
+        loadComponent: () =>
+          import('./pages/general/cobros-tienda/cobros-tienda.component')
+            .then(m => m.CobrosTiendaComponent)
+      },
+      {
         path: 'mis-compras',
         canActivate: [authGuard],
         loadComponent: () =>
@@ -188,6 +195,13 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./pages/general/admin/admin-colaboradores.component')
             .then(m => m.AdminColaboradoresComponent)
+      },
+      {
+        path: 'admin/cobros-tiendas',
+        canActivate: [authGuard, adminGuard],
+        loadComponent: () =>
+          import('./pages/general/admin/admin-cobros-tiendas.component')
+            .then(m => m.AdminCobrosTiendasComponent)
       },
       {
         path: 'terminos',

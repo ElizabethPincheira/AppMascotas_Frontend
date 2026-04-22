@@ -29,82 +29,97 @@
       <div class="pedidos-lista" *ngIf="!cargandoPedidos && tienePedidos">
         <article class="pedido-card" *ngFor="let pedido of pedidos">
           <div class="pedido-card__header">
-            <div>
+            <div class="pedido-card__headline">
               <span class="pedido-card__eyebrow">Pedido {{ getPedidoNumeroCorto(pedido) }}</span>
-              <h3>{{ pedido.comprador.nombreCompleto }}</h3>
-              <p>{{ pedido.createdAt | date:'dd/MM/yyyy HH:mm' }}</p>
-            </div>
-
-            <span class="pedido-status" [ngClass]="'pedido-status--' + getEstadoPedidoClass(pedido.estado)">
-              {{ pedido.estado }}
-            </span>
-          </div>
-
-          <div class="pedido-card__body">
-            <div class="pedido-card__items">
-              <h4>Productos pedidos</h4>
-              <ul>
-                <li *ngFor="let item of pedido.items">
-                  <span>{{ item.nombre }} x{{ item.cantidad }}</span>
-                  <strong>{{ formatPrice(item.precio * item.cantidad) }}</strong>
-                </li>
-              </ul>
-            </div>
-
-            <div class="pedido-card__summary">
-              <div class="pedido-summary__block">
-                <span class="pedido-summary__title">Datos del comprador</span>
-                <div class="pedido-summary__details">
-                  <div class="pedido-summary__detail">
-                    <span>Nombre</span>
-                    <strong>{{ pedido.comprador.nombreCompleto }}</strong>
-                  </div>
-                  <div class="pedido-summary__detail" *ngIf="pedido.comprador.email">
-                    <span>Correo</span>
-                    <strong>{{ pedido.comprador.email }}</strong>
-                  </div>
-                  <div class="pedido-summary__detail">
-                    <span>Teléfono</span>
-                    <strong>{{ pedido.comprador.telefono }}</strong>
-                  </div>
-                  <div class="pedido-summary__detail pedido-summary__detail--stacked">
-                    <span>Dirección</span>
-                    <strong>
-                      {{ pedido.comprador.direccionEntrega }},
-                      {{ pedido.comprador.comuna }},
-                      {{ pedido.comprador.provincia }},
-                      {{ pedido.comprador.region }}
-                    </strong>
-                  </div>
-                  <div class="pedido-summary__detail pedido-summary__detail--stacked" *ngIf="pedido.comprador.nota">
-                    <span>Nota</span>
-                    <strong>{{ pedido.comprador.nota }}</strong>
-                  </div>
-                </div>
-              </div>
-
-              <div class="pedido-summary__row">
-                <span>Total</span>
+              <div class="pedido-card__summary-line">
+                <h3>{{ pedido.comprador.nombreCompleto }}</h3>
+                <span>{{ pedido.createdAt | date:'dd/MM/yyyy HH:mm' }}</span>
+                <span>{{ getTotalItems(pedido) }} producto(s)</span>
+                <span>{{ getItemsPreview(pedido) }}</span>
                 <strong>{{ formatPrice(pedido.total) }}</strong>
               </div>
+            </div>
 
-              <div class="pedido-summary__row pedido-summary__row--stacked">
-                <span>Actualizar estado</span>
-                <div class="pedido-summary__actions">
-                  <select [(ngModel)]="pedidoEstadosForm[pedido._id]">
-                    <option *ngFor="let estado of estadosPedidoDisponibles" [value]="estado">{{ estado }}</option>
-                  </select>
+            <div class="pedido-card__actions-row">
+              <span class="pedido-status" [ngClass]="'pedido-status--' + getEstadoPedidoClass(pedido.estado)">
+                {{ pedido.estado }}
+              </span>
 
-                  <button
-                    type="button"
-                    class="btn-primary"
-                    (click)="actualizarEstadoPedido(pedido)"
-                    [disabled]="actualizandoPedidoId === pedido._id || pedidoEstadosForm[pedido._id] === pedido.estado">
-                    {{ actualizandoPedidoId === pedido._id ? 'Actualizando...' : 'Actualizar' }}
-                  </button>
-                </div>
+              <div class="pedido-summary__actions">
+                <select [(ngModel)]="pedidoEstadosForm[pedido._id]">
+                  <option *ngFor="let estado of estadosPedidoDisponibles" [value]="estado">{{ estado }}</option>
+                </select>
+
+                <button
+                  type="button"
+                  class="btn-primary"
+                  (click)="actualizarEstadoPedido(pedido)"
+                  [disabled]="actualizandoPedidoId === pedido._id || pedidoEstadosForm[pedido._id] === pedido.estado">
+                  {{ actualizandoPedidoId === pedido._id ? 'Actualizando...' : 'Actualizar' }}
+                </button>
               </div>
             </div>
+          </div>
+
+          <details class="pedido-customer-details">
+            <summary>Datos del comprador</summary>
+
+            <div class="pedido-summary__details">
+              <div class="pedido-summary__detail">
+                <span>Nombre</span>
+                <strong>{{ pedido.comprador.nombreCompleto }}</strong>
+              </div>
+              <div class="pedido-summary__detail" *ngIf="pedido.comprador.email">
+                <span>Correo</span>
+                <strong>{{ pedido.comprador.email }}</strong>
+              </div>
+              <div class="pedido-summary__detail">
+                <span>Teléfono</span>
+                <strong>{{ pedido.comprador.telefono }}</strong>
+              </div>
+              <div class="pedido-summary__detail pedido-summary__detail--stacked">
+                <span>Dirección</span>
+                <strong>
+                  {{ pedido.comprador.direccionEntrega }},
+                  {{ pedido.comprador.comuna }},
+                  {{ pedido.comprador.provincia }},
+                  {{ pedido.comprador.region }}
+                </strong>
+              </div>
+              <div class="pedido-summary__detail pedido-summary__detail--stacked" *ngIf="pedido.comprador.nota">
+                <span>Nota</span>
+                <strong>{{ pedido.comprador.nota }}</strong>
+              </div>
+            </div>
+          </details>
+
+          <div class="pedido-card__products-inline">
+            <span class="pedido-card__products-label">Productos</span>
+            <ul>
+              <li *ngFor="let item of pedido.items">
+                <div class="pedido-product__main">
+                  <div class="pedido-product__image-wrap">
+                    <img
+                      *ngIf="getImagenProducto(item) as imagenProducto; else itemWithoutImage"
+                      class="pedido-product__image"
+                      [src]="imagenProducto"
+                      [alt]="item.nombre" />
+
+                    <ng-template #itemWithoutImage>
+                      <div class="pedido-product__image-placeholder">
+                        <span class="material-symbols-outlined">inventory_2</span>
+                      </div>
+                    </ng-template>
+                  </div>
+
+                  <div class="pedido-product__meta">
+                    <span class="pedido-product__name">{{ item.nombre }} x{{ item.cantidad }}</span>
+                    <small>{{ formatPrice(item.precio) }} c/u</small>
+                  </div>
+                </div>
+                <strong>{{ formatPrice(item.precio * item.cantidad) }}</strong>
+              </li>
+            </ul>
           </div>
         </article>
       </div>

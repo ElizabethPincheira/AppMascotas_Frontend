@@ -52,6 +52,11 @@ export class AdminComponent {
       path: '/admin/colaboradores',
     },
     {
+      title: 'Cobros de tiendas',
+      description: 'Consulta montos adeudados, pagos registrados y marca cobros como pagados.',
+      path: '/admin/cobros-tiendas',
+    },
+    {
       title: 'Ver cuenta',
       description: 'Abre tu panel personal para actualizar tus datos o cambiar de seccion rapidamente.',
       path: '/mi-cuenta',

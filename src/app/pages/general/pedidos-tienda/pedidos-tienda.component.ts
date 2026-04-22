@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import Swal from 'sweetalert2';
 import { AuthService } from '../../../core/services/auth.service';
-import { EstadoPedido, Pedido, PedidosService } from '../../../core/services/pedidos.service';
+import { EstadoPedido, Pedido, PedidoItemPayload, PedidosService } from '../../../core/services/pedidos.service';
 
 @Component({
   selector: 'app-pedidos-tienda',
@@ -61,6 +61,41 @@ export class PedidosTiendaComponent {
 
   formatPrice(value: number): string {
     return this.clpFormatter.format(value);
+  }
+
+  getTotalItems(pedido: Pedido): number {
+    return pedido.items.reduce((sum, item) => sum + Number(item.cantidad || 0), 0);
+  }
+
+  getItemsPreview(pedido: Pedido): string {
+    const preview = pedido.items
+      .slice(0, 2)
+      .map((item) => `${item.nombre} x${item.cantidad}`)
+      .join(' · ');
+
+    if (pedido.items.length <= 2) {
+      return preview;
+    }
+
+    return `${preview} · +${pedido.items.length - 2} más`;
+  }
+
+  getImagenProducto(item: PedidoItemPayload): string | null {
+    const image = item.imagen?.trim();
+
+    if (!image) {
+      return null;
+    }
+
+    if (
+      image.startsWith('data:') ||
+      image.startsWith('http://') ||
+      image.startsWith('https://')
+    ) {
+      return image;
+    }
+
+    return `data:image/jpeg;base64,${image}`;
   }
 
   async actualizarEstadoPedido(pedido: Pedido): Promise<void> {

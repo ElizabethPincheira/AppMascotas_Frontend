@@ -101,6 +101,7 @@ export class UsersService {
     comunaTienda: string;
     categoriasTienda: string[];
     comunasRepartoTienda: string[];
+    aceptaContratoTienda: boolean;
   }): Promise<any> {
     const token = localStorage.getItem('token');
 

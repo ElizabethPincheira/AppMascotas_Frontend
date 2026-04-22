@@ -1,0 +1,101 @@
+<section class="admin-cobros-page">
+  <div class="admin-cobros-shell">
+    <section class="admin-cobros-hero">
+      <div>
+        <a class="admin-cobros-hero__back" routerLink="/admin">← Volver al panel</a>
+        <span class="admin-cobros-hero__eyebrow">Administrador</span>
+        <h1>Cobros de tiendas</h1>
+        <p>
+          Revisa lo adeudado al sitio por cada tienda y marca pagos para que los montos se reflejen de inmediato.
+        </p>
+      </div>
+    </section>
+
+    <section class="admin-cobros-metrics">
+      <article class="admin-cobros-metric admin-cobros-metric--warning">
+        <span>Total adeudado</span>
+        <strong>{{ formatPrice(resumenGeneral.totalAdeudado) }}</strong>
+      </article>
+
+      <article class="admin-cobros-metric admin-cobros-metric--success">
+        <span>Total pagado</span>
+        <strong>{{ formatPrice(resumenGeneral.totalPagado) }}</strong>
+      </article>
+
+      <article class="admin-cobros-metric admin-cobros-metric--neutral">
+        <span>Tiendas con deuda</span>
+        <strong>{{ totalTiendasConDeuda }}</strong>
+      </article>
+    </section>
+
+    <section class="admin-cobros-list">
+      <div class="admin-cobros-state" *ngIf="cargandoCobros">Cargando cobros de tiendas...</div>
+
+      <div class="admin-cobros-state" *ngIf="!cargandoCobros && tiendas.length === 0">
+        No hay pedidos registrados para generar cobros todavía.
+      </div>
+
+      <div class="admin-cobros-grid" *ngIf="!cargandoCobros && tiendas.length > 0">
+        <article class="store-charge-card" *ngFor="let tienda of tiendas; trackBy: trackByStoreId">
+          <div class="store-charge-card__header">
+            <div>
+              <span class="store-charge-card__eyebrow">Tienda</span>
+              <h2>{{ tienda.tienda.nombreTienda }}</h2>
+              <p>{{ tienda.tienda.nombre || 'Sin dueño visible' }}</p>
+              <small *ngIf="tienda.tienda.email">{{ tienda.tienda.email }}</small>
+            </div>
+
+            <span class="store-charge-card__badge">
+              Adeudado {{ formatPrice(tienda.resumen.totalAdeudado) }}
+            </span>
+          </div>
+
+          <div class="store-charge-card__summary">
+            <div>
+              <span>Pagado</span>
+              <strong>{{ formatPrice(tienda.resumen.totalPagado) }}</strong>
+            </div>
+            <div>
+              <span>Pendiente</span>
+              <strong>{{ formatPrice(tienda.resumen.totalAdeudado) }}</strong>
+            </div>
+            <div>
+              <span>Cargo por pedido</span>
+              <strong>{{ formatPrice(tienda.resumen.cargoPorPedido) }}</strong>
+            </div>
+          </div>
+
+          <div class="store-charge-card__orders">
+            <article class="order-charge-row" *ngFor="let pedido of tienda.pedidos; trackBy: trackByPedidoId">
+              <div class="order-charge-row__info">
+                <strong>{{ getPedidoNumeroCorto(pedido) }}</strong>
+                <span>{{ pedido.createdAt | date:'dd/MM/yyyy HH:mm' }}</span>
+                <span>{{ pedido.comprador.nombreCompleto }}</span>
+                <span>Estado pedido: {{ pedido.estado }}</span>
+              </div>
+
+              <div class="order-charge-row__meta">
+                <span class="order-charge-status" [ngClass]="getCobroStatusClass(pedido.estadoCobroSitio)">
+                  {{ pedido.estadoCobroSitio === 'pagado' ? 'Pagado' : 'Pendiente' }}
+                </span>
+                <strong>{{ formatPrice(pedido.cargoServicioSitio) }}</strong>
+                <button
+                  type="button"
+                  class="order-charge-action"
+                  (click)="actualizarCobro(pedido, pedido.estadoCobroSitio === 'pagado' ? 'pendiente' : 'pagado')"
+                  [disabled]="procesandoPedidoId === pedido._id"
+                >
+                  {{
+                    procesandoPedidoId === pedido._id
+                      ? 'Guardando...'
+                      : (pedido.estadoCobroSitio === 'pagado' ? 'Volver a pendiente' : 'Marcar pagado')
+                  }}
+                </button>
+              </div>
+            </article>
+          </div>
+        </article>
+      </div>
+    </section>
+  </div>
+</section>

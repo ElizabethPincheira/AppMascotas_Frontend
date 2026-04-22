@@ -1,0 +1,94 @@
+<section class="cobros-tienda-page">
+  <div class="cobros-tienda-shell">
+    <section class="cobros-tienda-hero">
+      <div>
+        <button class="back-button" type="button" (click)="volverAMiTienda()">← Volver a mi tienda</button>
+        <span class="cobros-tienda-hero__eyebrow">Cobros del sitio</span>
+        <h1>Resumen financiero de {{ nombreTienda }}</h1>
+        <p>
+          Cada pedido recibido desde la plataforma genera un cargo fijo de
+          {{ formatPrice(resumen.cargoPorPedido) }} para el sitio.
+        </p>
+      </div>
+    </section>
+
+    <section class="cobros-summary-grid">
+      <article class="summary-card summary-card--warning">
+        <span>Adeudado</span>
+        <strong>{{ formatPrice(resumen.totalAdeudado) }}</strong>
+        <small>{{ resumen.totalPedidosAdeudados }} pedido(s) pendientes de pago al sitio.</small>
+      </article>
+
+      <article class="summary-card summary-card--success">
+        <span>Pagado</span>
+        <strong>{{ formatPrice(resumen.totalPagado) }}</strong>
+        <small>{{ resumen.totalPedidosPagados }} pedido(s) ya regularizados.</small>
+      </article>
+
+      <article class="summary-card summary-card--neutral">
+        <span>Total generado</span>
+        <strong>{{ formatPrice(resumen.totalGenerado) }}</strong>
+        <small>{{ resumen.totalPedidosCanceladosSinCobro }} pedido(s) cancelados no generan deuda pendiente.</small>
+      </article>
+    </section>
+
+    <section class="cobros-panel">
+      <div class="section-heading">
+        <div>
+          <span class="section-heading__eyebrow">Detalle</span>
+          <h2>Cobros por pedido</h2>
+        </div>
+      </div>
+
+      <div *ngIf="cargandoCobros" class="loading-message">
+        Cargando cobros de tu tienda...
+      </div>
+
+      <div *ngIf="!cargandoCobros && !tieneCobros" class="empty-message">
+        <p>Aún no tienes pedidos con cobros registrados.</p>
+        <a routerLink="/tiendas" class="btn-primary">Ver tiendas publicadas</a>
+      </div>
+
+      <div class="cobros-lista" *ngIf="!cargandoCobros && tieneCobros">
+        <article class="cobro-card" *ngFor="let pedido of pedidos">
+          <div class="cobro-card__header">
+            <div>
+              <span class="cobro-card__eyebrow">Pedido {{ getPedidoNumeroCorto(pedido) }}</span>
+              <h3>{{ pedido.comprador.nombreCompleto }}</h3>
+              <p>{{ pedido.createdAt | date:'dd/MM/yyyy HH:mm' }}</p>
+            </div>
+
+            <span class="cobro-status" [ngClass]="getCobroStatusClass(pedido)">
+              {{ pedido.estadoCobroSitio === 'pagado' ? 'Pagado' : 'Pendiente' }}
+            </span>
+          </div>
+
+          <div class="cobro-card__body">
+            <div class="cobro-card__main">
+              <div class="cobro-detail">
+                <span>Estado del pedido</span>
+                <strong>{{ pedido.estado }}</strong>
+              </div>
+              <div class="cobro-detail">
+                <span>Total del pedido</span>
+                <strong>{{ formatPrice(pedido.total) }}</strong>
+              </div>
+              <div class="cobro-detail">
+                <span>Cargo del sitio</span>
+                <strong>{{ formatPrice(pedido.cargoServicioSitio) }}</strong>
+              </div>
+              <div class="cobro-detail" *ngIf="pedido.fechaPagoCobroSitio">
+                <span>Pago registrado</span>
+                <strong>{{ pedido.fechaPagoCobroSitio | date:'dd/MM/yyyy HH:mm' }}</strong>
+              </div>
+            </div>
+
+            <div class="cobro-card__note" *ngIf="pedido.estado === 'cancelado' && pedido.estadoCobroSitio !== 'pagado'">
+              Este pedido fue cancelado, por lo que no suma deuda pendiente mientras siga sin cobrarse.
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+  </div>
+</section>

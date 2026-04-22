@@ -42,6 +42,7 @@ export class RegistrarTiendaComponent {
     categoriaSeleccionada: '',
     categoriasSeleccionadas: Array.isArray(this.user?.categoriasTienda) ? [...this.user.categoriasTienda] : [],
     comunasRepartoSeleccionadas: Array.isArray(this.user?.comunasRepartoTienda) ? [...this.user.comunasRepartoTienda] : [],
+    aceptaContratoTienda: Boolean(this.user?.aceptaContratoTienda),
   };
 
   async ngOnInit(): Promise<void> {
@@ -77,7 +78,8 @@ export class RegistrarTiendaComponent {
       this.storeForm.provinciaTienda &&
       this.storeForm.comunaTienda &&
       this.storeForm.categoriasSeleccionadas.length > 0 &&
-      this.storeForm.comunasRepartoSeleccionadas.length > 0
+      this.storeForm.comunasRepartoSeleccionadas.length > 0 &&
+      this.storeForm.aceptaContratoTienda
     );
   }
 
@@ -179,6 +181,7 @@ export class RegistrarTiendaComponent {
         comunaTienda: this.storeForm.comunaTienda,
         categoriasTienda: this.storeForm.categoriasSeleccionadas,
         comunasRepartoTienda: this.storeForm.comunasRepartoSeleccionadas,
+        aceptaContratoTienda: this.storeForm.aceptaContratoTienda,
       });
 
       this.user = response.user;

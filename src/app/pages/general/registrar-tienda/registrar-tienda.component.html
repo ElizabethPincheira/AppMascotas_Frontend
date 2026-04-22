@@ -31,6 +31,23 @@
           Nuestro equipo la revisara y te avisaremos cuando sea aprobada.
         </div>
 
+        <div class="store-contract-card">
+          <span class="store-contract-card__eyebrow">Contrato comercial</span>
+          <h3>Cargo fijo por pedido generado en la plataforma</h3>
+          <p>
+            Al operar como tienda en CirculoAnimal.cl, aceptas que cada pedido recibido a traves del sitio
+            genera un cargo fijo de <strong>$1.000 CLP</strong> a favor de la plataforma. Ese monto se reflejara
+            en tu panel de cobros y sera marcado como pagado por administracion a medida que regularices tus pagos.
+          </p>
+
+          <label class="store-contract-check">
+            <input type="checkbox" [(ngModel)]="storeForm.aceptaContratoTienda" />
+            <span>
+              Acepto el contrato comercial y reconozco el cargo de $1.000 CLP por cada pedido generado desde el sitio.
+            </span>
+          </label>
+        </div>
+
         <div class="form-grid form-grid--single">
           <label class="form-field">
             <span>Nombre de la tienda</span>

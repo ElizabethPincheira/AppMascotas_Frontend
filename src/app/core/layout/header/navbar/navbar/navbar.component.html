@@ -87,6 +87,9 @@
             <li *ngIf="esUnaTienda">
               <a class="navbar-dropdown-item" routerLink="/pedidos-tienda" (click)="closeProfileMenu()">Pedidos recibidos</a>
             </li>
+            <li *ngIf="esUnaTienda">
+              <a class="navbar-dropdown-item" routerLink="/cobros-tienda" (click)="closeProfileMenu()">Cobros del sitio</a>
+            </li>
             <li class="navbar-dropdown-label">Mascotas</li>
             <li>
               <a class="navbar-dropdown-item" routerLink="/mis-mascotas" (click)="closeProfileMenu()">Mis publicaciones</a>
@@ -164,6 +167,10 @@
 
     <li *ngIf="esUnaTienda">
       <a class="navbar-drawer-link" routerLink="/pedidos-tienda" (click)="closeMobileMenu()">Pedidos recibidos</a>
+    </li>
+
+    <li *ngIf="esUnaTienda">
+      <a class="navbar-drawer-link" routerLink="/cobros-tienda" (click)="closeMobileMenu()">Cobros del sitio</a>
     </li>
 
     <li *ngIf="esAdministrador">

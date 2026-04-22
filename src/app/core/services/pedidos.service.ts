@@ -17,6 +17,8 @@ export type EstadoPedido =
   | 'entregado'
   | 'cancelado';
 
+export type EstadoCobroSitio = 'pendiente' | 'pagado';
+
 export interface PedidoCompradorPayload {
   nombreCompleto: string;
   email?: string;
@@ -54,9 +56,50 @@ export interface Pedido {
   comprador: PedidoCompradorPayload;
   total: number;
   estado: EstadoPedido;
+  cargoServicioSitio: number;
+  estadoCobroSitio: EstadoCobroSitio;
+  fechaPagoCobroSitio?: string | null;
   tienda?: PedidoTiendaInfo;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface ResumenCobrosTienda {
+  cargoPorPedido: number;
+  totalPagado: number;
+  totalAdeudado: number;
+  totalGenerado: number;
+  totalPedidosPagados: number;
+  totalPedidosAdeudados: number;
+  totalPedidosCanceladosSinCobro: number;
+}
+
+export interface CobrosMiTiendaResponse {
+  tienda?: {
+    _id: string;
+    nombreTienda: string;
+    email?: string;
+  };
+  resumen: ResumenCobrosTienda;
+  pedidos: Pedido[];
+}
+
+export interface CobroAdminTienda {
+  tiendaId: string;
+  tienda: {
+    _id: string;
+    nombre?: string;
+    email?: string;
+    nombreTienda: string;
+    estadoSolicitudTienda?: string;
+  };
+  resumen: ResumenCobrosTienda;
+  pedidos: Pedido[];
+}
+
+export interface CobrosAdminResponse {
+  resumenGeneral: ResumenCobrosTienda;
+  tiendas: CobroAdminTienda[];
 }
 
 @Injectable({
@@ -98,6 +141,42 @@ export class PedidosService {
     const response = await axios.patch(
       this.apiUrl + `pedidos/${pedidoId}/estado`,
       { estado },
+      { headers: this.authHeaders },
+    );
+
+    return response.data?.pedido;
+  }
+
+  async getMisCobrosTienda(): Promise<CobrosMiTiendaResponse> {
+    const response = await axios.get(this.apiUrl + 'pedidos/mi-tienda/cobros', {
+      headers: this.authHeaders,
+    });
+
+    return {
+      tienda: response.data?.tienda,
+      resumen: response.data?.resumen,
+      pedidos: response.data?.pedidos ?? [],
+    };
+  }
+
+  async getAdminCobrosTiendas(): Promise<CobrosAdminResponse> {
+    const response = await axios.get(this.apiUrl + 'pedidos/admin/cobros-tiendas', {
+      headers: this.authHeaders,
+    });
+
+    return {
+      resumenGeneral: response.data?.resumenGeneral,
+      tiendas: response.data?.tiendas ?? [],
+    };
+  }
+
+  async updateCobroSitio(
+    pedidoId: string,
+    estadoCobroSitio: EstadoCobroSitio,
+  ): Promise<Pedido> {
+    const response = await axios.patch(
+      this.apiUrl + `pedidos/${pedidoId}/cobro-sitio`,
+      { estadoCobroSitio },
       { headers: this.authHeaders },
     );
 

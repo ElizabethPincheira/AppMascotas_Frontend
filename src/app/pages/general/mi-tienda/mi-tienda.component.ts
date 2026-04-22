@@ -531,6 +531,7 @@ export class MiTiendaComponent implements OnInit {
         comunaTienda,
         categoriasTienda: Array.isArray(this.user?.categoriasTienda) ? this.user.categoriasTienda : [],
         comunasRepartoTienda: this.repartoForm.comunasRepartoTienda,
+        aceptaContratoTienda: Boolean(this.user?.aceptaContratoTienda ?? true),
       });
 
       this.user = response.user;

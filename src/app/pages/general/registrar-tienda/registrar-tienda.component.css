@@ -136,6 +136,61 @@
   color: #12305c;
 }
 
+.store-contract-card {
+  display: grid;
+  gap: 0.9rem;
+  margin-bottom: 1.5rem;
+  padding: 1.25rem 1.35rem;
+  border-radius: 1rem;
+  border: 1px solid rgba(166, 124, 82, 0.24);
+  background: linear-gradient(180deg, rgba(166, 124, 82, 0.12) 0%, rgba(166, 124, 82, 0.04) 100%);
+  color: #5f4327;
+}
+
+.store-contract-card__eyebrow {
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #8b6637;
+}
+
+.store-contract-card h3 {
+  margin: 0;
+  color: #4f341b;
+  font-size: 1.12rem;
+}
+
+.store-contract-card p {
+  margin: 0;
+  line-height: 1.7;
+}
+
+.store-contract-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+  padding: 1rem 1.05rem;
+  border-radius: 0.95rem;
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(166, 124, 82, 0.22);
+  cursor: pointer;
+}
+
+.store-contract-check input {
+  width: 1.05rem;
+  height: 1.05rem;
+  margin-top: 0.2rem;
+  accent-color: #8b6637;
+}
+
+.store-contract-check span {
+  color: #4b5563;
+  font-size: 0.94rem;
+  line-height: 1.6;
+  font-weight: 500;
+}
+
 .section-heading {
   display: flex;
   justify-content: space-between;

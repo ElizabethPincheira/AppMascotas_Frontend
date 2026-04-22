@@ -1,0 +1,265 @@
+.admin-cobros-page {
+  display: grid;
+  gap: 2rem;
+  padding: 2rem 1rem;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.admin-cobros-shell {
+  display: grid;
+  gap: 2rem;
+}
+
+.admin-cobros-hero,
+.admin-cobros-metric,
+.store-charge-card {
+  background: #fff;
+  border-radius: 1rem;
+  border: 1px solid #eee;
+}
+
+.admin-cobros-hero {
+  padding: 2rem;
+  background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+}
+
+.admin-cobros-hero__back,
+.order-charge-action {
+  text-decoration: none;
+}
+
+.admin-cobros-hero__back {
+  display: inline-flex;
+  margin-bottom: 1rem;
+  color: #475569;
+  font-weight: 700;
+}
+
+.admin-cobros-hero__eyebrow,
+.store-charge-card__eyebrow {
+  display: inline-flex;
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #64748b;
+}
+
+.admin-cobros-hero h1 {
+  margin: 0.75rem 0 0;
+  color: #111827;
+}
+
+.admin-cobros-hero p,
+.store-charge-card__header p,
+.admin-cobros-state {
+  color: #64748b;
+  line-height: 1.6;
+}
+
+.admin-cobros-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.admin-cobros-metric {
+  display: grid;
+  gap: 0.4rem;
+  padding: 1.35rem;
+}
+
+.admin-cobros-metric span {
+  color: #64748b;
+  font-size: 0.84rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.admin-cobros-metric strong {
+  color: #111827;
+  font-size: 1.8rem;
+}
+
+.admin-cobros-metric--warning {
+  background: linear-gradient(180deg, rgba(245, 158, 11, 0.12) 0%, rgba(255, 255, 255, 1) 100%);
+}
+
+.admin-cobros-metric--success {
+  background: linear-gradient(180deg, rgba(34, 197, 94, 0.12) 0%, rgba(255, 255, 255, 1) 100%);
+}
+
+.admin-cobros-metric--neutral {
+  background: linear-gradient(180deg, rgba(59, 130, 246, 0.12) 0%, rgba(255, 255, 255, 1) 100%);
+}
+
+.admin-cobros-list {
+  display: grid;
+  gap: 1rem;
+}
+
+.admin-cobros-state {
+  padding: 1rem;
+  border-radius: 0.85rem;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+}
+
+.admin-cobros-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.store-charge-card {
+  display: grid;
+  gap: 1rem;
+  padding: 1.5rem;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.05);
+}
+
+.store-charge-card__header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: start;
+}
+
+.store-charge-card__header h2 {
+  margin: 0.35rem 0 0;
+  color: #111827;
+}
+
+.store-charge-card__header p,
+.store-charge-card__header small {
+  display: block;
+  margin-top: 0.35rem;
+}
+
+.store-charge-card__badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 38px;
+  padding: 0.5rem 0.95rem;
+  border-radius: 999px;
+  background: rgba(245, 158, 11, 0.16);
+  color: #b45309;
+  font-weight: 700;
+}
+
+.store-charge-card__summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.85rem;
+}
+
+.store-charge-card__summary div {
+  display: grid;
+  gap: 0.3rem;
+  padding: 0.9rem 1rem;
+  border-radius: 0.85rem;
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+}
+
+.store-charge-card__summary span {
+  color: #64748b;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.store-charge-card__summary strong {
+  color: #111827;
+}
+
+.store-charge-card__orders {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.order-charge-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 1rem;
+  align-items: center;
+  padding: 1rem;
+  border-radius: 0.9rem;
+  border: 1px solid #e5e7eb;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+}
+
+.order-charge-row__info {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.order-charge-row__info strong {
+  color: #111827;
+}
+
+.order-charge-row__info span {
+  color: #64748b;
+}
+
+.order-charge-row__meta {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.order-charge-status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 34px;
+  padding: 0.45rem 0.8rem;
+  border-radius: 999px;
+  font-size: 0.84rem;
+  font-weight: 700;
+}
+
+.order-charge-status.is-paid {
+  background: rgba(34, 197, 94, 0.14);
+  color: #15803d;
+}
+
+.order-charge-status.is-pending {
+  background: rgba(245, 158, 11, 0.16);
+  color: #b45309;
+}
+
+.order-charge-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  padding: 0.7rem 1rem;
+  border: none;
+  border-radius: 0.75rem;
+  background: #0f172a;
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.order-charge-action:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+
+@media (max-width: 900px) {
+  .admin-cobros-metrics,
+  .store-charge-card__summary {
+    grid-template-columns: 1fr;
+  }
+
+  .store-charge-card__header,
+  .order-charge-row,
+  .order-charge-row__meta {
+    grid-template-columns: 1fr;
+    flex-direction: column;
+    align-items: start;
+  }
+}
