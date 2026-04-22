@@ -61,8 +61,8 @@ export class MiUserComponent {
 
   readonly userOptions: UserOption[] = [
     {
-      title: 'Mis mascotas',
-      description: 'Revisa tus publicaciones, edita informacion importante y administra tus casos activos.',
+      title: 'Mis publicaciones',
+      description: 'Revisa tus casos publicados, edita informacion importante y administra reportes activos.',
       path: '/mis-mascotas',
       badge: 'Panel personal',
       tone: 'lime'

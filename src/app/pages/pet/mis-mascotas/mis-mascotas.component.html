@@ -3,21 +3,21 @@
     <section class="mis-mascotas-hero">
       <div>
         <span class="mis-mascotas-hero__eyebrow">Panel personal</span>
-        <h1>Administra tus mascotas inscritas y mantén sus publicaciones al día.</h1>
+        <h1>Administra tus publicaciones y mantén cada caso al día.</h1>
         <p>
-          Desde aquí puedes revisar tus publicaciones, editar información importante, eliminar registros
-          o inscribir una nueva mascota.
+          Desde aquí puedes revisar reportes propios o de terceros, editar información importante, eliminar registros
+          o crear una nueva publicación.
         </p>
       </div>
 
-      <a class="mis-mascotas-hero__button" routerLink="/publicar">Agregar mascota</a>
+      <a class="mis-mascotas-hero__button" routerLink="/publicar">Nueva publicación</a>
     </section>
 
     <section class="mis-mascotas-panel" *ngIf="!cargando; else loadingState">
       <div class="section-heading">
         <div>
           <span class="section-heading__eyebrow">Tus publicaciones</span>
-          <h2>{{ mascotas.length }} mascota(s) inscrita(s)</h2>
+          <h2>{{ mascotas.length }} publicación(es) activa(s)</h2>
         </div>
       </div>
 
@@ -65,16 +65,16 @@
     <ng-template #loadingState>
       <section class="mis-mascotas-panel">
         <div class="empty-state">
-          <h2>Cargando tus mascotas...</h2>
+          <h2>Cargando tus publicaciones...</h2>
         </div>
       </section>
     </ng-template>
 
     <ng-template #emptyState>
       <div class="empty-state">
-        <h2>Aún no has inscrito mascotas</h2>
-        <p>Comienza registrando la primera para que aparezca en tu panel personal.</p>
-        <a class="empty-state__button" routerLink="/publicar">Inscribir mascota</a>
+        <h2>Aún no tienes publicaciones</h2>
+        <p>Crea tu primer caso para que aparezca en este panel personal.</p>
+        <a class="empty-state__button" routerLink="/publicar">Crear publicación</a>
       </div>
     </ng-template>
   </div>

@@ -1,28 +1,6 @@
 <section class="publicar-page">
   <div class="publicar-shell">
-    <section class="publicar-hero">
-      <div class="publicar-hero__content">
-        <span class="publicar-hero__eyebrow">Inscribir mascota</span>
-        <h1>
-          {{ textoHero }}
-        </h1>
-        <p>
-          Completa la ficha con los datos más importantes, agrega fotos y deja una ubicación clara.
-          Así la comunidad podrá reconocerla y actuar más rápido.
-        </p>
-      </div>
-
-      <div class="publicar-hero__aside">
-        <article class="hero-note">
-          <span class="hero-note__label">Consejo</span>
-          <p>Usa una foto frontal, una ubicación precisa y una descripción fácil de reconocer.</p>
-        </article>
-        <article class="hero-note">
-          <span class="hero-note__label">Imágenes</span>
-          <p>Puedes subir hasta 5 fotos para hacer la publicación más visible.</p>
-        </article>
-      </div>
-    </section>
+    
 
     <form class="publicar-card" #publicarForm="ngForm" (ngSubmit)="submit()">
       <div class="section-heading">
@@ -37,6 +15,14 @@
       </div>
 
       <div class="form-grid">
+        <label class="form-field form-field--full form-field--state-spotlight">
+          <span class="form-field__featured-label">Estado de la mascota</span>
+          <select [(ngModel)]="estado" name="estado" required (ngModelChange)="onEstadoChange()">
+            <option *ngFor="let item of estadosDisponibles" [value]="item">{{ item }}</option>
+          </select>
+          <small>{{ helperEstado }}</small>
+        </label>
+
         <label class="form-field form-field--full">
           <span>{{ labelNombre }}</span>
           <input
@@ -74,23 +60,6 @@
         </label>
 
         <label class="form-field">
-          <span>Color</span>
-          <input
-            type="text"
-            [(ngModel)]="color"
-            name="color"
-            placeholder="Ej: negro, blanco con manchas café">
-        </label>
-
-        <label class="form-field">
-          <span>Tamaño</span>
-          <select [(ngModel)]="tamano" name="tamano">
-            <option value="">Selecciona un tamaño</option>
-            <option *ngFor="let item of tamanos" [value]="item">{{ item }}</option>
-          </select>
-        </label>
-
-        <label class="form-field">
           <span>Chip</span>
           <input
             type="text"
@@ -108,47 +77,6 @@
             placeholder="Ej: $50.000, ofrece recompensa">
         </label>
 
-        <label class="form-field">
-          <span>{{ labelRaza }}</span>
-          <input
-            type="text"
-            [(ngModel)]="raza"
-            #razaModel="ngModel"
-            name="raza"
-            [placeholder]="placeholderRaza"
-            [required]="!esSituacionDeCalle">
-          <small class="field-error" *ngIf="debeMostrarError(razaModel)">
-            {{ esSituacionDeCalle ? 'Agrega el tipo o raza de referencia.' : 'La raza es obligatoria.' }}
-          </small>
-        </label>
-
-        <label class="form-field">
-          <span>Estado</span>
-          <select [(ngModel)]="estado" name="estado" required (ngModelChange)="onEstadoChange()">
-            <option *ngFor="let item of estadosDisponibles" [value]="item">{{ item }}</option>
-          </select>
-          <small>{{ helperEstado }}</small>
-        </label>
-
-        <label class="form-field">
-          <span>{{ labelFechaNacimiento }}</span>
-          <input
-            type="date"
-            [(ngModel)]="fechaNacimiento"
-            #fechaNacimientoModel="ngModel"
-            name="fechaNacimiento"
-            [max]="maxFechaHoy"
-            [required]="!esSituacionDeCalle">
-          <small
-            class="field-error"
-            *ngIf="debeMostrarError(fechaNacimientoModel) && fechaNacimientoModel.errors?.['required']">
-            {{ esSituacionDeCalle ? 'Si la conoces, agrega una fecha aproximada.' : 'La fecha de nacimiento es obligatoria.' }}
-          </small>
-          <small class="field-error" *ngIf="debeMostrarError(fechaNacimientoModel, fechaNacimientoInvalida)">
-            La fecha de nacimiento no puede ser futura.
-          </small>
-        </label>
-
         <label class="form-field" *ngIf="requierePerdidoDesde">
           <span>{{ labelPerdidoDesde }}</span>
           <input
@@ -164,17 +92,23 @@
 
         <div class="form-field form-field--full">
           <span>Contacto</span>
-          <small>{{ helperContacto }}</small>
+          <small class="contact-section__helper">{{ helperContacto }}</small>
 
-          <div class="location-switch" *ngIf="debeMostrarSelectorContacto">
-            <label class="location-switch__option" [class.is-active]="modoContacto === 'mail'">
+          <div class="contact-selector" *ngIf="debeMostrarSelectorContacto">
+            <label class="contact-selector__option" [class.is-active]="modoContacto === 'mail'">
               <input type="radio" [(ngModel)]="modoContacto" name="modoContacto" value="mail">
-              <span>Contactar por mail</span>
+              <div class="contact-selector__content">
+                <span class="contact-selector__title">Correo electrónico</span>
+                <small class="contact-selector__description">Ideal si prefieres responder con calma y dejar registro del caso.</small>
+              </div>
             </label>
 
-            <label class="location-switch__option" [class.is-active]="modoContacto === 'telefono'">
+            <label class="contact-selector__option" [class.is-active]="modoContacto === 'telefono'">
               <input type="radio" [(ngModel)]="modoContacto" name="modoContacto" value="telefono">
-              <span>Contactar por teléfono</span>
+              <div class="contact-selector__content">
+                <span class="contact-selector__title">Teléfono</span>
+                <small class="contact-selector__description">Mejor si necesitas que te contacten rápido ante una pista o aviso.</small>
+              </div>
             </label>
           </div>
 

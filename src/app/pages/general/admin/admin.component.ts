@@ -42,8 +42,8 @@ export class AdminComponent {
       path: '/admin/tiendas',
     },
     {
-      title: 'Gestionar mascotas',
-      description: 'Consulta las publicaciones activas y verifica el contenido que aparece en la plataforma.',
+      title: 'Gestionar publicaciones',
+      description: 'Consulta los casos activos y verifica el contenido que aparece en la plataforma.',
       path: '/mis-mascotas',
     },
     {

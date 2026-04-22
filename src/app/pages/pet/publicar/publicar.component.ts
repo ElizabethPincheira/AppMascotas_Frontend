@@ -37,13 +37,9 @@ export class PublicarComponent implements AfterViewInit {
   nombre = '';
   especie = '';
   sexo: 'Macho' | 'Hembra' | 'Desconocido' | '' = '';
-  color = '';
-  tamano: 'Pequeño' | 'Mediano' | 'Grande' | 'Gigante' | '' = '';
-  raza = '';
   chip = '';
   recompensa = '';
   estado = 'Extraviado';
-  fechaNacimiento = '';
   perdidoDesde = '';
   latitud: number | null = null;
   longitud: number | null = null;
@@ -93,13 +89,6 @@ export class PublicarComponent implements AfterViewInit {
     'Desconocido',
   ];
 
-  readonly tamanos: Array<'Pequeño' | 'Mediano' | 'Grande' | 'Gigante'> = [
-    'Pequeño',
-    'Mediano',
-    'Grande',
-    'Gigante',
-  ];
-
   readonly mapWidth = 960;
   readonly mapHeight = 540;
   readonly tileSize = 256;
@@ -135,16 +124,14 @@ export class PublicarComponent implements AfterViewInit {
 
   get formularioCompleto(): boolean {
     const tieneUbicacionGps = this.latitud !== null && this.longitud !== null;
-    const fechasValidas = this.isFechaNacimientoValida() && this.isPerdidoDesdeValida();
+    const fechasValidas = this.isPerdidoDesdeValida();
     const contactoValido = this.isContactoValido();
     const nombreValido = this.esSituacionDeCalle ? true : !!this.nombre.trim();
-    const razaValida = this.esSituacionDeCalle ? true : !!this.raza.trim();
 
     return !!(
       nombreValido &&
       this.especie.trim() &&
       this.sexo.trim() &&
-      razaValida &&
       this.estado.trim() &&
       contactoValido &&
       tieneUbicacionGps &&
@@ -194,20 +181,8 @@ export class PublicarComponent implements AfterViewInit {
     return this.esSituacionDeCalle ? 'Nombre o referencia visual' : 'Nombre';
   }
 
-  get labelRaza(): string {
-    return this.esSituacionDeCalle ? 'Raza o tipo (opcional)' : 'Raza';
-  }
-
-  get labelFechaNacimiento(): string {
-    return this.esSituacionDeCalle ? 'Fecha de nacimiento aproximada (opcional)' : 'Fecha de nacimiento';
-  }
-
   get placeholderNombre(): string {
     return this.esSituacionDeCalle ? 'Ej: Perrita cafe con pañuelo rojo' : 'Ej: Luna';
-  }
-
-  get placeholderRaza(): string {
-    return this.esSituacionDeCalle ? 'Ej: Mestizo, tamaño mediano' : 'Ej: Mestiza';
   }
 
   get labelUbicacion(): string {
@@ -267,10 +242,6 @@ export class PublicarComponent implements AfterViewInit {
 
   get ubicacionInvalida(): boolean {
     return this.latitud === null || this.longitud === null;
-  }
-
-  get fechaNacimientoInvalida(): boolean {
-    return !!this.fechaNacimiento && !this.isFechaNacimientoValida();
   }
 
   get perdidoDesdeInvalida(): boolean {
@@ -536,13 +507,9 @@ export class PublicarComponent implements AfterViewInit {
         nombre: this.nombre.trim() || undefined,
         especie: this.especie.trim().toLowerCase(),
         sexo: this.sexo || undefined,
-        color: this.color.trim() || undefined,
-        tamano: this.tamano || undefined,
-        raza: this.raza.trim() || undefined,
         chip: this.chip.trim() || undefined,
         recompensa: this.recompensa.trim() || undefined,
         estado: this.estado,
-        fechaNacimiento: this.fechaNacimiento || undefined,
         perdidoDesde: this.requierePerdidoDesde ? (this.perdidoDesde || undefined) : undefined,
         latitud: this.latitud ?? undefined,
         longitud: this.longitud ?? undefined,
@@ -630,13 +597,9 @@ export class PublicarComponent implements AfterViewInit {
     this.nombre = mascota.nombre ?? '';
     this.especie = mascota.especie ? this.capitalize(mascota.especie) : '';
     this.sexo = mascota.sexo ?? '';
-    this.color = mascota.color ?? '';
-    this.tamano = mascota.tamano ?? '';
-    this.raza = mascota.raza ?? '';
     this.chip = mascota.chip ?? '';
     this.recompensa = (mascota as any).recompensa ?? '';
     this.estado = mascota.estado ?? 'Extraviado';
-    this.fechaNacimiento = this.toInputDate(mascota.fechaNacimiento);
     this.perdidoDesde = this.toInputDate((mascota as any).perdidoDesde);
     this.latitud = typeof mascota.latitud === 'number' ? mascota.latitud : null;
     this.longitud = typeof mascota.longitud === 'number' ? mascota.longitud : null;
@@ -673,21 +636,6 @@ export class PublicarComponent implements AfterViewInit {
 
   private capitalize(value: string): string {
     return value.charAt(0).toUpperCase() + value.slice(1);
-  }
-
-  private isFechaNacimientoValida(): boolean {
-    if (this.esSituacionDeCalle && !this.fechaNacimiento) {
-      return true;
-    }
-
-    if (!this.fechaNacimiento) {
-      return false;
-    }
-
-    const fecha = new Date(`${this.fechaNacimiento}T00:00:00`);
-    const hoy = this.getInicioDelDiaActual();
-
-    return !Number.isNaN(fecha.getTime()) && fecha <= hoy;
   }
 
   private isPerdidoDesdeValida(): boolean {
