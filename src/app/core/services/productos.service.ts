@@ -8,7 +8,8 @@ export interface Producto {
   nombre: string;
   descripcion: string;
   precio: number;
-  stock: number;
+  stock?: number;
+  disponible?: boolean;
   imagen?: string;
   activo: boolean;
   fechaCreacion: Date;
@@ -19,7 +20,8 @@ export interface CreateProductoDto {
   nombre: string;
   descripcion: string;
   precio: number;
-  stock: number;
+  stock?: number;
+  disponible?: boolean;
   imagen?: string;
 }
 
@@ -28,6 +30,7 @@ export interface UpdateProductoDto {
   descripcion?: string;
   precio?: number;
   stock?: number;
+  disponible?: boolean;
   imagen?: string;
   activo?: boolean;
 }

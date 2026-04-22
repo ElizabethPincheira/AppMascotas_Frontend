@@ -85,7 +85,7 @@ export class MiTiendaComponent implements OnInit {
     nombre: '',
     descripcion: '',
     precio: 0,
-    stock: 0,
+    disponible: true,
   };
 
   async ngOnInit(): Promise<void> {
@@ -220,9 +220,12 @@ export class MiTiendaComponent implements OnInit {
     return !!(
       this.nuevoProductoForm.nombre.trim() &&
       this.nuevoProductoForm.descripcion.trim() &&
-      this.nuevoProductoForm.precio > 0 &&
-      this.nuevoProductoForm.stock >= 0
+      this.nuevoProductoForm.precio > 0
     );
+  }
+
+  get tituloFormularioProducto(): string {
+    return this.editandoProductoId ? 'Editar producto' : 'Agregar producto';
   }
 
   toggleFormulario(): void {
@@ -242,9 +245,22 @@ export class MiTiendaComponent implements OnInit {
       nombre: '',
       descripcion: '',
       precio: 0,
-      stock: 0,
+      disponible: true,
     };
     this.imagenPreview = null;
+    this.resetProductoImageInput();
+  }
+
+  isProductoDisponible(producto: Producto): boolean {
+    if (typeof producto.disponible === 'boolean') {
+      return producto.disponible;
+    }
+
+    if (typeof producto.stock === 'number') {
+      return producto.stock > 0;
+    }
+
+    return true;
   }
 
   getImagenProducto(producto: Producto): string | null {
@@ -264,6 +280,7 @@ export class MiTiendaComponent implements OnInit {
     }
 
     if (!file.type.startsWith('image/')) {
+      target.value = '';
       await Swal.fire({
         icon: 'error',
         title: 'Tipo de archivo inválido',
@@ -295,6 +312,7 @@ export class MiTiendaComponent implements OnInit {
       });
     } finally {
       this.procesandoImagenTienda = false;
+      target.value = '';
     }
   }
 
@@ -308,14 +326,16 @@ export class MiTiendaComponent implements OnInit {
     }
   }
 
-  async onImagenSeleccionada(event: any): Promise<void> {
-    const file = event.target.files?.[0];
+  async onImagenSeleccionada(event: Event): Promise<void> {
+    const target = event.target as HTMLInputElement;
+    const file = target.files?.[0];
 
     if (!file) {
       return;
     }
 
     if (!file.type.startsWith('image/')) {
+      target.value = '';
       await Swal.fire({
         icon: 'error',
         title: 'Tipo de archivo inválido',
@@ -340,39 +360,69 @@ export class MiTiendaComponent implements OnInit {
       });
     } finally {
       this.comprimiendoImagen = false;
+      target.value = '';
     }
   }
 
   removerImagen(): void {
     this.imagenPreview = null;
     this.nuevoProductoForm.imagen = undefined;
-    const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
-    if (fileInput) {
-      fileInput.value = '';
-    }
+    this.resetProductoImageInput();
+  }
+
+  editarProducto(producto: Producto): void {
+    this.editandoProductoId = producto._id;
+    this.mostrarFormulario = true;
+    this.nuevoProductoForm = {
+      nombre: producto.nombre,
+      descripcion: producto.descripcion,
+      precio: producto.precio,
+      disponible: this.isProductoDisponible(producto),
+      imagen: producto.imagen,
+    };
+    this.imagenPreview = this.getImagenProducto(producto);
+    this.resetProductoImageInput();
   }
 
   async agregarProducto(): Promise<void> {
     this.enviandoProducto = true;
 
     try {
-      const response = await this.productosService.createProducto(this.nuevoProductoForm);
+      if (this.editandoProductoId) {
+        const response = await this.productosService.updateProducto(
+          this.editandoProductoId,
+          this.nuevoProductoForm,
+        );
 
-      this.productos.push(response.producto);
+        this.productos = this.productos.map((producto) =>
+          producto._id === this.editandoProductoId ? response.producto : producto,
+        );
 
-      await Swal.fire({
-        icon: 'success',
-        title: 'Producto agregado',
-        text: 'El producto fue agregado exitosamente a tu catálogo.',
-        confirmButtonText: 'Continuar'
-      });
+        await Swal.fire({
+          icon: 'success',
+          title: 'Producto actualizado',
+          text: 'Los cambios se guardaron correctamente en tu catálogo.',
+          confirmButtonText: 'Continuar'
+        });
+      } else {
+        const response = await this.productosService.createProducto(this.nuevoProductoForm);
+
+        this.productos.push(response.producto);
+
+        await Swal.fire({
+          icon: 'success',
+          title: 'Producto agregado',
+          text: 'El producto fue agregado exitosamente a tu catálogo.',
+          confirmButtonText: 'Continuar'
+        });
+      }
 
       this.cancelarFormulario();
     } catch (error: any) {
       await Swal.fire({
         icon: 'error',
-        title: 'Error al agregar producto',
-        text: error?.response?.data?.message || 'Ocurrió un problema al agregar el producto.',
+        title: this.editandoProductoId ? 'Error al actualizar producto' : 'Error al agregar producto',
+        text: error?.response?.data?.message || 'Ocurrió un problema al guardar el producto.',
         confirmButtonText: 'Entendido'
       });
     } finally {
@@ -380,9 +430,9 @@ export class MiTiendaComponent implements OnInit {
     }
   }
 
-  async actualizarStock(producto: Producto, nuevoStock: number): Promise<void> {
+  async actualizarDisponibilidad(producto: Producto, disponible: boolean): Promise<void> {
     try {
-      const response = await this.productosService.updateProducto(producto._id, { stock: nuevoStock });
+      const response = await this.productosService.updateProducto(producto._id, { disponible });
 
       const index = this.productos.findIndex(p => p._id === producto._id);
       if (index > -1) {
@@ -391,8 +441,8 @@ export class MiTiendaComponent implements OnInit {
 
       await Swal.fire({
         icon: 'success',
-        title: 'Stock actualizado',
-        text: 'El stock del producto fue actualizado.',
+        title: 'Disponibilidad actualizada',
+        text: 'La disponibilidad del producto fue actualizada.',
         confirmButtonText: 'Continuar'
       });
     } catch (error: any) {
@@ -664,5 +714,12 @@ export class MiTiendaComponent implements OnInit {
     }
 
     return `data:image/jpeg;base64,${image}`;
+  }
+
+  private resetProductoImageInput(): void {
+    const fileInput = document.getElementById('product-image-input') as HTMLInputElement | null;
+    if (fileInput) {
+      fileInput.value = '';
+    }
   }
 }

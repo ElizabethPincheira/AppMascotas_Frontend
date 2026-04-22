@@ -37,7 +37,8 @@ export interface BackendProducto {
   nombre: string;
   descripcion: string;
   precio: number;
-  stock: number;
+  stock?: number;
+  disponible?: boolean;
   imagen?: string;
   activo: boolean;
 }
@@ -139,11 +140,23 @@ export class TiendasService {
       priceValue: product.precio,
       image: this.toDisplayImage(product.imagen) || this.fallbackImage,
       description: product.descripcion,
+      disponible: this.isProductoDisponible(product),
       tags: [
-        `Stock ${product.stock}`,
-        product.activo ? 'Disponible' : 'No disponible',
+        this.isProductoDisponible(product) ? 'Disponible' : 'No disponible',
       ],
     };
+  }
+
+  private isProductoDisponible(product: BackendProducto): boolean {
+    if (typeof product.disponible === 'boolean') {
+      return product.disponible;
+    }
+
+    if (typeof product.stock === 'number') {
+      return product.stock > 0;
+    }
+
+    return true;
   }
 
   private buildScheduleSummary(schedule?: Array<{ dia: string; abierto: boolean; apertura?: string; cierre?: string }>): string {

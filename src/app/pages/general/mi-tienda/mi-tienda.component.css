@@ -151,6 +151,17 @@
   color: #1a1a1a;
 }
 
+.section-heading--form {
+  margin-bottom: 1.5rem;
+}
+
+.section-heading--form h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
 .info-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -926,12 +937,13 @@
 }
 
 .stock-input {
-  width: 80px;
+  min-width: 150px;
   padding: 0.5rem;
   border: 1px solid #ddd;
   border-radius: 0.35rem;
   font-size: 0.875rem;
-  text-align: center;
+  text-align: left;
+  background: white;
 }
 
 .stock-input:focus {
@@ -943,6 +955,10 @@
   display: flex;
   gap: 0.75rem;
   padding-top: 0.5rem;
+}
+
+.producto-card__actions button {
+  flex: 1;
 }
 
 .file-upload {

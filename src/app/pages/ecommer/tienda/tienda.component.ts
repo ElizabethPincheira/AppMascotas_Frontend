@@ -92,7 +92,7 @@ export class StoreDetailComponent implements OnInit {
   }
 
   async agregarAlCarrito(product: StoreProduct): Promise<void> {
-    if (!this.store) {
+    if (!this.store || !product.disponible) {
       return;
     }
 

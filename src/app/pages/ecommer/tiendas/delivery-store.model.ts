@@ -30,6 +30,7 @@ export interface StoreProduct {
   priceValue: number;
   image: string;
   description: string;
+  disponible: boolean;
   tags: string[];
 }
 

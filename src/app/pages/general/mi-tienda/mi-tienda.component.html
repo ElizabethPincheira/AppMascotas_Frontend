@@ -324,6 +324,13 @@
 
         <!-- Formulario de agregar producto -->
         <div class="producto-form" *ngIf="mostrarFormulario">
+          <div class="section-heading section-heading--form">
+            <div>
+              <span class="section-heading__eyebrow">Catálogo</span>
+              <h3>{{ tituloFormularioProducto }}</h3>
+            </div>
+          </div>
+
           <div class="form-grid">
             <label class="form-field">
               <span>Nombre del producto</span>
@@ -341,16 +348,19 @@
             </label>
 
             <label class="form-field">
-              <span>Stock disponible</span>
-              <input type="number" [(ngModel)]="nuevoProductoForm.stock" placeholder="0" min="0" />
+              <span>Disponibilidad</span>
+              <select [(ngModel)]="nuevoProductoForm.disponible">
+                <option [ngValue]="true">Disponible</option>
+                <option [ngValue]="false">No disponible</option>
+              </select>
             </label>
           </div>
 
           <div class="form-field form-field--full">
             <span>Imagen del producto</span>
-            <label class="file-upload" (click)="fileInput.click()">
+            <label class="file-upload" for="product-image-input">
               <input 
-                #fileInput
+                id="product-image-input"
                 type="file" 
                 accept="image/*" 
                 (change)="onImagenSeleccionada($event)"
@@ -359,6 +369,9 @@
               />
               <span *ngIf="!imagenPreview" class="file-upload__hint">
                 📸 Haz clic para seleccionar una imagen
+              </span>
+              <span *ngIf="imagenPreview" class="file-upload__hint">
+                Cambiar imagen del producto
               </span>
             </label>
 
@@ -376,7 +389,7 @@
 
           <div class="form-actions">
             <button class="btn-primary" (click)="agregarProducto()" [disabled]="!formularioValido || enviandoProducto || comprimiendoImagen">
-              {{ enviandoProducto ? 'Agregando...' : 'Agregar producto' }}
+              {{ enviandoProducto ? (editandoProductoId ? 'Guardando...' : 'Agregando...') : (editandoProductoId ? 'Guardar cambios' : 'Agregar producto') }}
             </button>
             <button class="btn-secondary" (click)="cancelarFormulario()" [disabled]="enviandoProducto">
               Cancelar
@@ -398,15 +411,15 @@
           </div>
 
           <div *ngIf="!cargandoProductos && productos.length > 0" class="productos-grid">
-            <article class="producto-card" *ngFor="let producto of productos" [class.producto-sin-stock]="producto.stock === 0">
+            <article class="producto-card" *ngFor="let producto of productos" [class.producto-sin-stock]="!isProductoDisponible(producto)">
               <div class="producto-card__image" *ngIf="getImagenProducto(producto)">
                 <img [src]="getImagenProducto(producto)" alt="{{ producto.nombre }}" />
               </div>
 
               <div class="producto-card__header">
                 <h3>{{ producto.nombre }}</h3>
-                <span class="stock-badge" [ngClass]="producto.stock === 0 ? 'stock-badge--sin-stock' : 'stock-badge--con-stock'">
-                  {{ producto.stock === 0 ? 'Sin stock' : 'En stock' }}
+                <span class="stock-badge" [ngClass]="!isProductoDisponible(producto) ? 'stock-badge--sin-stock' : 'stock-badge--con-stock'">
+                  {{ isProductoDisponible(producto) ? 'Disponible' : 'No disponible' }}
                 </span>
               </div>
 
@@ -418,20 +431,23 @@
                   <span class="info-value">${{ producto.precio | number: '1.0-0' }}</span>
                 </div>
                 <div class="info-row">
-                  <span class="info-label">Stock:</span>
+                  <span class="info-label">Estado:</span>
                   <div class="stock-controls">
-                    <input 
-                      type="number" 
-                      [(ngModel)]="producto.stock" 
-                      min="0" 
+                    <select
                       class="stock-input"
-                      (change)="actualizarStock(producto, producto.stock)"
-                    />
+                      [ngModel]="isProductoDisponible(producto)"
+                      (ngModelChange)="actualizarDisponibilidad(producto, $event)">
+                      <option [ngValue]="true">Disponible</option>
+                      <option [ngValue]="false">No disponible</option>
+                    </select>
                   </div>
                 </div>
               </div>
 
               <div class="producto-card__actions">
+                <button class="btn-secondary" (click)="editarProducto(producto)">
+                  Editar
+                </button>
                 <button class="btn-danger" (click)="eliminarProducto(producto._id)">
                   Eliminar
                 </button>

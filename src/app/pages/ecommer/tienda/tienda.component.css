@@ -294,6 +294,13 @@
   box-shadow: 0 14px 24px rgba(78, 118, 41, 0.2);
 }
 
+.product-card__button:disabled {
+  cursor: not-allowed;
+  background: linear-gradient(180deg, #d8dfd3 0%, #c6cec1 100%);
+  color: #5f685b;
+  box-shadow: none;
+}
+
 .product-card__tags span,
 .category-list span {
   display: inline-flex;
@@ -303,6 +310,11 @@
   color: var(--brand-forest);
   font-size: 0.8rem;
   font-weight: 800;
+}
+
+.product-card__tag--unavailable {
+  background: rgba(239, 68, 68, 0.12) !important;
+  color: #b91c1c !important;
 }
 
 .gallery-grid {

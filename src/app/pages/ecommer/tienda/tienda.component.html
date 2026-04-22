@@ -76,14 +76,19 @@
                   <p>{{ product.description }}</p>
 
                   <div class="product-card__tags">
-                    <span *ngFor="let tag of product.tags">{{ tag }}</span>
+                    <span
+                      *ngFor="let tag of product.tags"
+                      [class.product-card__tag--unavailable]="tag === 'No disponible'">
+                      {{ tag }}
+                    </span>
                   </div>
 
                   <button
                     type="button"
                     class="product-card__button"
+                    [disabled]="!product.disponible"
                     (click)="agregarAlCarrito(product)">
-                    Agregar al carrito
+                    {{ product.disponible ? 'Agregar al carrito' : 'No disponible' }}
                   </button>
                 </div>
               </article>
