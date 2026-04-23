@@ -6,6 +6,7 @@ import Swal from 'sweetalert2';
 import axios from 'axios';
 import { environment } from '../../../../environments/environment';
 import { AuthService } from '../../../core/services/auth.service';
+import { PedidosService } from '../../../core/services/pedidos.service';
 import { UbicacionesService } from '../../../core/services/ubicaciones.service';
 import { UsersService } from '../../../core/services/users.service';
 
@@ -27,6 +28,7 @@ interface UserOption {
 export class MiUserComponent {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly pedidosService = inject(PedidosService);
   private readonly usersService = inject(UsersService);
   private readonly ubicacionesService = inject(UbicacionesService);
 
@@ -38,6 +40,7 @@ export class MiUserComponent {
   cargandoProvincias = false;
   cargandoComunas = false;
   guardandoPerfil = false;
+  totalAdeudadoTienda = 0;
 
   // Collaboration application
   postulacion: any = null;
@@ -59,31 +62,8 @@ export class MiUserComponent {
     comuna: this.user?.comuna || '',
   };
 
-  readonly userOptions: UserOption[] = [
-    {
-      title: 'Mis publicaciones',
-      description: 'Revisa tus casos publicados, edita informacion importante y administra reportes activos.',
-      path: '/mis-mascotas',
-      badge: 'Panel personal',
-      tone: 'lime'
-    },
-    ...(this.user?.esTienda ? [{
-      title: 'Cobros del sitio',
-      description: 'Consulta lo adeudado y lo pagado por los pedidos recibidos en tu tienda.',
-      path: '/cobros-tienda',
-      badge: 'Finanzas',
-      tone: 'sky' as const,
-    }] : []),
-    {
-      title: 'Registrate como tienda',
-      description: 'Abre tu tienda en nuestra plataforma y comparte tus productos con la comunidad.',
-      path: '/registrar-tienda',
-      badge: 'Nuevo negocio',
-      tone: 'earth'
-    },
-  ];
-
   async ngOnInit(): Promise<void> {
+    await this.cargarCobrosTienda();
     await this.cargarRegiones();
 
     if (this.profileForm.region) {
@@ -137,6 +117,55 @@ export class MiUserComponent {
     if (!this.postulacion?.fechaPostulacion) return '';
     const date = new Date(this.postulacion.fechaPostulacion);
     return date.toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' });
+  }
+
+  get estadoSolicitudTienda(): string {
+    return `${this.user?.estadoSolicitudTienda || ''}`.toLowerCase();
+  }
+
+  get mostrarOpcionesTienda(): boolean {
+    return this.user?.esTienda === true && this.estadoSolicitudTienda !== 'rechazada';
+  }
+
+  get mostrarCobrosSitio(): boolean {
+    return this.mostrarOpcionesTienda || this.totalAdeudadoTienda > 0;
+  }
+
+  get puedeRegistrarseComoTienda(): boolean {
+    return this.user?.esTienda !== true && this.estadoSolicitudTienda !== 'rechazada';
+  }
+
+  get userOptions(): UserOption[] {
+    return [
+      {
+        title: 'Mis publicaciones',
+        description: 'Revisa tus casos publicados, edita informacion importante y administra reportes activos.',
+        path: '/mis-mascotas',
+        badge: 'Panel personal',
+        tone: 'lime'
+      },
+      ...(this.mostrarOpcionesTienda ? [{
+        title: 'Cobros del sitio',
+        description: 'Consulta lo adeudado y lo pagado por los pedidos recibidos en tu tienda.',
+        path: '/cobros-tienda',
+        badge: 'Finanzas',
+        tone: 'sky' as const,
+      }] : []),
+      ...(this.mostrarCobrosSitio && !this.mostrarOpcionesTienda ? [{
+        title: 'Cobros del sitio',
+        description: 'Tu tienda fue rechazada, pero aún puedes revisar y regularizar la deuda pendiente con el sitio.',
+        path: '/cobros-tienda',
+        badge: 'Pendiente',
+        tone: 'sky' as const,
+      }] : []),
+      ...(this.puedeRegistrarseComoTienda ? [{
+        title: 'Registrate como tienda',
+        description: 'Abre tu tienda en nuestra plataforma y comparte tus productos con la comunidad.',
+        path: '/registrar-tienda',
+        badge: 'Nuevo negocio',
+        tone: 'earth' as const,
+      }] : []),
+    ];
   }
 
   get displayName(): string {
@@ -248,6 +277,21 @@ export class MiUserComponent {
       this.regiones = await this.ubicacionesService.getUbicaciones();
     } finally {
       this.cargandoRegiones = false;
+    }
+  }
+
+  private async cargarCobrosTienda(): Promise<void> {
+    if (this.user?.esTienda !== true) {
+      this.totalAdeudadoTienda = 0;
+      return;
+    }
+
+    try {
+      const response = await this.pedidosService.getMisCobrosTienda();
+      this.totalAdeudadoTienda = Number(response?.resumen?.totalAdeudado ?? 0);
+    } catch (error) {
+      console.warn('No se pudo cargar el resumen de cobros en Mi cuenta:', error);
+      this.totalAdeudadoTienda = 0;
     }
   }
 }
