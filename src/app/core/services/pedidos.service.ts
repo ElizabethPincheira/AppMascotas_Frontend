@@ -18,6 +18,7 @@ export type EstadoPedido =
   | 'cancelado';
 
 export type EstadoCobroSitio = 'pendiente' | 'pagado';
+export type MetodoCobroSitio = 'flow' | 'transferencia' | null;
 
 export interface PedidoCompradorPayload {
   nombreCompleto: string;
@@ -59,9 +60,21 @@ export interface Pedido {
   cargoServicioSitio: number;
   estadoCobroSitio: EstadoCobroSitio;
   fechaPagoCobroSitio?: string | null;
+  metodoCobroSitio?: MetodoCobroSitio;
+  transferenciaReportadaAt?: string | null;
   tienda?: PedidoTiendaInfo;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface TransferenciaCobroInfo {
+  configured: boolean;
+  banco: string;
+  titular: string;
+  rut?: string;
+  tipoCuenta: string;
+  numeroCuenta: string;
+  email?: string;
 }
 
 export interface ResumenCobrosTienda {
@@ -85,6 +98,7 @@ export interface CobrosMiTiendaResponse {
     nombreTienda: string;
     email?: string;
   };
+  transferencia?: TransferenciaCobroInfo;
   resumen: ResumenCobrosTienda;
   pedidos: Pedido[];
 }
@@ -159,6 +173,7 @@ export class PedidosService {
 
     return {
       tienda: response.data?.tienda,
+      transferencia: response.data?.transferencia,
       resumen: response.data?.resumen,
       pedidos: response.data?.pedidos ?? [],
     };
@@ -209,6 +224,24 @@ export class PedidosService {
     return {
       checkoutUrl: response.data?.checkoutUrl,
       resumenPago: response.data?.resumenPago,
+      pedidos: response.data?.pedidos ?? [],
+    };
+  }
+
+  async reportTransferenciaCobro(): Promise<{
+    message: string;
+    transferencia?: TransferenciaCobroInfo;
+    pedidos?: Pedido[];
+  }> {
+    const response = await axios.post(
+      this.apiUrl + 'pedidos/mi-tienda/cobros/transferencia',
+      {},
+      { headers: this.authHeaders },
+    );
+
+    return {
+      message: response.data?.message,
+      transferencia: response.data?.transferencia,
       pedidos: response.data?.pedidos ?? [],
     };
   }

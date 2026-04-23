@@ -162,6 +162,24 @@
   background: linear-gradient(180deg, #f9fbff 0%, #ffffff 100%);
 }
 
+.transfer-payment-box {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+  padding: 1.1rem 1.2rem;
+  border-radius: 1rem;
+  border: 1px solid #dbe4f0;
+  background: linear-gradient(180deg, #f7fcf8 0%, #ffffff 100%);
+}
+
+.transfer-payment-box__content {
+  display: grid;
+  gap: 1rem;
+  flex: 1;
+}
+
 .flow-payment-box__eyebrow {
   display: inline-flex;
   margin-bottom: 0.45rem;
@@ -181,6 +199,58 @@
   margin: 0.45rem 0 0;
   color: #64748b;
   line-height: 1.6;
+}
+
+.transfer-details {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.8rem;
+}
+
+.transfer-detail {
+  display: grid;
+  gap: 0.25rem;
+  padding: 0.9rem 1rem;
+  border-radius: 0.85rem;
+  background: #fff;
+  border: 1px solid #dbe4f0;
+}
+
+.transfer-detail span {
+  color: #64748b;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.transfer-detail strong {
+  color: #111827;
+  line-height: 1.45;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+.transfer-detail--wide {
+  grid-column: 1 / -1;
+}
+
+.transfer-detail--amount {
+  background: rgba(34, 197, 94, 0.08);
+  border-color: rgba(34, 197, 94, 0.2);
+}
+
+.transfer-actions {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.transfer-config-warning {
+  padding: 0.9rem 1rem;
+  border-radius: 0.85rem;
+  background: rgba(245, 158, 11, 0.14);
+  border: 1px solid rgba(245, 158, 11, 0.22);
+  color: #b45309;
+  font-weight: 600;
 }
 
 .empty-message {
@@ -298,6 +368,48 @@
   cursor: pointer;
 }
 
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 240px;
+  padding: 0.75rem 1.5rem;
+  background: #0f172a;
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.btn-copy {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  padding: 0.75rem 1.1rem;
+  background: #eef4ff;
+  color: #1d4ed8;
+  border: 1px solid #bfdbfe;
+  border-radius: 0.75rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btn-copy:hover {
+  background: #dbeafe;
+}
+
+.btn-primary:disabled,
+.btn-secondary:disabled,
+.btn-copy:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
 @media (max-width: 768px) {
   .cobros-tienda-page {
     padding: 1rem;
@@ -313,6 +425,11 @@
   }
 
   .flow-payment-box {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .transfer-payment-box {
     flex-direction: column;
     align-items: stretch;
   }

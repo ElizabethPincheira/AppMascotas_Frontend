@@ -54,6 +54,10 @@
         {{ flowMessage }}
       </div>
 
+      <div *ngIf="transferenciaMensaje" class="flow-message" [ngClass]="transferenciaMessageClass">
+        {{ transferenciaMensaje }}
+      </div>
+
       <div class="flow-payment-box" *ngIf="!cargandoCobros && resumen.totalAdeudado > 0">
         <div>
           <span class="flow-payment-box__eyebrow">Pago consolidado</span>
@@ -69,6 +73,73 @@
           [disabled]="!puedePagarConFlow"
           (click)="pagarConFlow()">
           {{ procesandoPagoFlow ? 'Conectando con Flow...' : 'Pagar en linea' }}
+        </button>
+      </div>
+
+      <div class="transfer-payment-box" *ngIf="!cargandoCobros && resumen.totalAdeudado > 0">
+        <div class="transfer-payment-box__content">
+          <div>
+            <span class="flow-payment-box__eyebrow">Pago por transferencia</span>
+            <h3>También puedes regularizar la deuda por transferencia bancaria</h3>
+            <p>
+              Haz una sola transferencia por el total adeudado y luego avísanos desde aquí para que
+              el administrador la revise y la marque como pagada.
+            </p>
+          </div>
+
+          <div class="transfer-details" *ngIf="transferenciaInfo.configured; else transferNotConfigured">
+            <div class="transfer-detail">
+              <span>Banco</span>
+              <strong>{{ transferenciaInfo.banco }}</strong>
+            </div>
+            <div class="transfer-detail">
+              <span>Titular</span>
+              <strong>{{ transferenciaInfo.titular }}</strong>
+            </div>
+            <div class="transfer-detail" *ngIf="transferenciaInfo.rut">
+              <span>RUT</span>
+              <strong>{{ transferenciaInfo.rut }}</strong>
+            </div>
+            <div class="transfer-detail">
+              <span>Tipo de cuenta</span>
+              <strong>{{ transferenciaInfo.tipoCuenta }}</strong>
+            </div>
+            <div class="transfer-detail">
+              <span>Número de cuenta</span>
+              <strong>{{ transferenciaInfo.numeroCuenta }}</strong>
+            </div>
+            <div class="transfer-detail transfer-detail--wide" *ngIf="transferenciaInfo.email">
+              <span>Correo de respaldo</span>
+              <strong>{{ transferenciaInfo.email }}</strong>
+            </div>
+            <div class="transfer-detail transfer-detail--amount">
+              <span>Monto a transferir</span>
+              <strong>{{ formatPrice(resumen.totalAdeudado) }}</strong>
+            </div>
+          </div>
+
+          <div class="transfer-actions" *ngIf="transferenciaInfo.configured">
+            <button
+              type="button"
+              class="btn-copy"
+              (click)="copiarDatosTransferencia()">
+              Copiar datos de transferencia
+            </button>
+          </div>
+
+          <ng-template #transferNotConfigured>
+            <div class="transfer-config-warning">
+              Los datos bancarios de transferencia aún no están configurados en el backend.
+            </div>
+          </ng-template>
+        </div>
+
+        <button
+          type="button"
+          class="btn-secondary"
+          [disabled]="!puedePagarPorTransferencia"
+          (click)="informarTransferencia()">
+          {{ procesandoTransferencia ? 'Informando transferencia...' : 'Ya hice la transferencia' }}
         </button>
       </div>
 
@@ -108,6 +179,14 @@
               <div class="cobro-detail">
                 <span>Cargo del sitio</span>
                 <strong>{{ formatPrice(pedido.cargoServicioSitio) }}</strong>
+              </div>
+              <div class="cobro-detail">
+                <span>Método informado</span>
+                <strong>{{ getMetodoCobroLabel(pedido) }}</strong>
+              </div>
+              <div class="cobro-detail" *ngIf="pedido.transferenciaReportadaAt">
+                <span>Transferencia avisada</span>
+                <strong>{{ pedido.transferenciaReportadaAt | date:'dd/MM/yyyy HH:mm' }}</strong>
               </div>
               <div class="cobro-detail" *ngIf="pedido.fechaPagoCobroSitio">
                 <span>Pago registrado</span>

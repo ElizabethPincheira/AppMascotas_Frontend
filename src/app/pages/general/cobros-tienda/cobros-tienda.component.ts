@@ -2,7 +2,12 @@ import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
-import { Pedido, PedidosService, ResumenCobrosTienda } from '../../../core/services/pedidos.service';
+import {
+  Pedido,
+  PedidosService,
+  ResumenCobrosTienda,
+  TransferenciaCobroInfo,
+} from '../../../core/services/pedidos.service';
 
 @Component({
   selector: 'app-cobros-tienda',
@@ -25,9 +30,21 @@ export class CobrosTiendaComponent {
   user = this.authService.getUser();
   cargandoCobros = false;
   procesandoPagoFlow = false;
+  procesandoTransferencia = false;
   pedidos: Pedido[] = [];
   flowStatus: 'paid' | 'pending' | 'failed' | null = null;
   flowPedidoId: string | null = null;
+  transferenciaMensaje = '';
+  transferenciaMensajeTipo: 'success' | 'warning' | 'error' | null = null;
+  transferenciaInfo: TransferenciaCobroInfo = {
+    configured: false,
+    banco: '',
+    titular: '',
+    rut: '',
+    tipoCuenta: '',
+    numeroCuenta: '',
+    email: '',
+  };
   resumen: ResumenCobrosTienda = {
     cargoPorPedido: 1000,
     totalPagado: 0,
@@ -64,6 +81,16 @@ export class CobrosTiendaComponent {
 
   get puedePagarConFlow(): boolean {
     return this.resumen.totalAdeudado > 0 && !this.procesandoPagoFlow;
+  }
+
+  get puedePagarPorTransferencia(): boolean {
+    return this.resumen.totalAdeudado > 0 && this.transferenciaInfo.configured && !this.procesandoTransferencia;
+  }
+
+  get transferenciaPendienteInformada(): boolean {
+    return this.pedidosConDeuda.some(
+      (pedido) => pedido.metodoCobroSitio === 'transferencia' && !!pedido.transferenciaReportadaAt,
+    );
   }
 
   formatPrice(value: number): string {
@@ -104,6 +131,19 @@ export class CobrosTiendaComponent {
     }
   }
 
+  get transferenciaMessageClass(): string {
+    switch (this.transferenciaMensajeTipo) {
+      case 'success':
+        return 'is-success';
+      case 'warning':
+        return 'is-pending';
+      case 'error':
+        return 'is-error';
+      default:
+        return '';
+    }
+  }
+
   volverAMiTienda(): void {
     this.router.navigate(['/mi-tienda']);
   }
@@ -129,14 +169,73 @@ export class CobrosTiendaComponent {
     }
   }
 
+  async informarTransferencia(): Promise<void> {
+    if (!this.puedePagarPorTransferencia) {
+      return;
+    }
+
+    this.procesandoTransferencia = true;
+
+    try {
+      const response = await this.pedidosService.reportTransferenciaCobro();
+      this.transferenciaMensaje =
+        response?.message ||
+        'Transferencia informada correctamente. Quedará pendiente hasta validación del administrador.';
+      this.transferenciaMensajeTipo = 'success';
+      await this.cargarCobros();
+    } catch (error: any) {
+      console.error('Error al informar transferencia:', error);
+      this.transferenciaMensaje =
+        error?.response?.data?.message ||
+        'No se pudo informar la transferencia. Intenta nuevamente en unos segundos.';
+      this.transferenciaMensajeTipo = 'error';
+    } finally {
+      this.procesandoTransferencia = false;
+    }
+  }
+
+  async copiarDatosTransferencia(): Promise<void> {
+    if (!this.transferenciaInfo.configured) {
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(this.getTransferenciaClipboardText());
+      this.transferenciaMensaje = 'Datos de transferencia copiados correctamente.';
+      this.transferenciaMensajeTipo = 'success';
+    } catch (error) {
+      console.error('Error al copiar datos de transferencia:', error);
+      this.transferenciaMensaje = 'No se pudieron copiar los datos de transferencia.';
+      this.transferenciaMensajeTipo = 'error';
+    }
+  }
+
+  getMetodoCobroLabel(pedido: Pedido): string {
+    if (pedido.estadoCobroSitio === 'pagado' && pedido.metodoCobroSitio === 'flow') {
+      return 'Pagado vía Flow';
+    }
+
+    if (pedido.metodoCobroSitio === 'transferencia' && pedido.transferenciaReportadaAt) {
+      return 'Transferencia informada';
+    }
+
+    if (pedido.metodoCobroSitio === 'flow') {
+      return 'Pendiente en Flow';
+    }
+
+    return 'Sin método informado';
+  }
+
   private async cargarCobros(): Promise<void> {
     this.cargandoCobros = true;
 
     try {
       const response = await this.pedidosService.getMisCobrosTienda();
       this.pedidos = response?.pedidos ?? [];
+      this.transferenciaInfo = response?.transferencia ?? this.transferenciaInfo;
       this.resumen = response?.resumen ?? this.resumen;
       this.reconcileFlowReturnState();
+      this.reconcileTransferState();
     } catch (error) {
       console.error('Error al cargar cobros de tienda:', error);
       this.pedidos = [];
@@ -173,6 +272,32 @@ export class CobrosTiendaComponent {
 
     if (this.flowStatus === 'failed') {
       this.flowStatus = 'pending';
+    }
+  }
+
+  private getTransferenciaClipboardText(): string {
+    const lines = [
+      `Banco: ${this.transferenciaInfo.banco}`,
+      `Titular: ${this.transferenciaInfo.titular}`,
+      this.transferenciaInfo.rut ? `RUT: ${this.transferenciaInfo.rut}` : '',
+      `Tipo de cuenta: ${this.transferenciaInfo.tipoCuenta}`,
+      `Numero de cuenta: ${this.transferenciaInfo.numeroCuenta}`,
+      this.transferenciaInfo.email ? `Correo: ${this.transferenciaInfo.email}` : '',
+      `Monto a transferir: ${this.formatPrice(this.resumen.totalAdeudado)}`,
+    ].filter(Boolean);
+
+    return lines.join('\n');
+  }
+
+  private reconcileTransferState(): void {
+    if (this.transferenciaMensaje) {
+      return;
+    }
+
+    if (this.transferenciaPendienteInformada) {
+      this.transferenciaMensaje =
+        'Ya informaste una transferencia. El pago seguirá pendiente hasta que el administrador la valide.';
+      this.transferenciaMensajeTipo = 'warning';
     }
   }
 }

@@ -14,18 +14,46 @@
     <section class="admin-cobros-metrics">
       <article class="admin-cobros-metric admin-cobros-metric--warning">
         <span>Total adeudado</span>
-        <strong>{{ formatPrice(resumenGeneral.totalAdeudado) }}</strong>
+        <strong>{{ formatPrice(resumenGeneralFiltrado.totalAdeudado) }}</strong>
       </article>
 
       <article class="admin-cobros-metric admin-cobros-metric--success">
         <span>Total pagado</span>
-        <strong>{{ formatPrice(resumenGeneral.totalPagado) }}</strong>
+        <strong>{{ formatPrice(resumenGeneralFiltrado.totalPagado) }}</strong>
       </article>
 
       <article class="admin-cobros-metric admin-cobros-metric--neutral">
         <span>Tiendas con deuda</span>
         <strong>{{ totalTiendasConDeuda }}</strong>
       </article>
+    </section>
+
+    <section class="admin-cobros-filters">
+      <div class="admin-cobros-filters__grid">
+        <label class="admin-cobros-field">
+          <span>Año</span>
+          <select [(ngModel)]="filtroAnio" name="filtroAnioCobrosAdmin">
+            <option value="">Todos los años</option>
+            <option *ngFor="let anio of aniosDisponibles" [value]="anio">{{ anio }}</option>
+          </select>
+        </label>
+
+        <label class="admin-cobros-field">
+          <span>Mes</span>
+          <select [(ngModel)]="filtroMes" name="filtroMesCobrosAdmin">
+            <option value="">Todos los meses</option>
+            <option *ngFor="let mes of mesesDisponibles" [value]="mes.value">{{ mes.label }}</option>
+          </select>
+        </label>
+      </div>
+
+      <button
+        type="button"
+        class="admin-cobros-filters__reset"
+        *ngIf="hayFiltrosActivos"
+        (click)="limpiarFiltros()">
+        Limpiar filtros
+      </button>
     </section>
 
     <section class="admin-cobros-list">
@@ -35,8 +63,12 @@
         No hay pedidos registrados para generar cobros todavía.
       </div>
 
-      <div class="admin-cobros-grid" *ngIf="!cargandoCobros && tiendas.length > 0">
-        <article class="store-charge-card" *ngFor="let tienda of tiendas; trackBy: trackByStoreId">
+      <div class="admin-cobros-state" *ngIf="!cargandoCobros && tiendas.length > 0 && tiendasFiltradas.length === 0">
+        No hay cobros para el año y mes seleccionados.
+      </div>
+
+      <div class="admin-cobros-grid" *ngIf="!cargandoCobros && tiendasFiltradas.length > 0">
+        <article class="store-charge-card" *ngFor="let tienda of tiendasFiltradas; trackBy: trackByStoreId">
           <div class="store-charge-card__header">
             <div>
               <span class="store-charge-card__eyebrow">Tienda</span>
@@ -72,6 +104,10 @@
                 <span>{{ pedido.createdAt | date:'dd/MM/yyyy HH:mm' }}</span>
                 <span>{{ pedido.comprador.nombreCompleto }}</span>
                 <span>Estado pedido: {{ pedido.estado }}</span>
+                <span>Método cobro: {{ getMetodoCobroLabel(pedido) }}</span>
+                <span *ngIf="pedido.transferenciaReportadaAt">
+                  Transferencia avisada: {{ pedido.transferenciaReportadaAt | date:'dd/MM/yyyy HH:mm' }}
+                </span>
               </div>
 
               <div class="order-charge-row__meta">

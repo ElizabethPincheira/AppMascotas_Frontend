@@ -2,12 +2,15 @@ import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
+import { PedidosService } from '../../../core/services/pedidos.service';
 import { UsersService } from '../../../core/services/users.service';
 
 interface AdminShortcut {
   title: string;
   description: string;
   path: string;
+  badge?: string;
+  highlight?: boolean;
 }
 
 interface AdminStatCard {
@@ -26,71 +29,96 @@ interface AdminStatCard {
 export class AdminComponent {
   private readonly authService = inject(AuthService);
   private readonly usersService = inject(UsersService);
+  private readonly pedidosService = inject(PedidosService);
 
   readonly user = this.authService.getUser();
   cargandoStats = true;
   stats: AdminStatCard[] = [];
-  readonly shortcuts: AdminShortcut[] = [
-    {
-      title: 'Ver usuarios',
-      description: 'Consulta los usuarios registrados, sus roles y si cuentan con tienda activa.',
-      path: '/admin/usuarios',
-    },
-    {
-      title: 'Gestionar tiendas',
-      description: 'Revisa solicitudes pendientes, aprueba negocios y registra rechazos con contexto.',
-      path: '/admin/tiendas',
-    },
-    {
-      title: 'Gestionar publicaciones',
-      description: 'Consulta los casos activos y verifica el contenido que aparece en la plataforma.',
-      path: '/mis-mascotas',
-    },
-    {
-      title: 'Gestionar colaboradores',
-      description: 'Revisa y gestiona las postulaciones de colaboradores recibidas.',
-      path: '/admin/colaboradores',
-    },
-    {
-      title: 'Cobros de tiendas',
-      description: 'Consulta montos adeudados, pagos registrados y marca cobros como pagados.',
-      path: '/admin/cobros-tiendas',
-    },
-    {
-      title: 'Ver cuenta',
-      description: 'Abre tu panel personal para actualizar tus datos o cambiar de seccion rapidamente.',
-      path: '/mi-cuenta',
-    },
-  ];
+  transferenciasAvisadasPendientes = 0;
+
+  get shortcuts(): AdminShortcut[] {
+    return [
+      {
+        title: 'Ver usuarios',
+        description: 'Consulta los usuarios registrados, sus roles y si cuentan con tienda activa.',
+        path: '/admin/usuarios',
+      },
+      {
+        title: 'Gestionar tiendas',
+        description: 'Revisa solicitudes pendientes, aprueba negocios y registra rechazos con contexto.',
+        path: '/admin/tiendas',
+      },
+      {
+        title: 'Gestionar publicaciones',
+        description: 'Consulta los casos activos y verifica el contenido que aparece en la plataforma.',
+        path: '/mis-mascotas',
+      },
+      {
+        title: 'Gestionar colaboradores',
+        description: 'Revisa y gestiona las postulaciones de colaboradores recibidas.',
+        path: '/admin/colaboradores',
+      },
+      {
+        title: 'Cobros de tiendas',
+        description:
+          this.transferenciasAvisadasPendientes > 0
+            ? 'Hay transferencias informadas pendientes de revisión desde las tiendas.'
+            : 'Consulta montos adeudados, pagos registrados y marca cobros como pagados.',
+        path: '/admin/cobros-tiendas',
+        badge:
+          this.transferenciasAvisadasPendientes > 0
+            ? `${this.transferenciasAvisadasPendientes} transferencia${this.transferenciasAvisadasPendientes === 1 ? '' : 's'}`
+            : undefined,
+        highlight: this.transferenciasAvisadasPendientes > 0,
+      },
+      {
+        title: 'Ver cuenta',
+        description: 'Abre tu panel personal para actualizar tus datos o cambiar de seccion rapidamente.',
+        path: '/mi-cuenta',
+      },
+    ];
+  }
 
   async ngOnInit(): Promise<void> {
     try {
-      const response = await this.usersService.getAdminStats();
+      const [statsResponse, cobrosResponse] = await Promise.all([
+        this.usersService.getAdminStats(),
+        this.pedidosService.getAdminCobrosTiendas(),
+      ]);
+
+      this.transferenciasAvisadasPendientes = (cobrosResponse?.tiendas ?? [])
+        .flatMap((tienda) => tienda.pedidos ?? [])
+        .filter(
+          (pedido) =>
+            pedido.estadoCobroSitio !== 'pagado' &&
+            pedido.metodoCobroSitio === 'transferencia' &&
+            !!pedido.transferenciaReportadaAt,
+        ).length;
 
       this.stats = [
         {
           label: 'Mascotas activas',
-          value: Number(response?.totalMascotasActivas ?? 0),
+          value: Number(statsResponse?.totalMascotasActivas ?? 0),
           accent: 'amber',
         },
         {
           label: 'Resueltas este mes',
-          value: Number(response?.totalMascotasResueltasEsteMes ?? 0),
+          value: Number(statsResponse?.totalMascotasResueltasEsteMes ?? 0),
           accent: 'green',
         },
         {
           label: 'Usuarios registrados',
-          value: Number(response?.totalUsuariosRegistrados ?? 0),
+          value: Number(statsResponse?.totalUsuariosRegistrados ?? 0),
           accent: 'blue',
         },
         {
           label: 'Tiendas aprobadas',
-          value: Number(response?.totalTiendasAprobadas ?? 0),
+          value: Number(statsResponse?.totalTiendasAprobadas ?? 0),
           accent: 'teal',
         },
         {
           label: 'Tiendas pendientes',
-          value: Number(response?.totalTiendasPendientes ?? 0),
+          value: Number(statsResponse?.totalTiendasPendientes ?? 0),
           accent: 'rose',
         },
       ];

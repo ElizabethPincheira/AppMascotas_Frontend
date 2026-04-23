@@ -34,8 +34,15 @@
     </section>
 
     <section class="admin-shortcuts">
-      <article class="admin-card" *ngFor="let shortcut of shortcuts">
-        <span class="admin-card__eyebrow">Herramienta</span>
+      <article
+        class="admin-card"
+        *ngFor="let shortcut of shortcuts"
+        [class.admin-card--highlight]="shortcut.highlight"
+      >
+        <div class="admin-card__topbar">
+          <span class="admin-card__eyebrow">Herramienta</span>
+          <span class="admin-card__badge" *ngIf="shortcut.badge">{{ shortcut.badge }}</span>
+        </div>
         <h2>{{ shortcut.title }}</h2>
         <p>{{ shortcut.description }}</p>
         <a class="admin-card__link" [routerLink]="shortcut.path">Abrir seccion</a>
