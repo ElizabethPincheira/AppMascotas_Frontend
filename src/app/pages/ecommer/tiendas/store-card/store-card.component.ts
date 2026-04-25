@@ -25,6 +25,10 @@ export class StoreCardComponent {
   ];
 
   get todaySchedule(): string {
+    if (!this.hasWeeklySchedule) {
+      return this.store.schedule || 'Horario no informado';
+    }
+
     const today = this.dayOrder[new Date().getDay()];
     const entry = this.store.weeklySchedule.find((item) => item.dia === today);
 
@@ -37,6 +41,10 @@ export class StoreCardComponent {
     }
 
     return `Hoy ${entry.apertura} - ${entry.cierre}`;
+  }
+
+  get hasWeeklySchedule(): boolean {
+    return this.store.weeklySchedule.length > 0;
   }
 
   get orderedWeeklySchedule(): StoreScheduleEntry[] {

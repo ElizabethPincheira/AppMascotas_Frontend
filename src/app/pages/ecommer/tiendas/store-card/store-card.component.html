@@ -1,17 +1,49 @@
 <article class="store-card">
-  <header class="store-card__header">
-    <div>
-      <h3>{{ store.name }}</h3>
-      <p class="store-card__location">{{ store.comuna }} · {{ store.region }}</p>
+  <figure class="store-card__media">
+    <img class="store-card__image" [src]="store.heroImage" [alt]="'Imagen de la tienda ' + store.name" loading="lazy" />
+    <div class="store-card__media-overlay"></div>
+
+    <div class="store-card__media-top">
+      <span class="store-card__pill store-card__pill--rating">
+        <span aria-hidden="true">&#9733;</span>
+        {{ store.rating | number:'1.1-1' }}
+      </span>
+      <span class="store-card__pill">{{ store.eta }}</span>
     </div>
-  </header>
+
+    <figcaption class="store-card__hero-copy">
+      <p class="store-card__location">{{ store.comuna }} · {{ store.region }}</p>
+      <h3>{{ store.name }}</h3>
+      <p class="store-card__slogan">{{ store.slogan }}</p>
+    </figcaption>
+  </figure>
+
+  <section class="store-card__stats store-card__stats--hero">
+    <div class="store-card__stat">
+      <span class="store-card__label">Despacho</span>
+      <strong>{{ store.deliveryFee }}</strong>
+    </div>
+    <div class="store-card__stat">
+      <span class="store-card__label">Cobertura</span>
+      <strong>{{ store.coverage.length }} comuna(s)</strong>
+    </div>
+    <div class="store-card__stat store-card__stat--wide">
+      <span class="store-card__label">Direccion base</span>
+      <strong>{{ store.address }}</strong>
+    </div>
+  </section>
 
   <p class="store-card__highlight">{{ store.highlight }}</p>
 
   <section class="store-card__schedule">
     <span class="store-card__label">Horario de atencion</span>
     <strong>{{ todaySchedule }}</strong>
-    <button type="button" class="store-card__schedule-toggle" (click)="toggleWeeklySchedule()">
+    <button
+      *ngIf="hasWeeklySchedule"
+      type="button"
+      class="store-card__schedule-toggle"
+      (click)="toggleWeeklySchedule()"
+    >
       {{ showWeeklySchedule ? 'Ocultar semana' : 'Ver semana completa' }}
     </button>
 
@@ -46,7 +78,6 @@
   </section>
 
   <div class="store-card__footer">
-    <span class="store-card__support">Pedido demo con impacto solidario</span>
     <a class="store-card__button" [routerLink]="['/tiendas', store.id]">Ver tienda</a>
   </div>
 </article>
