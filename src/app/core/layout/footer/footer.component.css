@@ -5,18 +5,16 @@
   width: 100%;
 }
 
-/* Color Palette */
 :root {
-  --footer-bg-light: #f6fafe;
-  --footer-bg-dark: #0f172a;
+  --footer-bg-light: #f0f7ff;
   --footer-text-primary: #2a343a;
   --footer-text-secondary: #566167;
   --footer-text-muted: #a9b3bb;
   --footer-primary: #005bc4;
-  --footer-primary-container: #4388fd;
-  --footer-surface-container: #e7eff5;
-  --footer-surface-container-low: #eef4fa;
-  --footer-surface-container-high: #e1e9f0;
+  --footer-primary-light: #4388fd;
+  --footer-surface-container: #deeeff;
+  --footer-surface-container-low: #e8f2ff;
+  --footer-surface-container-high: #d4e4f8;
 }
 
 /* Material Symbols */
@@ -44,7 +42,7 @@
   background: var(--footer-bg-light);
   border-radius: 3rem 3rem 0 0;
   width: 100%;
-  box-shadow: 0 -20px 40px rgba(0, 91, 196, 0.04);
+  box-shadow: 0 -20px 40px rgba(0, 91, 196, 0.05);
   position: relative;
   overflow: hidden;
   margin-top: auto;
@@ -54,8 +52,8 @@
 .footer-modern__texture {
   position: absolute;
   inset: 0;
-  opacity: 0.1;
-  background: radial-gradient(circle at top right, rgba(67, 136, 253, 0.2), transparent);
+  opacity: 0.12;
+  background: radial-gradient(circle at top right, rgba(67, 136, 253, 0.25), transparent);
   pointer-events: none;
 }
 
@@ -109,22 +107,17 @@
 }
 
 .footer-modern__brand-icon {
-  width: 40px;
-  height: 40px;
-  background: #005bc4 !important;
-  border-radius: 9999px;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 16px rgba(0, 91, 196, 0.3);
-  color: white !important;
   flex-shrink: 0;
 }
 
-.footer-modern__brand-icon .material-symbols-outlined {
-  font-size: 24px;
-  font-weight: 700;
-  color: white !important;
+.footer-modern__brand-logo {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  mix-blend-mode: multiply;
 }
 
 .footer-modern__brand-text {
@@ -152,7 +145,7 @@
   width: 40px;
   height: 40px;
   border-radius: 9999px;
-  background: #e7eff5 !important;
+  background: #deeeff !important;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -213,7 +206,7 @@
   letter-spacing: 0.2em;
   color: #005bc4 !important;
   margin: 0;
-  font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+  font-family: "Nunito", "Trebuchet MS", sans-serif;
 }
 
 /* Navigation Links */
@@ -269,7 +262,7 @@
 
 /* Newsletter Section */
 .footer-modern__newsletter {
-  background: #f0f5ff !important;
+  background: #e0eeff !important;
   padding: 1.5rem;
   border-radius: 0.75rem;
   border: 1px solid rgba(0, 91, 196, 0.15);
@@ -324,7 +317,7 @@
   padding: 0.5rem 1rem;
   border: none;
   border-radius: 9999px;
-  background: #005bc4 !important;
+  background: linear-gradient(180deg, #005bc4, #0048a3) !important;
   color: white !important;
   font-size: 0.75rem;
   font-weight: 700;
@@ -345,8 +338,8 @@
 
 /* Bottom Section */
 .footer-modern__bottom {
-  background: #f8f9fb;
-  border-top: 1px solid #e1e9f0;
+  background: #e8f2ff;
+  border-top: 1px solid #d4e4f8;
   padding: 2rem;
   width: calc(100% + 4rem);
   margin-left: -2rem;
@@ -416,7 +409,7 @@
 
   .footer-modern {
     border-radius: 2rem 2rem 0 0;
-    box-shadow: 0 -15px 30px rgba(0, 91, 196, 0.03);
+    box-shadow: 0 -15px 30px rgba(0, 91, 196, 0.04);
   }
 
   .footer-modern__brand-section {

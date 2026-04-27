@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="currentColor">
+  <!-- Outer ring -->
+  <path fill-rule="evenodd" clip-rule="evenodd" d="M100 8C49.4 8 8 49.4 8 100s41.4 92 92 92 92-41.4 92-92S150.6 8 100 8zm0 12c44.2 0 80 35.8 80 80s-35.8 80-80 80-80-35.8-80-80 35.8-80 80-80z"/>
+
+  <!-- Cat body (left, front) -->
+  <ellipse cx="83" cy="128" rx="22" ry="20"/>
+  <!-- Cat head -->
+  <circle cx="79" cy="96" r="17"/>
+  <!-- Cat left ear -->
+  <polygon points="66,87 70,68 80,83"/>
+  <!-- Cat right ear -->
+  <polygon points="80,83 88,67 92,84"/>
+  <!-- Cat tail - curves left and up around body -->
+  <path d="M62 140 C48 148 42 160 52 168 C62 176 74 166 70 156 C68 150 63 148 62 140Z"/>
+
+  <!-- Dog body (right, back) -->
+  <ellipse cx="120" cy="128" rx="30" ry="26"/>
+  <!-- Dog head -->
+  <circle cx="126" cy="90" r="23"/>
+  <!-- Dog snout -->
+  <ellipse cx="140" cy="97" rx="11" ry="9"/>
+  <!-- Dog nose -->
+  <circle cx="146" cy="92" r="4" fill="white"/>
+  <!-- Dog floppy ear (left side) -->
+  <path d="M107 80 C96 78 88 88 90 102 C92 112 102 116 108 108 C112 102 112 88 107 80Z"/>
+  <!-- Dog tail hint (right side) -->
+  <path d="M148 120 C158 110 162 98 158 90 C155 84 150 86 148 92 C146 98 150 110 148 120Z"/>
+
+  <!-- Hand / palm at bottom supporting animals -->
+  <path d="M68 150 C62 158 62 168 68 172 C74 176 80 174 84 170 L100 178 L116 170 C120 174 126 176 132 172 C138 168 138 158 132 150 C118 158 82 158 68 150Z"/>
+</svg>

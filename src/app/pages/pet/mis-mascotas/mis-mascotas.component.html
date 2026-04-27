@@ -1,17 +1,6 @@
 <section class="mis-mascotas-page">
   <div class="mis-mascotas-shell">
-    <section class="mis-mascotas-hero">
-      <div>
-        <span class="mis-mascotas-hero__eyebrow">Panel personal</span>
-        <h1>Administra tus publicaciones y mantén cada caso al día.</h1>
-        <p>
-          Desde aquí puedes revisar reportes propios o de terceros, editar información importante, eliminar registros
-          o crear una nueva publicación.
-        </p>
-      </div>
-
-      <a class="mis-mascotas-hero__button" routerLink="/publicar">Nueva publicación</a>
-    </section>
+  
 
     <section class="mis-mascotas-panel" *ngIf="!cargando; else loadingState">
       <div class="section-heading">
