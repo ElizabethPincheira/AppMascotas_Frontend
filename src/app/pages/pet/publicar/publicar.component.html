@@ -94,52 +94,7 @@
           <span>Contacto</span>
           <small class="contact-section__helper">{{ helperContacto }}</small>
 
-          <div class="contact-selector" *ngIf="debeMostrarSelectorContacto">
-            <label class="contact-selector__option" [class.is-active]="modoContacto === 'mail'">
-              <input type="radio" [(ngModel)]="modoContacto" name="modoContacto" value="mail">
-              <div class="contact-selector__content">
-                <span class="contact-selector__title">Correo electrónico</span>
-                <small class="contact-selector__description">Ideal si prefieres responder con calma y dejar registro del caso.</small>
-              </div>
-            </label>
-
-            <label class="contact-selector__option" [class.is-active]="modoContacto === 'telefono'">
-              <input type="radio" [(ngModel)]="modoContacto" name="modoContacto" value="telefono">
-              <div class="contact-selector__content">
-                <span class="contact-selector__title">Teléfono</span>
-                <small class="contact-selector__description">Mejor si necesitas que te contacten rápido ante una pista o aviso.</small>
-              </div>
-            </label>
-          </div>
-
-          <div class="contact-card" *ngIf="modoContacto === 'mail' && puedeUsarCorreoPerfil">
-            <span class="contact-card__label">Correo del perfil</span>
-            <input
-              type="email"
-              [value]="userEmail || 'No hay correo disponible en tu perfil'"
-              readonly>
-            <small *ngIf="!userEmail">Para usar esta opción, tu sesión debe tener un correo guardado.</small>
-          </div>
-
-          <div class="contact-card" *ngIf="modoContacto === 'mail' && !puedeUsarCorreoPerfil">
-            <span class="contact-card__label">Correo de contacto</span>
-            <input
-              type="email"
-              [(ngModel)]="contacto"
-              #contactoMailModel="ngModel"
-              name="contactoMail"
-              placeholder="correo@ejemplo.cl"
-              [required]="modoContacto === 'mail' && !esSituacionDeCalle">
-            <small class="field-error" *ngIf="debeMostrarError(contactoMailModel) && contactoMailModel.errors?.['required']">
-              Ingresa un correo de contacto.
-            </small>
-            <small class="field-error" *ngIf="debeMostrarError(contactoMailModel, correoManualInvalido)">
-              El correo no tiene un formato válido.
-            </small>
-            <small>Usaremos este correo para que puedan contactarte por este caso.</small>
-          </div>
-
-          <div class="contact-card" *ngIf="modoContacto === 'telefono'">
+          <div class="contact-card">
             <span class="contact-card__label">Teléfono de contacto</span>
             <input
               type="tel"

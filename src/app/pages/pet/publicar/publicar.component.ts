@@ -51,7 +51,7 @@ export class PublicarComponent implements AfterViewInit {
   regionPerdida = '';
   caracteristicasAdicionales = '';
   contacto = '';
-  modoContacto: 'mail' | 'telefono' = 'mail';
+  modoContacto: 'telefono' = 'telefono';
   modoUbicacion: 'mapa' | 'gps' = 'mapa';
   ubicacionGpsCargando = false;
   ubicacionGpsLista = false;
@@ -96,7 +96,6 @@ export class PublicarComponent implements AfterViewInit {
   mapCenterLng = -71.543;
   mapZoom = 5;
   private readonly googleMapsApiKey = environment.googleMapsApiKey;
-  private readonly emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   googleMapsDisponible = false;
   googleMapsError = '';
   private googleMap?: any;
@@ -143,12 +142,8 @@ export class PublicarComponent implements AfterViewInit {
     return new Date().toISOString().slice(0, 10);
   }
 
-  get userEmail(): string {
-    return this.authService.getUser()?.email?.trim?.() || '';
-  }
-
   get contactoSeleccionado(): string {
-    return this.modoContacto === 'mail' ? this.userEmail : this.contacto.trim();
+    return this.contacto.trim();
   }
 
   get estaAutenticado(): boolean {
@@ -206,7 +201,7 @@ export class PublicarComponent implements AfterViewInit {
   }
 
   get puedeUsarCorreoPerfil(): boolean {
-    return this.estaAutenticado && !!this.userEmail;
+    return false;
   }
 
   get debeMostrarSelectorContacto(): boolean {
@@ -225,8 +220,8 @@ export class PublicarComponent implements AfterViewInit {
 
   get helperContacto(): string {
     return this.esSituacionDeCalle
-      ? 'Puedes dejar un correo o teléfono si quieres que te contacten, pero no es obligatorio.'
-      : 'Deja un medio de contacto para que puedan avisarte rápidamente.';
+      ? 'Puedes dejar un teléfono si quieres que te contacten, pero no es obligatorio.'
+      : 'Deja un teléfono para que puedan avisarte rápidamente.';
   }
 
   onEstadoChange(): void {
@@ -249,12 +244,7 @@ export class PublicarComponent implements AfterViewInit {
   }
 
   get correoManualInvalido(): boolean {
-    if (this.modoContacto !== 'mail' || this.puedeUsarCorreoPerfil) {
-      return false;
-    }
-
-    const correo = this.contacto.trim();
-    return !!correo && !this.emailRegex.test(correo);
+    return false;
   }
 
   get telefonoContactoInvalido(): boolean {
@@ -613,8 +603,7 @@ export class PublicarComponent implements AfterViewInit {
     this.direccionGps = this.ubicacionPerdida || (this.ubicacionGpsLista ? 'Punto guardado en el mapa' : '');
     this.caracteristicasAdicionales = mascota.caracteristicasAdicionales ?? '';
     const contactoMascota = mascota.contacto?.trim() ?? '';
-    this.modoContacto = contactoMascota && contactoMascota === this.userEmail ? 'mail' : 'telefono';
-    this.contacto = this.modoContacto === 'telefono' ? contactoMascota : '';
+    this.contacto = contactoMascota;
     this.existingImagePreviews = (mascota.imagenes ?? []).map((imagen) =>
       imagen.startsWith('data:') ? imagen : `data:image/jpeg;base64,${imagen}`
     );
@@ -654,16 +643,8 @@ export class PublicarComponent implements AfterViewInit {
   }
 
   private isContactoValido(): boolean {
-    if (this.esSituacionDeCalle && !this.contacto.trim() && (!this.puedeUsarCorreoPerfil || this.modoContacto !== 'mail')) {
+    if (this.esSituacionDeCalle && !this.contacto.trim()) {
       return true;
-    }
-
-    if (this.modoContacto === 'mail') {
-      if (this.puedeUsarCorreoPerfil) {
-        return true;
-      }
-
-      return this.emailRegex.test(this.contacto.trim());
     }
 
     const telefono = this.contacto.replace(/\s+/g, '');
