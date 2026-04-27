@@ -3,6 +3,7 @@ import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { environment } from '../../../../environments/environment';
+import { AuthService } from '../../../core/services/auth.service';
 import { MascotaService } from '../../../core/services/mascota.service';
 import { SeoService } from '../../../core/services/seo.service';
 import { UbicacionesService } from '../../../core/services/ubicaciones.service';
@@ -50,7 +51,12 @@ export class ListaMascotasComponent implements AfterViewInit {
     private seoService: SeoService,
     private ubicacionesService: UbicacionesService,
     private route: ActivatedRoute,
+    private authService: AuthService,
   ) {}
+
+  get isLogueado(): boolean {
+    return this.authService.isLogged();
+  }
 
   async ngOnInit() {
     try {

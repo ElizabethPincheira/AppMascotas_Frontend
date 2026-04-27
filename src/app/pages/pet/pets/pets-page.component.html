@@ -1,59 +1,21 @@
 <section class="pets-showcase">
   <div class="pets-shell">
-    <section class="home-filters">
-      <div class="home-filters__intro">
-        <span class="section-kicker">Inicio con filtros</span>
-        <h2>{{ inicioFiltrosTitulo }}</h2>
-        <p>{{ inicioFiltrosDescripcion }}</p>
-      </div>
 
-      <div class="home-filters__toolbar">
-        <div class="home-filter-chips">
-          <button
-            *ngFor="let modo of modosInicio"
-            type="button"
-            class="home-filter-chip"
-            [class.is-active]="filtroModoInicio === modo.value"
-            (click)="setFiltroModoInicio(modo.value)">
-            {{ modo.label }}
-          </button>
+    <!-- Hero -->
+    <div class="home-hero">
+      <div class="home-hero__content">
+        
+        <h1>Conecta, <span>encuentra</span> y cuida</h1>
+      
+        <div class="home-hero__actions">
+          <a *ngIf="isLogueado" class="home-hero__cta home-hero__cta--secondary" routerLink="/publicar">
+            <span class="material-symbols-outlined" style="font-size:1.1rem;margin-right:0.3rem;">add_circle</span>
+            Publicar mascota
+          </a>
         </div>
-
-        <div class="home-filters__controls">
-          <label class="home-filter-field">
-            <span>Especie</span>
-            <select
-              [(ngModel)]="filtroEspecie"
-              name="filtroEspecieInicio"
-              (ngModelChange)="activarExploracionInicio()">
-              <option *ngFor="let especie of especiesFiltro" [value]="especie">{{ especie }}</option>
-            </select>
-          </label>
-
-          <label class="home-filter-field home-filter-field--search">
-            <span>Buscar</span>
-            <input
-              type="text"
-              [(ngModel)]="filtroTexto"
-              (ngModelChange)="activarExploracionInicio()"
-              name="filtroTextoInicio"
-              placeholder="Nombre, raza, comuna o región">
-          </label>
-        </div>
+   
       </div>
-
-      <div class="home-filters__summary">
-        <strong>{{ resultadosInicioTexto }}</strong>
-        <span *ngIf="hayFiltrosInicioActivos">con los filtros actuales</span>
-        <button
-          *ngIf="hayFiltrosInicioActivos"
-          type="button"
-          class="home-filters__reset"
-          (click)="limpiarFiltrosInicio()">
-          Limpiar filtros
-        </button>
-      </div>
-    </section>
+    </div>
 
     <section class="section-band" *ngIf="!mostrarVistaCurada">
       <div class="section-heading section-heading--wide">

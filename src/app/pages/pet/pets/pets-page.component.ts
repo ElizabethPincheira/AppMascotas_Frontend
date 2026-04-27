@@ -216,6 +216,10 @@ export class PetsPageComponent {
     ).length;
   }
 
+  get isLogueado(): boolean {
+    return this.authService.isLogged();
+  }
+
   get rutaAgregarMascota(): string {
     return this.authService.isLogged() ? '/publicar' : '/login';
   }
