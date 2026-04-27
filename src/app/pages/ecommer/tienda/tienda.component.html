@@ -1,53 +1,35 @@
 <ng-container *ngIf="!cargando && store as store; else storeState">
   <section class="store-detail-page">
     <div class="store-detail-shell">
-      <nav class="breadcrumb">
-        <a routerLink="/tiendas">Tiendas</a>
-        <span>/</span>
-        <span>{{ store.name }}</span>
-      </nav>
+     
 
-      <section class="store-hero">
-        <div class="store-hero__content">
-          <span class="store-hero__eyebrow">{{ store.comuna }} · {{ store.region }}</span>
-          <h1>{{ store.name }}</h1>
-          <p class="store-hero__slogan">{{ store.slogan }}</p>
-          <p class="store-hero__description">{{ store.description }}</p>
-
-          <div class="store-hero__actions">
-            <a class="hero-link hero-link--solid" href="#productos">Ver productos</a>
-            <a class="hero-link hero-link--ghost" routerLink="/tiendas">Volver a tiendas</a>
+      <div class="store-header">
+        <div class="store-header__content">
+          <div class="store-header__top">
+            <div class="store-header__info">
+              <h1 class="store-header__title">{{ store.name }}</h1>
+              <p class="store-header__slogan" *ngIf="store.slogan">{{ store.slogan }}</p>
+            </div>
           </div>
+          
+          <div class="store-header__meta">
+            <span class="store-meta-item" *ngIf="store.comuna">
+              <span class="store-meta-item__icon">📍</span>
+              <span class="store-meta-item__text">{{ store.comuna }}, {{ store.region }}</span>
+            </span>
+            <span class="store-meta-item" *ngIf="store.deliveryFee">
+              <span class="store-meta-item__icon">🚚</span>
+              <span class="store-meta-item__text">{{ store.deliveryFee }}</span>
+            </span>
+            <span class="store-meta-item" *ngIf="store.eta">
+              <span class="store-meta-item__icon">⏱</span>
+              <span class="store-meta-item__text">{{ store.eta }}</span>
+            </span>
+          </div>
+          
+          <p class="store-header__description" *ngIf="store.description">{{ store.description }}</p>
         </div>
-
-        <div class="store-hero__media">
-          <img [src]="store.heroImage" [alt]="store.name" />
-        </div>
-      </section>
-
-      <section class="store-summary">
-        <article class="summary-card">
-          <span class="summary-card__label">Tiempo estimado</span>
-          <strong>{{ store.eta }}</strong>
-        </article>
-
-        <article class="summary-card">
-          <span class="summary-card__label">Despacho</span>
-          <strong>{{ store.deliveryFee }}</strong>
-          <p>Tarifa referencial para pedidos urbanos y compras pequenas.</p>
-        </article>
-
-        <article class="summary-card">
-          <span class="summary-card__label">Calificación</span>
-          <strong>{{ store.rating }} / 5</strong>
-        </article>
-
-        <article class="summary-card">
-          <span class="summary-card__label">Horario</span>
-          <strong>{{ store.schedule }}</strong>
-          <p>{{ store.address }}</p>
-        </article>
-      </section>
+      </div>
 
       <section class="store-layout">
         <div class="store-main">
@@ -61,33 +43,42 @@
             </div>
 
             <div class="products-grid">
-              <article class="product-card" *ngFor="let product of store.products; trackBy: trackByProductId">
-                <img class="product-card__image" [src]="product.image" [alt]="product.name" />
+              <article class="product-card" *ngFor="let product of store.products; trackBy: trackByProductId" [class.product-card--unavailable]="!product.disponible">
+                <div class="product-card__image-wrapper">
+                  <img class="product-card__image" [src]="product.image" [alt]="product.name" />
+                  <div class="product-card__overlay">
+                    <button
+                      type="button"
+                      class="product-card__quick-add"
+                      [disabled]="!product.disponible"
+                      (click)="agregarAlCarrito(product)">
+                      <span *ngIf="product.disponible">Agregar al carrito</span>
+                      <span *ngIf="!product.disponible">No disponible</span>
+                    </button>
+                  </div>
+                  <span *ngIf="product.disponible" class="product-card__badge">Disponible</span>
+                </div>
 
                 <div class="product-card__body">
-                  <div class="product-card__header">
-                    <span class="product-card__category">{{ product.category }}</span>
-                    <strong class="product-card__price">{{ product.price }}</strong>
+                  <div class="product-card__category-tag">
+                    {{ product.category }}
                   </div>
 
-                  <h3>{{ product.name }}</h3>
-                  <p>{{ product.description }}</p>
+                  <h3 class="product-card__title">{{ product.name }}</h3>
+                  <p class="product-card__description">{{ product.description }}</p>
 
                   <div class="product-card__tags">
                     <span
                       *ngFor="let tag of product.tags"
-                      [class.product-card__tag--unavailable]="tag === 'No disponible'">
+                      [class.product-card__tag--unavailable]="tag === 'No disponible'"
+                      class="product-card__tag">
                       {{ tag }}
                     </span>
                   </div>
 
-                  <button
-                    type="button"
-                    class="product-card__button"
-                    [disabled]="!product.disponible"
-                    (click)="agregarAlCarrito(product)">
-                    {{ product.disponible ? 'Agregar al carrito' : 'No disponible' }}
-                  </button>
+                  <div class="product-card__footer">
+                    <strong class="product-card__price">{{ product.price }}</strong>
+                  </div>
                 </div>
               </article>
             </div>
@@ -96,39 +87,7 @@
       
         </div>
 
-        <aside class="store-sidebar">
-          <section class="panel panel--compact">
-            <span class="panel__label">Cobertura</span>
-            <h2>Despacha a</h2>
-            <ul class="coverage-list">
-              <li *ngFor="let zone of store.coverage">{{ zone }}</li>
-            </ul>
-          </section>
-
-          <section class="panel panel--compact">
-            <span class="panel__label">Categorías</span>
-            <h2>Especialidad</h2>
-            <div class="category-list">
-              <span *ngFor="let category of store.categories">{{ category }}</span>
-            </div>
-          </section>
-
-          <section class="panel panel--compact">
-            <span class="panel__label">Mas tiendas</span>
-            <h2>Sigue explorando</h2>
-            <div class="related-stores">
-              <a
-                *ngFor="let relatedStore of featuredStores"
-                class="related-store"
-                [routerLink]="['/tiendas', relatedStore.id]"
-                [class.related-store--active]="relatedStore.id === store.id"
-              >
-                <strong>{{ relatedStore.name }}</strong>
-                <span>{{ relatedStore.comuna }}</span>
-              </a>
-            </div>
-          </section>
-        </aside>
+    
       </section>
     </div>
   </section>
