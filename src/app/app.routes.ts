@@ -81,18 +81,6 @@ export const routes: Routes = [
             .then(m => m.ColaboradoresComponent)
       },
       {
-        path: 'fauna',
-        loadComponent: () =>
-          import('./pages/pet/fauna/fauna.component')
-            .then(m => m.FaunaComponent)
-      },
-      {
-        path: 'donar',
-        loadComponent: () =>
-          import('./pages/pet/donaciones/donaciones.component')
-            .then(m => m.DonacionesComponent)
-      },
-      {
         path: 'mascotas/:id',
         loadComponent: () =>
           import('./pages/pet/detalle-mascota/detalle-mascota.component')
