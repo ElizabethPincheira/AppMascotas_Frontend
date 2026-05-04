@@ -31,6 +31,7 @@ export interface StoreProduct {
   image: string;
   description: string;
   disponible: boolean;
+  stock?: number;
   tags: string[];
 }
 

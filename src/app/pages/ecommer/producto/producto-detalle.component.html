@@ -1,0 +1,166 @@
+<ng-container *ngIf="!cargando && store && product; else productState">
+  <section class="product-detail-page">
+    <div class="product-detail-shell">
+      <nav class="product-breadcrumb" aria-label="Ruta de navegación">
+        <a routerLink="/tiendas">Tiendas</a>
+        <span>/</span>
+        <a [routerLink]="['/tiendas', store.id]">{{ store.name }}</a>
+        <span>/</span>
+        <strong>{{ product.name }}</strong>
+      </nav>
+
+      <section class="product-hero">
+        <div class="product-hero__media">
+          <img [src]="product.image" [alt]="product.name" />
+          <span
+            class="product-hero__badge"
+            [class.product-hero__badge--unavailable]="!product.disponible"
+          >
+            {{ product.disponible ? 'Disponible' : 'No disponible' }}
+          </span>
+        </div>
+
+        <div class="product-hero__content">
+          <span class="product-hero__eyebrow">{{ product.category }}</span>
+          <h1>{{ product.name }}</h1>
+          <p class="product-hero__store">Vendido por {{ store.name }}</p>
+          <p class="product-hero__description">{{ product.description }}</p>
+
+          <div class="product-price-panel">
+            <span>Precio</span>
+            <strong>{{ product.price }}</strong>
+            <p>{{ stockLabel }}</p>
+          </div>
+
+          <div class="product-purchase">
+            <div class="product-quantity" aria-label="Cantidad">
+              <button type="button" (click)="disminuirCantidad()" [disabled]="cantidad <= 1">
+                <span class="material-symbols-outlined">remove</span>
+              </button>
+              <strong>{{ cantidad }}</strong>
+              <button type="button" (click)="aumentarCantidad()">
+                <span class="material-symbols-outlined">add</span>
+              </button>
+            </div>
+
+            <button
+              type="button"
+              class="product-add"
+              [disabled]="!product.disponible"
+              (click)="agregarAlCarrito()"
+            >
+              <span class="material-symbols-outlined">shopping_cart</span>
+              {{ product.disponible ? 'Agregar al carrito' : 'No disponible' }}
+            </button>
+          </div>
+
+          <div class="product-subtotal" *ngIf="product.disponible">
+            <span>Subtotal estimado</span>
+            <strong>{{ formatPrice(subtotal) }}</strong>
+          </div>
+        </div>
+      </section>
+
+      <section class="product-info-grid">
+        <article class="product-info-card">
+          <span class="product-info-card__icon material-symbols-outlined">storefront</span>
+          <div>
+            <h2>Tienda</h2>
+            <p>{{ store.comuna }}, {{ store.region }}</p>
+            <a [routerLink]="['/tiendas', store.id]">Ver tienda completa</a>
+          </div>
+        </article>
+
+        <article class="product-info-card">
+          <span class="product-info-card__icon material-symbols-outlined">local_shipping</span>
+          <div>
+            <h2>Entrega</h2>
+            <p>{{ store.deliveryFee }} · {{ store.eta }}</p>
+          </div>
+        </article>
+
+        <article class="product-info-card product-info-card--schedule">
+          <span class="product-info-card__icon material-symbols-outlined">schedule</span>
+          <div>
+            <div class="schedule-card__header">
+              <div>
+                <h2>Horario</h2>
+                <p>{{ todayScheduleLabel }}</p>
+              </div>
+              <span
+                class="schedule-card__status"
+                [class.schedule-card__status--closed]="todaySchedule && !todaySchedule.abierto"
+              >
+                {{ scheduleStatusLabel }}
+              </span>
+            </div>
+
+            <div class="schedule-card__week" *ngIf="hasWeeklySchedule">
+              <div
+                class="schedule-card__day"
+                *ngFor="let item of orderedWeeklySchedule"
+                [class.schedule-card__day--today]="isTodaySchedule(item)"
+                [class.schedule-card__day--closed]="!item.abierto"
+              >
+                <span>{{ item.dia }}</span>
+                <strong>{{ item.abierto ? (item.apertura + ' - ' + item.cierre) : 'Cerrado' }}</strong>
+              </div>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <section class="related-products" *ngIf="relatedProducts.length > 0">
+        <div class="section-heading">
+          <div>
+            <span class="section-heading__eyebrow">También en esta tienda</span>
+            <h2>Productos relacionados</h2>
+          </div>
+        </div>
+
+        <div class="related-products__grid">
+          <article class="related-product" *ngFor="let relatedProduct of relatedProducts; trackBy: trackByProductId">
+            <a [routerLink]="['/tiendas', store.id, 'productos', relatedProduct.productoId]">
+              <img [src]="relatedProduct.image" [alt]="relatedProduct.name" />
+            </a>
+            <div>
+              <span>{{ relatedProduct.category }}</span>
+              <h3>
+                <a [routerLink]="['/tiendas', store.id, 'productos', relatedProduct.productoId]">
+                  {{ relatedProduct.name }}
+                </a>
+              </h3>
+              <strong>{{ relatedProduct.price }}</strong>
+              <button
+                type="button"
+                [disabled]="!relatedProduct.disponible"
+                (click)="agregarAlCarrito(relatedProduct)"
+              >
+                {{ relatedProduct.disponible ? 'Agregar' : 'No disponible' }}
+              </button>
+            </div>
+          </article>
+        </div>
+      </section>
+    </div>
+  </section>
+</ng-container>
+
+<ng-template #productState>
+  <section class="product-detail-page">
+    <div class="product-detail-shell">
+      <section class="empty-state" *ngIf="cargando; else productNotFound">
+        <h1>Cargando producto...</h1>
+        <p>Estamos preparando el detalle del producto seleccionado.</p>
+      </section>
+    </div>
+  </section>
+</ng-template>
+
+<ng-template #productNotFound>
+  <section class="empty-state">
+    <h1>Producto no encontrado</h1>
+    <p>El producto que buscas no existe o ya no está disponible en esta tienda.</p>
+    <a routerLink="/tiendas" class="product-link product-link--solid">Volver a tiendas</a>
+  </section>
+</ng-template>

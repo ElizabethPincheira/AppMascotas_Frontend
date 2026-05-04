@@ -37,7 +37,7 @@
             <div class="section-heading">
               <div>
                 <span class="section-heading__eyebrow">Catálogo</span>
-                <h2>Productos destacados</h2>
+                <h2>Productos</h2>
               </div>
               <div class="section-heading__meta">{{ store.products.length }} productos</div>
             </div>
@@ -45,7 +45,13 @@
             <div class="products-grid">
               <article class="product-card" *ngFor="let product of store.products; trackBy: trackByProductId" [class.product-card--unavailable]="!product.disponible">
                 <div class="product-card__image-wrapper">
-                  <img class="product-card__image" [src]="product.image" [alt]="product.name" />
+                  <a
+                    class="product-card__media-link"
+                    [routerLink]="['/tiendas', store.id, 'productos', product.productoId]"
+                    [attr.aria-label]="'Ver detalle de ' + product.name"
+                  >
+                    <img class="product-card__image" [src]="product.image" [alt]="product.name" />
+                  </a>
                   <div class="product-card__overlay">
                     <button
                       type="button"
@@ -64,7 +70,14 @@
                     {{ product.category }}
                   </div>
 
-                  <h3 class="product-card__title">{{ product.name }}</h3>
+                  <h3 class="product-card__title">
+                    <a
+                      [routerLink]="['/tiendas', store.id, 'productos', product.productoId]"
+                      [attr.aria-label]="'Ver detalle de ' + product.name"
+                    >
+                      {{ product.name }}
+                    </a>
+                  </h3>
                   <p class="product-card__description">{{ product.description }}</p>
 
                   <div class="product-card__tags">
@@ -78,6 +91,9 @@
 
                   <div class="product-card__footer">
                     <strong class="product-card__price">{{ product.price }}</strong>
+                    <a class="product-card__detail-action" [routerLink]="['/tiendas', store.id, 'productos', product.productoId]">
+                      Ver detalle
+                    </a>
                   </div>
                 </div>
               </article>

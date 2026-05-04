@@ -141,6 +141,7 @@ export class TiendasService {
       image: this.toDisplayImage(product.imagen) || this.fallbackImage,
       description: product.descripcion,
       disponible: this.isProductoDisponible(product),
+      stock: product.stock,
       tags: [
         this.isProductoDisponible(product) ? 'Disponible' : 'No disponible',
       ],

@@ -50,6 +50,12 @@ export const routes: Routes = [
             .then(m => m.TiendaComponent)
       },
       {
+        path: 'tiendas/:id/productos/:productoId',
+        loadComponent: () =>
+          import('./pages/ecommer/producto/producto-detalle.component')
+            .then(m => m.ProductoDetalleComponent)
+      },
+      {
         path: 'tiendas/:id',
         loadComponent: () =>
           import('./pages/ecommer/tienda/tienda.component')
