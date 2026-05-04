@@ -5,8 +5,8 @@
     <section class="mis-mascotas-panel" *ngIf="!cargando; else loadingState">
       <div class="section-heading">
         <div>
-          <span class="section-heading__eyebrow">Tus publicaciones</span>
-          <h2>{{ mascotas.length }} publicación(es) activa(s)</h2>
+          <span class="section-heading__eyebrow">{{ encabezadoEyebrow }}</span>
+          <h2>{{ totalPublicacionesLabel }}</h2>
         </div>
       </div>
 
@@ -21,6 +21,7 @@
             </div>
             <h3>{{ mascota.nombre }}</h3>
             <p>{{ mascota.raza }} · {{ mascota.especie }}</p>
+            <p class="pet-admin-card__owner" *ngIf="esModoAdmin">Responsable: {{ formatOwner(mascota) }}</p>
 
             <div class="pet-admin-card__meta">
               <span *ngIf="mascota.sexo">{{ mascota.sexo }}</span>
@@ -54,16 +55,16 @@
     <ng-template #loadingState>
       <section class="mis-mascotas-panel">
         <div class="empty-state">
-          <h2>Cargando tus publicaciones...</h2>
+          <h2>{{ cargandoLabel }}</h2>
         </div>
       </section>
     </ng-template>
 
     <ng-template #emptyState>
       <div class="empty-state">
-        <h2>Aún no tienes publicaciones</h2>
-        <p>Crea tu primer caso para que aparezca en este panel personal.</p>
-        <a class="empty-state__button" routerLink="/publicar">Crear publicación</a>
+        <h2>{{ emptyTitle }}</h2>
+        <p>{{ emptyDescription }}</p>
+        <a class="empty-state__button" routerLink="/publicar" *ngIf="mostrarCrearPublicacion">Crear publicación</a>
       </div>
     </ng-template>
   </div>

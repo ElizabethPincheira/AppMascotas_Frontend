@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import Swal from 'sweetalert2';
 import { AuthService } from '../../../core/services/auth.service';
 import { MascotaService } from '../../../core/services/mascota.service';
@@ -17,11 +17,13 @@ export class MisMascotasComponent {
   private readonly authService = inject(AuthService);
   private readonly mascotaService = inject(MascotaService);
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
   private readonly estadosResueltos: Array<Mascota['estado']> = ['Recuperado', 'Adoptado', 'Emparejado'];
 
   mascotas: Mascota[] = [];
   cargando = true;
   user = this.authService.getUser();
+  readonly esModoAdmin = this.route.snapshot.data['modo'] === 'admin';
 
   async ngOnInit(): Promise<void> {
     await this.cargarMascotas();
@@ -30,11 +32,54 @@ export class MisMascotasComponent {
   async cargarMascotas(): Promise<void> {
     this.cargando = true;
     try {
+      if (this.esModoAdmin) {
+        this.mascotas = await this.mascotaService.getMascotas();
+        return;
+      }
+
       const ownerId = this.user?._id ?? this.user?.id;
       this.mascotas = ownerId ? await this.mascotaService.getMascotasByOwner(ownerId) : [];
     } finally {
       this.cargando = false;
     }
+  }
+
+  get encabezadoEyebrow(): string {
+    return this.esModoAdmin ? 'Panel administrativo' : 'Tus publicaciones';
+  }
+
+  get totalPublicacionesLabel(): string {
+    return this.esModoAdmin
+      ? `${this.mascotas.length} publicación(es) en la plataforma`
+      : `${this.mascotas.length} publicación(es) activa(s)`;
+  }
+
+  get cargandoLabel(): string {
+    return this.esModoAdmin ? 'Cargando publicaciones...' : 'Cargando tus publicaciones...';
+  }
+
+  get emptyTitle(): string {
+    return this.esModoAdmin ? 'No hay publicaciones registradas' : 'Aún no tienes publicaciones';
+  }
+
+  get emptyDescription(): string {
+    return this.esModoAdmin
+      ? 'Cuando existan publicaciones de cualquier usuario, aparecerán en este panel administrativo.'
+      : 'Crea tu primer caso para que aparezca en este panel personal.';
+  }
+
+  get mostrarCrearPublicacion(): boolean {
+    return !this.esModoAdmin;
+  }
+
+  formatOwner(mascota: Mascota): string {
+    const usuario = mascota.usuarioId;
+
+    if (!usuario || typeof usuario === 'string') {
+      return 'Sin responsable asociado';
+    }
+
+    return usuario.nombre?.trim() || usuario.email?.trim() || 'Sin responsable asociado';
   }
 
   getImageSrc(imagen?: string): string {
@@ -106,7 +151,7 @@ export class MisMascotasComponent {
     const ownerId = this.obtenerUsuarioId(this.user);
     const mascotaOwnerId = this.obtenerUsuarioId(mascota.usuarioId);
 
-    return !!ownerId && !!mascotaOwnerId && ownerId === mascotaOwnerId;
+    return this.esModoAdmin || (!!ownerId && !!mascotaOwnerId && ownerId === mascotaOwnerId);
   }
 
   async marcarCasoComoResuelto(mascota: Mascota): Promise<void> {

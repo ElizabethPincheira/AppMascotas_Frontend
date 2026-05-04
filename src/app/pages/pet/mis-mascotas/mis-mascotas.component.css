@@ -167,6 +167,11 @@
   color: var(--text-main);
 }
 
+.pet-admin-card__owner {
+  font-weight: 800;
+  color: var(--brand-forest);
+}
+
 .pet-admin-card__meta {
   display: flex;
   flex-wrap: wrap;

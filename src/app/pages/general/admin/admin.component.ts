@@ -51,7 +51,7 @@ export class AdminComponent {
       {
         title: 'Gestionar publicaciones',
         description: 'Consulta los casos activos y verifica el contenido que aparece en la plataforma.',
-        path: '/mis-mascotas',
+        path: '/admin/publicaciones',
       },
       {
         title: 'Gestionar colaboradores',

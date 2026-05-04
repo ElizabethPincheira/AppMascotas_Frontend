@@ -178,6 +178,14 @@ export const routes: Routes = [
             .then(m => m.AdminTiendasComponent)
       },
       {
+        path: 'admin/publicaciones',
+        canActivate: [authGuard, adminGuard],
+        loadComponent: () =>
+          import('./pages/pet/mis-mascotas/mis-mascotas.component')
+            .then(m => m.MisMascotasComponent),
+        data: { modo: 'admin' },
+      },
+      {
         path: 'admin/colaboradores',
         canActivate: [authGuard, adminGuard],
         loadComponent: () =>
