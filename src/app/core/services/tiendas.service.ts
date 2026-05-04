@@ -38,6 +38,7 @@ export interface BackendProducto {
   descripcion: string;
   precio: number;
   unidadVenta?: 'unidad' | 'kilo';
+  minimoKilos?: number;
   stock?: number;
   disponible?: boolean;
   imagen?: string;
@@ -140,6 +141,7 @@ export class TiendasService {
       }).format(product.precio),
       priceValue: product.precio,
       unidadVenta: product.unidadVenta || 'unidad',
+      minimoKilos: product.minimoKilos,
       image: this.toDisplayImage(product.imagen) || this.fallbackImage,
       description: product.descripcion,
       disponible: this.isProductoDisponible(product),

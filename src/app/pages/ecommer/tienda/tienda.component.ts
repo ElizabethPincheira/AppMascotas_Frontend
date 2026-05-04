@@ -100,6 +100,19 @@ export class StoreDetailComponent implements OnInit {
       return;
     }
 
+    // Si el producto tiene mínimo de kilos, dirigir al detalle del producto
+    if (product.unidadVenta === 'kilo' && product.minimoKilos) {
+      await Swal.fire({
+        icon: 'info',
+        title: 'Cantidad mínima requerida',
+        text: `Este producto tiene un mínimo de ${product.minimoKilos} kg por compra. Por favor, especifica la cantidad en el detalle del producto.`,
+        confirmButtonText: 'Ir al producto',
+      });
+      // Navegar a la página de detalle del producto
+      window.location.href = `/tiendas/${this.store.id}/productos/${product.productoId}`;
+      return;
+    }
+
     const agregado = this.carritoService.agregarItem(
       {
         productoId: product.productoId,

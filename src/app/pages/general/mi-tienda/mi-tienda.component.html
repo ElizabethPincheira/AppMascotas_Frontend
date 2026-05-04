@@ -358,6 +358,18 @@
               </select>
             </label>
 
+            <label class="form-field" *ngIf="nuevoProductoForm.unidadVenta === 'kilo'">
+              <span>Mínimo de kilos por venta</span>
+              <input 
+                type="number" 
+                [(ngModel)]="nuevoProductoForm.minimoKilos" 
+                placeholder="Ej: 2.5" 
+                step="0.1" 
+                min="0" 
+              />
+              <small class="form-field__hint">Especifica el mínimo de kilos que debe comprar el cliente.</small>
+            </label>
+
             <label class="form-field">
               <span>Disponibilidad</span>
               <select [(ngModel)]="nuevoProductoForm.disponible">
@@ -444,6 +456,10 @@
                 <div class="info-row">
                   <span class="info-label">Venta:</span>
                   <span class="info-value">{{ producto.unidadVenta === 'kilo' ? 'Por kilo' : 'Por unidad' }}</span>
+                </div>
+                <div class="info-row" *ngIf="producto.minimoKilos && producto.unidadVenta === 'kilo'">
+                  <span class="info-label">Mínimo:</span>
+                  <span class="info-value">{{ producto.minimoKilos }} kg</span>
                 </div>
                 <div class="info-row">
                   <span class="info-label">Estado:</span>

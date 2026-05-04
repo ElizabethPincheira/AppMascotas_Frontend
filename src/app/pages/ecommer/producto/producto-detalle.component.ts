@@ -65,6 +65,13 @@ export class ProductoDetalleComponent implements OnInit {
       this.store = storeData ? this.tiendasService.toDeliveryStore(storeData, products) : null;
       this.product = this.store?.products.find((item) => item.productoId === productId) ?? null;
 
+      // Establecer cantidad inicial según el mínimo de kilos
+      if (this.product?.unidadVenta === 'kilo' && this.product?.minimoKilos) {
+        this.cantidad = this.product.minimoKilos;
+      } else {
+        this.cantidad = 1;
+      }
+
       if (this.store && this.product) {
         this.seoService.setPage(
           `${this.product.name} — ${this.store.name}`,
@@ -116,6 +123,32 @@ export class ProductoDetalleComponent implements OnInit {
 
   get quantityUnitLabel(): string {
     return this.product?.unidadVenta === 'kilo' ? 'kg' : 'u.';
+  }
+
+  get minimumQuantityLabel(): string {
+    if (!this.product || this.product.unidadVenta !== 'kilo' || !this.product.minimoKilos) {
+      return '';
+    }
+    return `Mínimo ${this.product.minimoKilos} kg`;
+  }
+
+  get quantityErrorMessage(): string {
+    if (!this.product || this.product.unidadVenta !== 'kilo' || !this.product.minimoKilos) {
+      return '';
+    }
+    return `La cantidad mínima permitida es ${this.product.minimoKilos} kg`;
+  }
+
+  get isValidQuantity(): boolean {
+    if (!this.product) {
+      return false;
+    }
+    
+    if (this.product.unidadVenta === 'kilo' && this.product.minimoKilos) {
+      return this.cantidad >= this.product.minimoKilos;
+    }
+    
+    return this.cantidad > 0;
   }
 
   get subtotal(): number {
@@ -175,7 +208,10 @@ export class ProductoDetalleComponent implements OnInit {
   }
 
   disminuirCantidad(): void {
-    this.cantidad = Math.max(this.cantidad - 1, 1);
+    const minCantidad = (this.product?.unidadVenta === 'kilo' && this.product?.minimoKilos)
+      ? this.product.minimoKilos
+      : 1;
+    this.cantidad = Math.max(this.cantidad - 1, minCantidad);
   }
 
   trackByProductId(_: number, product: StoreProduct): string {
@@ -193,6 +229,19 @@ export class ProductoDetalleComponent implements OnInit {
   async agregarAlCarrito(product: StoreProduct | null = this.product): Promise<void> {
     if (!this.store || !product?.disponible) {
       return;
+    }
+
+    // Validar cantidad mínima para productos por kilo
+    if (product.unidadVenta === 'kilo' && product.minimoKilos && product.productoId === this.product?.productoId) {
+      if (this.cantidad < product.minimoKilos) {
+        await Swal.fire({
+          icon: 'warning',
+          title: 'Cantidad insuficiente',
+          text: `El mínimo permitido para comprar es ${product.minimoKilos} kg.`,
+          confirmButtonText: 'Entendido',
+        });
+        return;
+      }
     }
 
     const agregado = this.carritoService.agregarItem(

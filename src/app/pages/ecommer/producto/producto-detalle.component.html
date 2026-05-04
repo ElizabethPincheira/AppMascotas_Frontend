@@ -30,6 +30,7 @@
             <span>Precio</span>
             <strong>{{ priceLabel }}</strong>
             <p>{{ stockLabel }}</p>
+            <p *ngIf="minimumQuantityLabel" class="product-price-panel__minimum">{{ minimumQuantityLabel }}</p>
           </div>
 
           <div class="product-purchase">
@@ -46,12 +47,13 @@
             <button
               type="button"
               class="product-add"
-              [disabled]="!product.disponible"
+              [disabled]="!product.disponible || !isValidQuantity"
               (click)="agregarAlCarrito()"
             >
               <span class="material-symbols-outlined">shopping_cart</span>
               {{ product.disponible ? 'Agregar al carrito' : 'No disponible' }}
             </button>
+            <p *ngIf="!isValidQuantity" class="product-quantity-error">{{ quantityErrorMessage }}</p>
           </div>
 
           <div class="product-subtotal" *ngIf="product.disponible">

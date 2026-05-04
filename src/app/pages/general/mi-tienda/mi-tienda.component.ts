@@ -86,6 +86,7 @@ export class MiTiendaComponent implements OnInit {
     descripcion: '',
     precio: 0,
     unidadVenta: 'unidad',
+    minimoKilos: 0,
     disponible: true,
   };
 
@@ -247,6 +248,7 @@ export class MiTiendaComponent implements OnInit {
       descripcion: '',
       precio: 0,
       unidadVenta: 'unidad',
+      minimoKilos: 0,
       disponible: true,
     };
     this.imagenPreview = null;
@@ -394,6 +396,7 @@ export class MiTiendaComponent implements OnInit {
       descripcion: producto.descripcion,
       precio: producto.precio,
       unidadVenta: producto.unidadVenta || 'unidad',
+      minimoKilos: producto.minimoKilos || 0,
       disponible: this.isProductoDisponible(producto),
       imagen: producto.imagen,
     };

@@ -88,6 +88,9 @@
                       {{ tag }}
                     </span>
                     <span class="product-card__tag" *ngIf="product.unidadVenta === 'kilo'">Venta por kilo</span>
+                    <span class="product-card__tag product-card__tag--minimum" *ngIf="product.minimoKilos && product.unidadVenta === 'kilo'">
+                      Mín. {{ product.minimoKilos }} kg
+                    </span>
                   </div>
 
                   <div class="product-card__footer">

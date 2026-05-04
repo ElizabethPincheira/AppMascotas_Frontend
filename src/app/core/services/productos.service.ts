@@ -11,6 +11,7 @@ export interface Producto {
   descripcion: string;
   precio: number;
   unidadVenta?: UnidadVentaProducto;
+  minimoKilos?: number;
   stock?: number;
   disponible?: boolean;
   imagen?: string;
@@ -24,6 +25,7 @@ export interface CreateProductoDto {
   descripcion: string;
   precio: number;
   unidadVenta?: UnidadVentaProducto;
+  minimoKilos?: number;
   stock?: number;
   disponible?: boolean;
   imagen?: string;
@@ -32,6 +34,7 @@ export interface CreateProductoDto {
 export interface UpdateProductoDto {
   nombre?: string;
   descripcion?: string;
+  minimoKilos?: number;
   precio?: number;
   unidadVenta?: UnidadVentaProducto;
   stock?: number;
