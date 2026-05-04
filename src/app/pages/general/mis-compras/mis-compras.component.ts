@@ -52,6 +52,16 @@ export class MisComprasComponent {
     return this.clpFormatter.format(value);
   }
 
+  formatCantidad(item: PedidoItemPayload): string {
+    return `${item.cantidad} ${item.unidadVenta === 'kilo' ? 'kg' : 'u.'}`;
+  }
+
+  formatPrecioUnitario(item: PedidoItemPayload): string {
+    return item.unidadVenta === 'kilo'
+      ? `${this.formatPrice(item.precio)} / kg`
+      : `${this.formatPrice(item.precio)} c/u`;
+  }
+
   getImagenProducto(item: PedidoItemPayload): string | null {
     const image = item.imagen?.trim();
 

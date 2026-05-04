@@ -62,7 +62,7 @@
 
                     <div class="compra-item__meta">
                       <span class="compra-item__name">{{ item.nombre }}</span>
-                      <small>{{ formatPrice(item.precio) }} c/u</small>
+                      <small>{{ formatPrecioUnitario(item) }} · {{ formatCantidad(item) }}</small>
                     </div>
                   </div>
                   <strong>{{ formatPrice(item.precio * item.cantidad) }}</strong>

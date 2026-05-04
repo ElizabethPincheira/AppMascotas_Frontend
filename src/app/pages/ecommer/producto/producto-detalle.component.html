@@ -28,7 +28,7 @@
 
           <div class="product-price-panel">
             <span>Precio</span>
-            <strong>{{ product.price }}</strong>
+            <strong>{{ priceLabel }}</strong>
             <p>{{ stockLabel }}</p>
           </div>
 
@@ -37,7 +37,7 @@
               <button type="button" (click)="disminuirCantidad()" [disabled]="cantidad <= 1">
                 <span class="material-symbols-outlined">remove</span>
               </button>
-              <strong>{{ cantidad }}</strong>
+              <strong>{{ cantidad }} <small>{{ quantityUnitLabel }}</small></strong>
               <button type="button" (click)="aumentarCantidad()">
                 <span class="material-symbols-outlined">add</span>
               </button>
@@ -130,7 +130,7 @@
                   {{ relatedProduct.name }}
                 </a>
               </h3>
-              <strong>{{ relatedProduct.price }}</strong>
+              <strong>{{ relatedProduct.unidadVenta === 'kilo' ? (relatedProduct.price + ' / kg') : relatedProduct.price }}</strong>
               <button
                 type="button"
                 [disabled]="!relatedProduct.disponible"

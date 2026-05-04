@@ -8,6 +8,7 @@ export interface PedidoItemPayload {
   precio: number;
   imagen: string;
   cantidad: number;
+  unidadVenta?: 'unidad' | 'kilo';
 }
 
 export type EstadoPedido =

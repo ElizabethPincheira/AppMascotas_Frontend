@@ -41,13 +41,13 @@
             <div class="cart-item__body">
               <div>
                 <h3>{{ item.nombre }}</h3>
-                <p>{{ formatPrice(item.precio) }} c/u</p>
+                <p>{{ getPriceLabel(item) }}</p>
               </div>
 
               <div class="cart-item__actions">
                 <div class="cart-quantity" aria-label="Selector de cantidad">
                   <button type="button" (click)="disminuirCantidad(item)">−</button>
-                  <span>{{ item.cantidad }}</span>
+                  <span>{{ item.cantidad }} {{ getUnitLabel(item) }}</span>
                   <button type="button" (click)="aumentarCantidad(item)">+</button>
                 </div>
 

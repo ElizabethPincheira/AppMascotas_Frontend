@@ -97,12 +97,25 @@ export class ProductoDetalleComponent implements OnInit {
     }
 
     if (typeof this.product.stock === 'number') {
+      const unit = this.product.unidadVenta === 'kilo' ? 'kg' : 'unidad(es)';
       return this.product.stock > 0
-        ? `${this.product.stock} unidad(es) disponibles`
+        ? `${this.product.stock} ${unit} disponibles`
         : 'Stock a confirmar con la tienda';
     }
 
     return 'Disponible para compra';
+  }
+
+  get priceLabel(): string {
+    if (!this.product) {
+      return '';
+    }
+
+    return this.product.unidadVenta === 'kilo' ? `${this.product.price} / kg` : this.product.price;
+  }
+
+  get quantityUnitLabel(): string {
+    return this.product?.unidadVenta === 'kilo' ? 'kg' : 'u.';
   }
 
   get subtotal(): number {
@@ -190,6 +203,7 @@ export class ProductoDetalleComponent implements OnInit {
         precio: product.priceValue,
         imagen: product.image,
         cantidad: product.productoId === this.product?.productoId ? this.cantidad : 1,
+        unidadVenta: product.unidadVenta,
       },
       this.store.name,
     );

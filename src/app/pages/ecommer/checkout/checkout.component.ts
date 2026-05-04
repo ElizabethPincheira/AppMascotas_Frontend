@@ -121,6 +121,7 @@ export class CheckoutComponent {
         precio: item.precio,
         imagen: item.imagen,
         cantidad: item.cantidad,
+        unidadVenta: item.unidadVenta,
       })),
       comprador: {
         nombreCompleto: this.deliveryForm.nombreCompleto.trim(),
@@ -139,6 +140,16 @@ export class CheckoutComponent {
 
   trackByProductoId(_: number, item: CarritoItem): string {
     return item.productoId;
+  }
+
+  getUnitLabel(item: CarritoItem): string {
+    return item.unidadVenta === 'kilo' ? 'kg' : 'u.';
+  }
+
+  getPriceLabel(item: CarritoItem): string {
+    return item.unidadVenta === 'kilo'
+      ? `${this.formatPrice(item.precio)} / kg`
+      : `${this.formatPrice(item.precio)} c/u`;
   }
 
   siguientePaso(): void {

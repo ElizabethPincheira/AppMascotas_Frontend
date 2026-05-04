@@ -39,4 +39,14 @@ export class CarritoComponent {
   formatPrice(value: number): string {
     return this.clpFormatter.format(value);
   }
+
+  getUnitLabel(item: CarritoItem): string {
+    return item.unidadVenta === 'kilo' ? 'kg' : 'u.';
+  }
+
+  getPriceLabel(item: CarritoItem): string {
+    return item.unidadVenta === 'kilo'
+      ? `${this.formatPrice(item.precio)} / kg`
+      : `${this.formatPrice(item.precio)} c/u`;
+  }
 }

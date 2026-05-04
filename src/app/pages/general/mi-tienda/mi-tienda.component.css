@@ -662,6 +662,12 @@
   color: #333;
 }
 
+.form-field__hint {
+  color: #5b6472;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
 .form-field input,
 .form-field textarea,
 .form-field select {

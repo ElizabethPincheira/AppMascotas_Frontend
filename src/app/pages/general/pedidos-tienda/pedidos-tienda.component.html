@@ -113,8 +113,8 @@
                   </div>
 
                   <div class="pedido-product__meta">
-                    <span class="pedido-product__name">{{ item.nombre }} x{{ item.cantidad }}</span>
-                    <small>{{ formatPrice(item.precio) }} c/u</small>
+                    <span class="pedido-product__name">{{ item.nombre }} x{{ formatCantidad(item) }}</span>
+                    <small>{{ formatPrecioUnitario(item) }}</small>
                   </div>
                 </div>
                 <strong>{{ formatPrice(item.precio * item.cantidad) }}</strong>

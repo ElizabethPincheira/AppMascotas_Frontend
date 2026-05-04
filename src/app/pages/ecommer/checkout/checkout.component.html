@@ -125,8 +125,8 @@
               <img [src]="item.imagen" [alt]="item.nombre" />
               <div>
                 <h3>{{ item.nombre }}</h3>
-                <p>{{ formatPrice(item.precio) }} c/u</p>
-                <span>Cantidad: {{ item.cantidad }}</span>
+                <p>{{ getPriceLabel(item) }}</p>
+                <span>Cantidad: {{ item.cantidad }} {{ getUnitLabel(item) }}</span>
               </div>
               <strong>{{ formatPrice(item.precio * item.cantidad) }}</strong>
             </article>

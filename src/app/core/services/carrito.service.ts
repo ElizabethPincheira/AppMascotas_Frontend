@@ -8,6 +8,7 @@ export interface CarritoItem {
   precio: number;
   imagen: string;
   cantidad: number;
+  unidadVenta?: 'unidad' | 'kilo';
 }
 
 @Injectable({

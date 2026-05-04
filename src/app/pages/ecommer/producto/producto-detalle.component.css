@@ -206,6 +206,12 @@
   font-size: 1.08rem;
 }
 
+.product-quantity small {
+  color: var(--text-soft);
+  font-size: 0.68rem;
+  font-weight: 900;
+}
+
 .product-add {
   display: inline-flex;
   align-items: center;

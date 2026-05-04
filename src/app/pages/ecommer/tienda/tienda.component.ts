@@ -84,6 +84,10 @@ export class StoreDetailComponent implements OnInit {
     return product.id;
   }
 
+  formatProductPrice(product: StoreProduct): string {
+    return product.unidadVenta === 'kilo' ? `${product.price} / kg` : product.price;
+  }
+
   private esAdmin(): boolean {
     const user = this.authService.getUser();
     const roles = Array.isArray(user?.roles) ? user.roles : [];
@@ -104,6 +108,7 @@ export class StoreDetailComponent implements OnInit {
         precio: product.priceValue,
         imagen: product.image,
         cantidad: 1,
+        unidadVenta: product.unidadVenta,
       },
       this.store.name,
     );

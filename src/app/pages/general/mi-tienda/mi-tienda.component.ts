@@ -85,6 +85,7 @@ export class MiTiendaComponent implements OnInit {
     nombre: '',
     descripcion: '',
     precio: 0,
+    unidadVenta: 'unidad',
     disponible: true,
   };
 
@@ -245,6 +246,7 @@ export class MiTiendaComponent implements OnInit {
       nombre: '',
       descripcion: '',
       precio: 0,
+      unidadVenta: 'unidad',
       disponible: true,
     };
     this.imagenPreview = null;
@@ -265,6 +267,20 @@ export class MiTiendaComponent implements OnInit {
 
   getImagenProducto(producto: Producto): string | null {
     return this.toDisplayImage(producto.imagen) || null;
+  }
+
+  getUnidadVentaLabel(producto: Pick<Producto, 'unidadVenta'> | CreateProductoDto): string {
+    return producto.unidadVenta === 'kilo' ? 'kg' : 'unidad';
+  }
+
+  getPrecioProductoLabel(producto: Pick<Producto, 'precio' | 'unidadVenta'>): string {
+    const precio = new Intl.NumberFormat('es-CL', {
+      style: 'currency',
+      currency: 'CLP',
+      maximumFractionDigits: 0,
+    }).format(producto.precio);
+
+    return producto.unidadVenta === 'kilo' ? `${precio} / kg` : `${precio} c/u`;
   }
 
   getImagenTiendaInfo(): string | null {
@@ -377,6 +393,7 @@ export class MiTiendaComponent implements OnInit {
       nombre: producto.nombre,
       descripcion: producto.descripcion,
       precio: producto.precio,
+      unidadVenta: producto.unidadVenta || 'unidad',
       disponible: this.isProductoDisponible(producto),
       imagen: producto.imagen,
     };

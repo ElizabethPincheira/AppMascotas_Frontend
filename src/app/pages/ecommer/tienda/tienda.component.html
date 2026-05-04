@@ -87,10 +87,11 @@
                       class="product-card__tag">
                       {{ tag }}
                     </span>
+                    <span class="product-card__tag" *ngIf="product.unidadVenta === 'kilo'">Venta por kilo</span>
                   </div>
 
                   <div class="product-card__footer">
-                    <strong class="product-card__price">{{ product.price }}</strong>
+                    <strong class="product-card__price">{{ formatProductPrice(product) }}</strong>
                     <a class="product-card__detail-action" [routerLink]="['/tiendas', store.id, 'productos', product.productoId]">
                       Ver detalle
                     </a>

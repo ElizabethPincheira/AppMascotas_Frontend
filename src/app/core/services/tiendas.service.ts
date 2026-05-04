@@ -37,6 +37,7 @@ export interface BackendProducto {
   nombre: string;
   descripcion: string;
   precio: number;
+  unidadVenta?: 'unidad' | 'kilo';
   stock?: number;
   disponible?: boolean;
   imagen?: string;
@@ -138,6 +139,7 @@ export class TiendasService {
         maximumFractionDigits: 0,
       }).format(product.precio),
       priceValue: product.precio,
+      unidadVenta: product.unidadVenta || 'unidad',
       image: this.toDisplayImage(product.imagen) || this.fallbackImage,
       description: product.descripcion,
       disponible: this.isProductoDisponible(product),
