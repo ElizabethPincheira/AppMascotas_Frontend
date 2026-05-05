@@ -139,7 +139,7 @@ export class CheckoutComponent {
   }
 
   trackByProductoId(_: number, item: CarritoItem): string {
-    return item.productoId;
+    return item.itemId || `${item.productoId}-${item.unidadVenta || 'unidad'}`;
   }
 
   getUnitLabel(item: CarritoItem): string {

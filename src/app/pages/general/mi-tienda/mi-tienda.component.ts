@@ -86,6 +86,8 @@ export class MiTiendaComponent implements OnInit {
     descripcion: '',
     precio: 0,
     unidadVenta: 'unidad',
+    precioUnidad: 0,
+    precioKilo: 0,
     minimoKilos: 0,
     disponible: true,
   };
@@ -219,10 +221,16 @@ export class MiTiendaComponent implements OnInit {
   }
 
   get formularioValido(): boolean {
+    const tienePreciosConfigurados = this.nuevoProductoForm.unidadVenta === 'ambos'
+      ? (this.nuevoProductoForm.precioUnidad || 0) > 0 && (this.nuevoProductoForm.precioKilo || 0) > 0
+      : this.nuevoProductoForm.unidadVenta === 'kilo'
+        ? (this.nuevoProductoForm.precioKilo || 0) > 0
+        : (this.nuevoProductoForm.precioUnidad || 0) > 0;
+
     return !!(
       this.nuevoProductoForm.nombre.trim() &&
       this.nuevoProductoForm.descripcion.trim() &&
-      this.nuevoProductoForm.precio > 0
+      tienePreciosConfigurados
     );
   }
 
@@ -248,6 +256,8 @@ export class MiTiendaComponent implements OnInit {
       descripcion: '',
       precio: 0,
       unidadVenta: 'unidad',
+      precioUnidad: 0,
+      precioKilo: 0,
       minimoKilos: 0,
       disponible: true,
     };
@@ -272,6 +282,10 @@ export class MiTiendaComponent implements OnInit {
   }
 
   getUnidadVentaLabel(producto: Pick<Producto, 'unidadVenta'> | CreateProductoDto): string {
+    if (producto.unidadVenta === 'ambos') {
+      return 'unidad y kilo';
+    }
+
     return producto.unidadVenta === 'kilo' ? 'kg' : 'unidad';
   }
 
@@ -281,6 +295,22 @@ export class MiTiendaComponent implements OnInit {
       currency: 'CLP',
       maximumFractionDigits: 0,
     }).format(producto.precio);
+
+    if (producto.unidadVenta === 'ambos') {
+      const productoConPrecios = producto as Producto;
+      const precioUnidad = new Intl.NumberFormat('es-CL', {
+        style: 'currency',
+        currency: 'CLP',
+        maximumFractionDigits: 0,
+      }).format(productoConPrecios.precioUnidad ?? producto.precio);
+      const precioKilo = new Intl.NumberFormat('es-CL', {
+        style: 'currency',
+        currency: 'CLP',
+        maximumFractionDigits: 0,
+      }).format(productoConPrecios.precioKilo ?? producto.precio);
+
+      return `${precioUnidad} c/u o ${precioKilo} / kg`;
+    }
 
     return producto.unidadVenta === 'kilo' ? `${precio} / kg` : `${precio} c/u`;
   }
@@ -396,6 +426,8 @@ export class MiTiendaComponent implements OnInit {
       descripcion: producto.descripcion,
       precio: producto.precio,
       unidadVenta: producto.unidadVenta || 'unidad',
+      precioUnidad: producto.precioUnidad || 0,
+      precioKilo: producto.precioKilo || 0,
       minimoKilos: producto.minimoKilos || 0,
       disponible: this.isProductoDisponible(producto),
       imagen: producto.imagen,
@@ -408,10 +440,22 @@ export class MiTiendaComponent implements OnInit {
     this.enviandoProducto = true;
 
     try {
+      const payload: CreateProductoDto = {
+        ...this.nuevoProductoForm,
+      };
+
+      if (payload.unidadVenta === 'kilo') {
+        payload.precio = payload.precioKilo || 0;
+      } else if (payload.unidadVenta === 'ambos') {
+        payload.precio = payload.precioUnidad || 0;
+      } else {
+        payload.precio = payload.precioUnidad || 0;
+      }
+
       if (this.editandoProductoId) {
         const response = await this.productosService.updateProducto(
           this.editandoProductoId,
-          this.nuevoProductoForm,
+          payload,
         );
 
         this.productos = this.productos.map((producto) =>
@@ -425,7 +469,7 @@ export class MiTiendaComponent implements OnInit {
           confirmButtonText: 'Continuar'
         });
       } else {
-        const response = await this.productosService.createProducto(this.nuevoProductoForm);
+        const response = await this.productosService.createProducto(payload);
 
         this.productos.push(response.producto);
 

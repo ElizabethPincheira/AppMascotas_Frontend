@@ -28,7 +28,9 @@ export interface StoreProduct {
   category: string;
   price: string;
   priceValue: number;
-  unidadVenta: 'unidad' | 'kilo';
+  unidadVenta: 'unidad' | 'kilo' | 'ambos';
+  precioUnidad?: number;
+  precioKilo?: number;
   minimoKilos?: number;
   image: string;
   description: string;

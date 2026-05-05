@@ -34,6 +34,14 @@
           </div>
 
           <div class="product-purchase">
+            <div class="form-field" *ngIf="product.unidadVenta === 'ambos'">
+              <span>Tipo de venta</span>
+              <select [(ngModel)]="unidadVentaSeleccionada" (ngModelChange)="onUnidadVentaSeleccionadaChange()">
+                <option value="unidad">Por unidad</option>
+                <option value="kilo">Por kilo</option>
+              </select>
+            </div>
+
             <div class="product-quantity" aria-label="Cantidad">
               <button type="button" (click)="disminuirCantidad()" [disabled]="cantidad <= 1">
                 <span class="material-symbols-outlined">remove</span>
@@ -132,7 +140,9 @@
                   {{ relatedProduct.name }}
                 </a>
               </h3>
-              <strong>{{ relatedProduct.unidadVenta === 'kilo' ? (relatedProduct.price + ' / kg') : relatedProduct.price }}</strong>
+              <strong>
+                {{ relatedProduct.unidadVenta === 'kilo' ? (relatedProduct.price + ' / kg') : relatedProduct.unidadVenta === 'ambos' ? 'Ver opciones en detalle' : relatedProduct.price }}
+              </strong>
               <button
                 type="button"
                 [disabled]="!relatedProduct.disponible"

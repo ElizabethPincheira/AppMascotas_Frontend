@@ -37,7 +37,9 @@ export interface BackendProducto {
   nombre: string;
   descripcion: string;
   precio: number;
-  unidadVenta?: 'unidad' | 'kilo';
+  unidadVenta?: 'unidad' | 'kilo' | 'ambos';
+  precioUnidad?: number;
+  precioKilo?: number;
   minimoKilos?: number;
   stock?: number;
   disponible?: boolean;
@@ -138,9 +140,11 @@ export class TiendasService {
         style: 'currency',
         currency: 'CLP',
         maximumFractionDigits: 0,
-      }).format(product.precio),
-      priceValue: product.precio,
+      }).format(this.resolvePrecio(product, product.unidadVenta === 'kilo' ? 'kilo' : 'unidad')),
+      priceValue: this.resolvePrecio(product, product.unidadVenta === 'kilo' ? 'kilo' : 'unidad'),
       unidadVenta: product.unidadVenta || 'unidad',
+      precioUnidad: product.precioUnidad,
+      precioKilo: product.precioKilo,
       minimoKilos: product.minimoKilos,
       image: this.toDisplayImage(product.imagen) || this.fallbackImage,
       description: product.descripcion,
@@ -162,6 +166,14 @@ export class TiendasService {
     }
 
     return true;
+  }
+
+  private resolvePrecio(product: BackendProducto, unidad: 'unidad' | 'kilo'): number {
+    if (unidad === 'kilo') {
+      return product.precioKilo ?? product.precio;
+    }
+
+    return product.precioUnidad ?? product.precio;
   }
 
   private buildScheduleSummary(schedule?: Array<{ dia: string; abierto: boolean; apertura?: string; cierre?: string }>): string {

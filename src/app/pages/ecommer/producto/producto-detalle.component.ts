@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
 import { CarritoService } from '../../../core/services/carrito.service';
 import { SeoService } from '../../../core/services/seo.service';
@@ -10,7 +11,7 @@ import { DeliveryStore, StoreProduct, StoreScheduleEntry } from '../tiendas/deli
 @Component({
   selector: 'app-producto-detalle',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, FormsModule],
   templateUrl: './producto-detalle.component.html',
   styleUrls: ['./producto-detalle.component.css'],
 })
@@ -24,6 +25,7 @@ export class ProductoDetalleComponent implements OnInit {
   product: StoreProduct | null = null;
   cargando = true;
   cantidad = 1;
+  unidadVentaSeleccionada: 'unidad' | 'kilo' = 'unidad';
   private readonly dayOrder = [
     'Lunes',
     'Martes',
@@ -65,12 +67,8 @@ export class ProductoDetalleComponent implements OnInit {
       this.store = storeData ? this.tiendasService.toDeliveryStore(storeData, products) : null;
       this.product = this.store?.products.find((item) => item.productoId === productId) ?? null;
 
-      // Establecer cantidad inicial según el mínimo de kilos
-      if (this.product?.unidadVenta === 'kilo' && this.product?.minimoKilos) {
-        this.cantidad = this.product.minimoKilos;
-      } else {
-        this.cantidad = 1;
-      }
+      this.unidadVentaSeleccionada = this.product?.unidadVenta === 'kilo' ? 'kilo' : 'unidad';
+      this.syncCantidadMinima();
 
       if (this.store && this.product) {
         this.seoService.setPage(
@@ -104,7 +102,7 @@ export class ProductoDetalleComponent implements OnInit {
     }
 
     if (typeof this.product.stock === 'number') {
-      const unit = this.product.unidadVenta === 'kilo' ? 'kg' : 'unidad(es)';
+      const unit = this.unidadVentaSeleccionada === 'kilo' ? 'kg' : 'unidad(es)';
       return this.product.stock > 0
         ? `${this.product.stock} ${unit} disponibles`
         : 'Stock a confirmar con la tienda';
@@ -118,22 +116,31 @@ export class ProductoDetalleComponent implements OnInit {
       return '';
     }
 
+    if (this.product.unidadVenta === 'ambos') {
+      const precio = this.unidadVentaSeleccionada === 'kilo'
+        ? (this.product.precioKilo ?? this.product.priceValue)
+        : (this.product.precioUnidad ?? this.product.priceValue);
+      return this.unidadVentaSeleccionada === 'kilo'
+        ? `${this.formatPrice(precio)} / kg`
+        : `${this.formatPrice(precio)} c/u`;
+    }
+
     return this.product.unidadVenta === 'kilo' ? `${this.product.price} / kg` : this.product.price;
   }
 
   get quantityUnitLabel(): string {
-    return this.product?.unidadVenta === 'kilo' ? 'kg' : 'u.';
+    return this.unidadVentaSeleccionada === 'kilo' ? 'kg' : 'u.';
   }
 
   get minimumQuantityLabel(): string {
-    if (!this.product || this.product.unidadVenta !== 'kilo' || !this.product.minimoKilos) {
+    if (!this.product || this.unidadVentaSeleccionada !== 'kilo' || !this.product.minimoKilos) {
       return '';
     }
     return `Mínimo ${this.product.minimoKilos} kg`;
   }
 
   get quantityErrorMessage(): string {
-    if (!this.product || this.product.unidadVenta !== 'kilo' || !this.product.minimoKilos) {
+    if (!this.product || this.unidadVentaSeleccionada !== 'kilo' || !this.product.minimoKilos) {
       return '';
     }
     return `La cantidad mínima permitida es ${this.product.minimoKilos} kg`;
@@ -144,7 +151,7 @@ export class ProductoDetalleComponent implements OnInit {
       return false;
     }
     
-    if (this.product.unidadVenta === 'kilo' && this.product.minimoKilos) {
+    if (this.unidadVentaSeleccionada === 'kilo' && this.product.minimoKilos) {
       return this.cantidad >= this.product.minimoKilos;
     }
     
@@ -152,7 +159,7 @@ export class ProductoDetalleComponent implements OnInit {
   }
 
   get subtotal(): number {
-    return (this.product?.priceValue ?? 0) * this.cantidad;
+    return this.getPrecioPorUnidad(this.product) * this.cantidad;
   }
 
   get hasWeeklySchedule(): boolean {
@@ -208,10 +215,14 @@ export class ProductoDetalleComponent implements OnInit {
   }
 
   disminuirCantidad(): void {
-    const minCantidad = (this.product?.unidadVenta === 'kilo' && this.product?.minimoKilos)
+    const minCantidad = (this.unidadVentaSeleccionada === 'kilo' && this.product?.minimoKilos)
       ? this.product.minimoKilos
       : 1;
     this.cantidad = Math.max(this.cantidad - 1, minCantidad);
+  }
+
+  onUnidadVentaSeleccionadaChange(): void {
+    this.syncCantidadMinima();
   }
 
   trackByProductId(_: number, product: StoreProduct): string {
@@ -232,7 +243,7 @@ export class ProductoDetalleComponent implements OnInit {
     }
 
     // Validar cantidad mínima para productos por kilo
-    if (product.unidadVenta === 'kilo' && product.minimoKilos && product.productoId === this.product?.productoId) {
+    if (this.unidadVentaSeleccionada === 'kilo' && product.minimoKilos && product.productoId === this.product?.productoId) {
       if (this.cantidad < product.minimoKilos) {
         await Swal.fire({
           icon: 'warning',
@@ -249,10 +260,12 @@ export class ProductoDetalleComponent implements OnInit {
         productoId: product.productoId,
         tiendaId: String(this.store.id),
         nombre: product.name,
-        precio: product.priceValue,
+        precio: this.getPrecioPorUnidad(product),
         imagen: product.image,
         cantidad: product.productoId === this.product?.productoId ? this.cantidad : 1,
-        unidadVenta: product.unidadVenta,
+        unidadVenta: product.productoId === this.product?.productoId
+          ? this.unidadVentaSeleccionada
+          : (product.unidadVenta === 'kilo' ? 'kilo' : 'unidad'),
       },
       this.store.name,
     );
@@ -268,5 +281,25 @@ export class ProductoDetalleComponent implements OnInit {
       timer: 1500,
       showConfirmButton: false,
     });
+  }
+
+  private getPrecioPorUnidad(product: StoreProduct | null): number {
+    if (!product) {
+      return 0;
+    }
+
+    if (this.unidadVentaSeleccionada === 'kilo') {
+      return product.precioKilo ?? product.priceValue;
+    }
+
+    return product.precioUnidad ?? product.priceValue;
+  }
+
+  private syncCantidadMinima(): void {
+    const minCantidad = (this.unidadVentaSeleccionada === 'kilo' && this.product?.minimoKilos)
+      ? this.product.minimoKilos
+      : 1;
+
+    this.cantidad = Math.max(this.cantidad, minCantidad);
   }
 }

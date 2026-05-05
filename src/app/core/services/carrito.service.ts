@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 
 export interface CarritoItem {
+  itemId?: string;
   productoId: string;
   tiendaId: string;
   nombre: string;
@@ -65,7 +66,10 @@ export class CarritoService {
     }
 
     const itemsRefrescados = this.itemsSubject.value;
-    const existingItemIndex = itemsRefrescados.findIndex((existingItem) => existingItem.productoId === item.productoId);
+    const itemId = `${item.productoId}-${item.unidadVenta || 'unidad'}`;
+    const existingItemIndex = itemsRefrescados.findIndex(
+      (existingItem) => (existingItem.itemId || `${existingItem.productoId}-${existingItem.unidadVenta || 'unidad'}`) === itemId,
+    );
 
     if (existingItemIndex >= 0) {
       const updatedItems = [...itemsRefrescados];
@@ -75,7 +79,7 @@ export class CarritoService {
       };
       this.itemsSubject.next(updatedItems);
     } else {
-      this.itemsSubject.next([...itemsRefrescados, item]);
+      this.itemsSubject.next([...itemsRefrescados, { ...item, itemId }]);
     }
 
     this.tiendaActualNombre = nombreTienda;
@@ -83,8 +87,10 @@ export class CarritoService {
     return true;
   }
 
-  quitarItem(productoId: string): void {
-    const updatedItems = this.itemsSubject.value.filter((item) => item.productoId !== productoId);
+  quitarItem(itemId: string): void {
+    const updatedItems = this.itemsSubject.value.filter(
+      (item) => (item.itemId || `${item.productoId}-${item.unidadVenta || 'unidad'}`) !== itemId,
+    );
     this.itemsSubject.next(updatedItems);
 
     if (updatedItems.length === 0) {
@@ -94,14 +100,14 @@ export class CarritoService {
     this.persistir();
   }
 
-  cambiarCantidad(productoId: string, cantidad: number): void {
+  cambiarCantidad(itemId: string, cantidad: number): void {
     if (cantidad <= 0) {
-      this.quitarItem(productoId);
+      this.quitarItem(itemId);
       return;
     }
 
     const updatedItems = this.itemsSubject.value.map((item) =>
-      item.productoId === productoId
+      (item.itemId || `${item.productoId}-${item.unidadVenta || 'unidad'}`) === itemId
         ? { ...item, cantidad }
         : item,
     );

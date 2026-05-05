@@ -21,15 +21,15 @@ export class CarritoComponent {
   });
 
   trackByProductoId(_: number, item: CarritoItem): string {
-    return item.productoId;
+    return item.itemId || `${item.productoId}-${item.unidadVenta || 'unidad'}`;
   }
 
   aumentarCantidad(item: CarritoItem): void {
-    this.carritoService.cambiarCantidad(item.productoId, item.cantidad + 1);
+    this.carritoService.cambiarCantidad(item.itemId || `${item.productoId}-${item.unidadVenta || 'unidad'}`, item.cantidad + 1);
   }
 
   disminuirCantidad(item: CarritoItem): void {
-    this.carritoService.cambiarCantidad(item.productoId, item.cantidad - 1);
+    this.carritoService.cambiarCantidad(item.itemId || `${item.productoId}-${item.unidadVenta || 'unidad'}`, item.cantidad - 1);
   }
 
   get nombreTienda(): string {

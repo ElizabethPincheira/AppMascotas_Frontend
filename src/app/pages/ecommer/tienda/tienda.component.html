@@ -88,15 +88,30 @@
                       {{ tag }}
                     </span>
                     <span class="product-card__tag" *ngIf="product.unidadVenta === 'kilo'">Venta por kilo</span>
+                    <span class="product-card__tag" *ngIf="product.unidadVenta === 'ambos'">Venta por unidad o kilo</span>
                     <span class="product-card__tag product-card__tag--minimum" *ngIf="product.minimoKilos && product.unidadVenta === 'kilo'">
                       Mín. {{ product.minimoKilos }} kg
                     </span>
                   </div>
 
                   <div class="product-card__footer">
-                    <strong class="product-card__price">{{ formatProductPrice(product) }}</strong>
+                    <ng-container *ngIf="isPrecioMixto(product); else singlePrice">
+                      <div class="product-card__price product-card__price--mixed">
+                        <span class="product-card__price-line">
+                          <em>Por unidad</em>
+                          <strong>{{ getPrecioUnidadLabel(product) }}</strong>
+                        </span>
+                        <span class="product-card__price-line">
+                          <em>Por kilo</em>
+                          <strong>{{ getPrecioKiloLabel(product) }}</strong>
+                        </span>
+                      </div>
+                    </ng-container>
+                    <ng-template #singlePrice>
+                      <strong class="product-card__price">{{ formatProductPrice(product) }}</strong>
+                    </ng-template>
                     <a class="product-card__detail-action" [routerLink]="['/tiendas', store.id, 'productos', product.productoId]">
-                      Ver detalle
+                      Comprar
                     </a>
                   </div>
                 </div>

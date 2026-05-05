@@ -84,8 +84,34 @@ export class StoreDetailComponent implements OnInit {
     return product.id;
   }
 
+  isPrecioMixto(product: StoreProduct): boolean {
+    return product.unidadVenta === 'ambos';
+  }
+
+  getPrecioUnidadLabel(product: StoreProduct): string {
+    const precio = product.precioUnidad ?? product.priceValue;
+    return `${this.formatPrice(precio)} c/u`;
+  }
+
+  getPrecioKiloLabel(product: StoreProduct): string {
+    const precio = product.precioKilo ?? product.priceValue;
+    return `${this.formatPrice(precio)} / kg`;
+  }
+
   formatProductPrice(product: StoreProduct): string {
-    return product.unidadVenta === 'kilo' ? `${product.price} / kg` : product.price;
+    if (product.unidadVenta === 'kilo') {
+      return `${this.formatPrice(product.precioKilo ?? product.priceValue)} / kg`;
+    }
+
+    return `${this.formatPrice(product.precioUnidad ?? product.priceValue)} c/u`;
+  }
+
+  private formatPrice(value: number): string {
+    return new Intl.NumberFormat('es-CL', {
+      style: 'currency',
+      currency: 'CLP',
+      maximumFractionDigits: 0,
+    }).format(value);
   }
 
   private esAdmin(): boolean {
@@ -100,7 +126,11 @@ export class StoreDetailComponent implements OnInit {
       return;
     }
 
-    // Si el producto tiene mínimo de kilos, dirigir al detalle del producto
+    if (product.unidadVenta === 'ambos') {
+      window.location.href = `/tiendas/${this.store.id}/productos/${product.productoId}`;
+      return;
+    }
+
     if (product.unidadVenta === 'kilo' && product.minimoKilos) {
       await Swal.fire({
         icon: 'info',

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import axios from 'axios';
 import { environment } from '../../../environments/environment';
 
-export type UnidadVentaProducto = 'unidad' | 'kilo';
+export type UnidadVentaProducto = 'unidad' | 'kilo' | 'ambos';
 
 export interface Producto {
   _id: string;
@@ -11,6 +11,8 @@ export interface Producto {
   descripcion: string;
   precio: number;
   unidadVenta?: UnidadVentaProducto;
+  precioUnidad?: number;
+  precioKilo?: number;
   minimoKilos?: number;
   stock?: number;
   disponible?: boolean;
@@ -25,6 +27,8 @@ export interface CreateProductoDto {
   descripcion: string;
   precio: number;
   unidadVenta?: UnidadVentaProducto;
+  precioUnidad?: number;
+  precioKilo?: number;
   minimoKilos?: number;
   stock?: number;
   disponible?: boolean;
@@ -37,6 +41,8 @@ export interface UpdateProductoDto {
   minimoKilos?: number;
   precio?: number;
   unidadVenta?: UnidadVentaProducto;
+  precioUnidad?: number;
+  precioKilo?: number;
   stock?: number;
   disponible?: boolean;
   imagen?: string;

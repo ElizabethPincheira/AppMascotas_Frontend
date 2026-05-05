@@ -343,22 +343,25 @@
             </label>
 
             <label class="form-field">
-              <span>Precio (CLP)</span>
-              <input type="number" [(ngModel)]="nuevoProductoForm.precio" placeholder="0.00" step="0.01" min="0" />
-              <small class="form-field__hint">
-                {{ nuevoProductoForm.unidadVenta === 'kilo' ? 'Este precio se mostrará por kilo.' : 'Este precio se mostrará por unidad.' }}
-              </small>
-            </label>
-
-            <label class="form-field">
               <span>Tipo de venta</span>
               <select [(ngModel)]="nuevoProductoForm.unidadVenta">
                 <option value="unidad">Por unidad</option>
                 <option value="kilo">Por kilo</option>
+                <option value="ambos">Por unidad y por kilo</option>
               </select>
             </label>
 
-            <label class="form-field" *ngIf="nuevoProductoForm.unidadVenta === 'kilo'">
+            <label class="form-field" *ngIf="nuevoProductoForm.unidadVenta === 'unidad' || nuevoProductoForm.unidadVenta === 'ambos'">
+              <span>Precio por unidad (CLP)</span>
+              <input type="number" [(ngModel)]="nuevoProductoForm.precioUnidad" placeholder="Ej: 1500" step="1" min="0" />
+            </label>
+
+            <label class="form-field" *ngIf="nuevoProductoForm.unidadVenta === 'kilo' || nuevoProductoForm.unidadVenta === 'ambos'">
+              <span>Precio por kilo (CLP)</span>
+              <input type="number" [(ngModel)]="nuevoProductoForm.precioKilo" placeholder="Ej: 4500" step="1" min="0" />
+            </label>
+
+            <label class="form-field" *ngIf="nuevoProductoForm.unidadVenta === 'kilo' || nuevoProductoForm.unidadVenta === 'ambos'">
               <span>Mínimo de kilos por venta</span>
               <input 
                 type="number" 
@@ -455,7 +458,7 @@
                 </div>
                 <div class="info-row">
                   <span class="info-label">Venta:</span>
-                  <span class="info-value">{{ producto.unidadVenta === 'kilo' ? 'Por kilo' : 'Por unidad' }}</span>
+                  <span class="info-value">{{ producto.unidadVenta === 'kilo' ? 'Por kilo' : producto.unidadVenta === 'ambos' ? 'Por unidad y por kilo' : 'Por unidad' }}</span>
                 </div>
                 <div class="info-row" *ngIf="producto.minimoKilos && producto.unidadVenta === 'kilo'">
                   <span class="info-label">Mínimo:</span>
