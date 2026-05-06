@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { AuthService } from '../../../core/services/auth.service';
+import { SeoService } from '../../../core/services/seo.service';
 
 @Component({
   selector: 'app-colaboradores',
@@ -18,10 +19,16 @@ export class ColaboradoresComponent implements OnInit, OnDestroy {
 
   constructor(
     private router: Router,
-    private authService: AuthService
+    private authService: AuthService,
+    private seoService: SeoService
   ) { }
 
   ngOnInit() {
+    this.seoService.setPage(
+      'Colaboradores | Circulo Animal',
+      'Unete como colaborador de Circulo Animal y aporta con apoyo veterinario, busqueda de mascotas perdidas o hogar temporal.'
+    );
+
     this.estaLogueado = this.authService.isLogged();
 
     this.authService.user$

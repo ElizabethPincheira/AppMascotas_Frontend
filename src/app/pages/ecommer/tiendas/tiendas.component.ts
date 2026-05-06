@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../core/services/auth.service';
+import { SeoService } from '../../../core/services/seo.service';
 import { TiendasService } from '../../../core/services/tiendas.service';
 import { DeliveryStore } from './delivery-store.model';
 import { StoreCardComponent } from './store-card/store-card.component';
@@ -16,6 +17,7 @@ import { StoreCardComponent } from './store-card/store-card.component';
 export class TiendaComponent implements OnInit {
   private readonly tiendasService = inject(TiendasService);
   private readonly authService = inject(AuthService);
+  private readonly seoService = inject(SeoService);
 
   selectedRegion = '';
   selectedProvincia = '';
@@ -25,6 +27,11 @@ export class TiendaComponent implements OnInit {
   private readonly currentUser = this.authService.getUser();
 
   async ngOnInit(): Promise<void> {
+    this.seoService.setPage(
+      'Tiendas para mascotas en Chile | Circulo Animal',
+      'Descubre tiendas para mascotas en Circulo Animal y filtra por region, provincia y comuna para encontrar productos cerca de ti.'
+    );
+
     await this.cargarTiendasDelBackend();
   }
 

@@ -1,6 +1,6 @@
 import { Component, ElementRef, HostListener, inject } from '@angular/core';
-import { Router, RouterLink, RouterLinkActive } from '@angular/router';
-import { map } from 'rxjs';
+import { NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { Subject, filter, map, takeUntil } from 'rxjs';
 import { AuthService } from '../../../../services/auth.service';
 import { CommonModule } from '@angular/common';
 import { CarritoService } from '../../../../services/carrito.service';
@@ -36,6 +36,7 @@ export class NavbarComponent {
     { label: 'Tiendas', path: '/tiendas' },
     { label: 'Ser parte', path: '/colaboradores' },
   ];
+  private readonly destroy$ = new Subject<void>();
 
   constructor(private authService: AuthService,
     private router: Router
@@ -43,16 +44,33 @@ export class NavbarComponent {
 
 
   ngOnInit() {
-    this.authService.user$.subscribe(user => {
-      this.user = user;
-      void this.cargarCobrosTienda();
-    });
+    this.authService.user$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(user => {
+        this.user = user;
+        void this.cargarCobrosTienda();
+      });
+
+    this.router.events
+      .pipe(
+        filter((event): event is NavigationEnd => event instanceof NavigationEnd),
+        takeUntil(this.destroy$),
+      )
+      .subscribe(() => {
+        this.closeMobileMenu();
+        this.closeProfileMenu();
+      });
 
     if (this.authService.isLogged()) {
       void this.authService.refreshCurrentUser().catch((error) => {
         console.warn('No se pudo refrescar el usuario en navbar:', error);
       });
     }
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   toggleProfileMenu(): void {
@@ -133,6 +151,18 @@ export class NavbarComponent {
     const normalizedRoles = roles.map((role: string) => role.toLowerCase());
 
     return normalizedRoles.includes('admin') || normalizedRoles.includes('administrador');
+  }
+
+  get isLoggedIn(): boolean {
+    return !!this.user?.nombre;
+  }
+
+  get displayName(): string {
+    return this.user?.nombre || 'Usuario';
+  }
+
+  get displayInitial(): string {
+    return this.displayName.charAt(0).toUpperCase() || 'U';
   }
 
   private async cargarCobrosTienda(): Promise<void> {

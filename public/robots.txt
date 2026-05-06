@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /
+
+Disallow: /admin/
+Disallow: /mi-cuenta/
+Disallow: /mi-tienda/
+Disallow: /pedidos-tienda/
+Disallow: /cobros-tienda/
+Disallow: /mis-compras/
+Disallow: /checkout/
+
+Sitemap: https://circuloanimal.cl/sitemap.xml

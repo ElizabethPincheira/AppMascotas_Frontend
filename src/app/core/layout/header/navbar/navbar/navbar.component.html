@@ -1,16 +1,12 @@
-<!-- ═══════════════════════════════════════════
-     NAVBAR
-═══════════════════════════════════════════ -->
 <header class="nav-root">
   <nav class="nav-bar">
-
-    <!-- Izquierda: Hamburguesa + Logo -->
     <div class="nav-start">
       <button
         class="nav-ham"
         [class.nav-ham--open]="mobileMenuOpen"
         type="button"
         (click)="toggleMobileMenu()"
+        aria-controls="mobile-nav-drawer"
         [attr.aria-expanded]="mobileMenuOpen"
         aria-label="Abrir menú">
         <span></span>
@@ -31,7 +27,6 @@
       </a>
     </div>
 
-    <!-- Centro: Links de navegación (solo desktop) -->
     <ul class="nav-links">
       <li *ngFor="let item of primaryNavItems; trackBy: trackByPath">
         <a
@@ -48,34 +43,31 @@
       </li>
     </ul>
 
-    <!-- Derecha: Acciones -->
     <div class="nav-end">
-      <!-- Carrito -->
       <button class="nav-cart" type="button" (click)="irAlCarrito()" aria-label="Carrito">
         <span class="material-symbols-outlined">shopping_cart</span>
         <span class="nav-cart__badge" *ngIf="cantidadCarrito$ | async as n">{{ n }}</span>
       </button>
 
-      <!-- No logueado -->
-      <ng-container *ngIf="!user?.nombre">
+      <ng-container *ngIf="!isLoggedIn">
         <div class="nav-auth-divider"></div>
         <a class="nav-btn nav-btn--ghost" routerLink="/login">Ingresar</a>
         <a class="nav-btn nav-btn--primary" routerLink="/register">Registrarse</a>
       </ng-container>
 
-      <!-- Logueado: menú de perfil -->
-      <div class="nav-profile" *ngIf="user?.nombre" [class.nav-profile--open]="profileMenuOpen">
+      <div class="nav-profile" *ngIf="isLoggedIn" [class.nav-profile--open]="profileMenuOpen">
         <button
           class="nav-profile__toggle"
           type="button"
           (click)="toggleProfileMenu()"
+          aria-controls="desktop-profile-menu"
           [attr.aria-expanded]="profileMenuOpen">
-          <span class="nav-avatar">{{ user.nombre?.charAt(0) || 'U' }}</span>
-          <span class="nav-profile__name">{{ user.nombre }}</span>
+          <span class="nav-avatar">{{ displayInitial }}</span>
+          <span class="nav-profile__name">{{ displayName }}</span>
           <span class="material-symbols-outlined nav-profile__caret">expand_more</span>
         </button>
 
-        <ul class="nav-dropdown" *ngIf="profileMenuOpen">
+        <ul id="desktop-profile-menu" class="nav-dropdown" *ngIf="profileMenuOpen">
           <li>
             <a class="nav-dropdown__item" routerLink="/mi-cuenta" (click)="closeProfileMenu()">
               <span class="material-symbols-outlined">person</span> Mi cuenta
@@ -129,13 +121,9 @@
         </ul>
       </div>
     </div>
-
   </nav>
 </header>
 
-<!-- ═══════════════════════════════════════════
-     OVERLAY (mobile — fondo oscuro)
-═══════════════════════════════════════════ -->
 <div
   class="nav-overlay"
   [class.nav-overlay--visible]="mobileMenuOpen"
@@ -143,15 +131,11 @@
   aria-hidden="true">
 </div>
 
-<!-- ═══════════════════════════════════════════
-     DRAWER (desliza desde la izquierda)
-═══════════════════════════════════════════ -->
 <aside
+  id="mobile-nav-drawer"
   class="nav-drawer"
   [class.nav-drawer--open]="mobileMenuOpen"
   aria-label="Menú principal">
-
-  <!-- Cabecera -->
   <div class="nav-drawer__head">
     <div class="nav-drawer__brand">
       <img src="assets/icons/logo_circuloanimal.png" alt="CírculoAnimal" width="40" height="40" />
@@ -162,10 +146,7 @@
     </button>
   </div>
 
-  <!-- Cuerpo del drawer -->
   <nav class="nav-drawer__body">
-
-    <!-- Navegación principal -->
     <p class="nav-drawer__section-label">Navegación</p>
     <ul class="nav-drawer__list">
       <li *ngFor="let item of primaryNavItems; trackBy: trackByPath">
@@ -191,8 +172,7 @@
       </li>
     </ul>
 
-    <!-- Usuario logueado -->
-    <ng-container *ngIf="user?.nombre">
+    <ng-container *ngIf="isLoggedIn">
       <p class="nav-drawer__section-label">Mi cuenta</p>
       <ul class="nav-drawer__list">
         <li>
@@ -245,8 +225,7 @@
       </div>
     </ng-container>
 
-    <!-- No logueado -->
-    <ng-container *ngIf="!user?.nombre">
+    <ng-container *ngIf="!isLoggedIn">
       <div class="nav-drawer__auth">
         <a class="nav-drawer__auth-btn nav-drawer__auth-btn--primary" routerLink="/register" (click)="closeMobileMenu()">
           Registrarse
@@ -256,6 +235,5 @@
         </a>
       </div>
     </ng-container>
-
   </nav>
 </aside>
